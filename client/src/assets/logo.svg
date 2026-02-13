@@ -1,0 +1,16 @@
+<svg width="168" height="43" viewBox="0 0 168 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- ICON (BIGGER) -->
+  <g transform="translate(4 5) scale(1.15)">
+    <rect x="0" y="0" width="29" height="29" rx="7" fill="#CC0022"></rect>
+
+    <!-- lightning / speed mark -->
+    <path d="M16 4L10 15H15L13 25L20 13H15L16 4Z" fill="white"></path>
+  </g>
+
+  <!-- TEXT (BIGGER & TIGHTER) -->
+  <text x="54" y="31" fill="#CC0022" font-size="26" font-weight="700" font-family="Inter, Poppins, Segoe UI, sans-serif" letter-spacing="-0.5">
+    Nex.ai
+  </text>
+
+</svg>
