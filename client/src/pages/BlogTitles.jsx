@@ -3,7 +3,7 @@ import { Hash, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast';
 import Markdown from 'react-markdown';
 import axios from 'axios'
-import { useAuth } from '@clerk/clerk-react';
+import { useSelector } from 'react-redux';
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -17,7 +17,7 @@ const BlogTitles = () => {
   const [loading, setLoading] = useState(false)
   const [content, setContent] = useState('')
 
-  const {getToken} = useAuth()
+  const { token } = useSelector(state => state.auth)
 
   const onSubmitHandler = async (e)=> {
     e.preventDefault();
@@ -40,7 +40,7 @@ Here are 5 SEO-friendly blog titles for the keyword "${input}":
 5. [Title 5]`;
 
 
-      const { data } = await axios.post('/api/ai/generate-blog-title', { uiPrompt, aiPrompt }, {headers: {Authorization: `Bearer ${await getToken()}`}})
+      const { data } = await axios.post('/api/ai/generate-blog-title', { uiPrompt, aiPrompt }, {headers: {Authorization: `Bearer ${token}`}})
 
       if(data.success) {
         setContent(data.content)

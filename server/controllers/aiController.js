@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import sql from "../configs/db.js";
-import { clerkClient } from "@clerk/express";
 import axios from 'axios';
 import {v2 as cloudinary} from 'cloudinary';
 
@@ -11,13 +10,12 @@ const AI = new OpenAI({
 
 export const generateArticle = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.user.id;
     const { prompt, length } = req.body;
     const plan = req.plan;
-    const free_usage = req.free_usage;
 
-    if (plan != "premium" && free_usage >= 10) {
-      return res.json({success: false, message: "Limit reached. Upgrade to Continue.",
+    if (plan != "premium") {
+      return res.json({success: false, message: "This feature requires premium plan.",
       });
     }
 
@@ -35,34 +33,25 @@ export const generateArticle = async (req, res) => {
 
     const content = response.choices[0].message.content
 
-    await sql` INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, ${prompt}, ${content}, 'article')`;
-
-    if(plan !== 'premium') {
-        await clerkClient.users.updateUserMetadata(userId, {
-            privateMetadata: {
-                free_usage: free_usage + 1
-            }
-        })
-    }
+    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
+      [userId, prompt, content, 'article']);
 
     res.json({success: true, content})
 
-
   } catch (error) {
     console.log(error.message)
-    res.json({success: false, message: error.message})
+    res.status(500).json({success: false, message: error.message})
   }
 };
 
 export const generateBlogTitle = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.user.id;
     const { uiPrompt, aiPrompt } = req.body;
     const plan = req.plan;
-    const free_usage = req.free_usage;
 
-    if (plan != "premium" && free_usage >= 10) {
-      return res.json({success: false, message: "Limit reached. Upgrade to Continue.",
+    if (plan != "premium") {
+      return res.json({success: false, message: "This feature requires premium plan.",
       });
     }
 
@@ -87,28 +76,20 @@ export const generateBlogTitle = async (req, res) => {
       });
     }
 
-    await sql` INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, ${uiPrompt}, ${content}, 'blog-title')`;
-
-    if(plan !== 'premium') {
-        await clerkClient.users.updateUserMetadata(userId, {
-            privateMetadata: {
-                free_usage: free_usage + 1
-            }
-        })
-    }
+    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
+      [userId, uiPrompt, content, 'blog-title']);
 
     res.json({success: true, content})
 
-
   } catch (error) {
     console.log(error.message)
-    res.json({success: false, message: error.message})
+    res.status(500).json({success: false, message: error.message})
   }
 };
 
 export const generateImage = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.user.id;
     const { prompt, publish } = req.body;
     const plan = req.plan;
 
@@ -128,20 +109,20 @@ export const generateImage = async (req, res) => {
 
     const {secure_url} = await cloudinary.uploader.upload(base64Image)
 
-    await sql` INSERT INTO creations (user_id, prompt, content, type, publish) VALUES (${userId}, ${prompt}, ${secure_url}, 'image', ${publish ?? false})`;
+    await sql('INSERT INTO creations (user_id, prompt, content, type, publish) VALUES ($1, $2, $3, $4, $5)', 
+      [userId, prompt, secure_url, 'image', publish ?? false]);
 
     res.json({success: true, content: secure_url})
 
-
   } catch (error) {
     console.log(error.message)
-    res.json({success: false, message: error.message})
+    res.status(500).json({success: false, message: error.message})
   }
 };
 
 export const removeImageBackground = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.user.id;
     const image = req.file;
     const plan = req.plan;
 
@@ -161,20 +142,20 @@ export const removeImageBackground = async (req, res) => {
       ]
     })
 
-    await sql` INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, 'Remove background from image', ${secure_url}, 'image')`;
+    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
+      [userId, 'Remove background from image', secure_url, 'image']);
 
     res.json({success: true, content: secure_url})
 
-
   } catch (error) {
     console.log(error.message)
-    res.json({success: false, message: error.message})
+    res.status(500).json({success: false, message: error.message})
   }
 };
 
 export const removeImageObject = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.user.id;
     const { object } = req.body;
     const image = req.file;
     const plan = req.plan;
@@ -191,13 +172,13 @@ export const removeImageObject = async (req, res) => {
       resource_type: 'image'
     })
 
-    await sql` INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, ${`Removed ${object} from image`}, ${imageUrl}, 'image')`;
+    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
+      [userId, `Removed ${object} from image`, imageUrl, 'image']);
 
     res.json({success: true, content: imageUrl})
 
-
   } catch (error) {
     console.log(error.message)
-    res.json({success: false, message: error.message})
+    res.status(500).json({success: false, message: error.message})
   }
 };

@@ -17,6 +17,31 @@
     "filter": "Filter",
     "pagination": "Pagination"
   },
+  "nav": {
+    "dashboard": "Dashboard",
+    "plans": "Plans",
+    "getStarted": "Get Started",
+    "logout": "Logout"
+  },
+  "hero": {
+    "badge": "🚀 AI-Powered Content Creation",
+    "title": {
+      "part1": "Create Amazing Content",
+      "part2": "With AI Tools"
+    },
+    "description": "Transform your content creation with our suite of premium AI tools. Write articles, generate images, create videos and enhance your workflow. All powered by cutting-edge AI technology.",
+    "startBtn": "Start Creating Now",
+    "watchBtn": "Watch Demo",
+    "trustedBy": "Trusted by 10k+ creators worldwide",
+    "features": {
+      "ai": "AI-Powered",
+      "aiDesc": "Advanced AI algorithms to help you create content faster and better",
+      "fast": "Lightning Fast",
+      "fastDesc": "Generate results instantly without long waiting times",
+      "secure": "Secure & Private",
+      "secureDesc": "Your data is protected with enterprise-grade security"
+    }
+  },
   "admin": {
     "dashboard": "Admin Dashboard",
     "title": "Platform Management",
@@ -237,5 +262,33 @@
     "failedToSubmit": "Failed to submit complaint",
     "failedToLoad": "Failed to load complaints",
     "adminResponse": "Admin Response"
+  },
+  "auth": {
+    "verifyEmail": "Verify Your Email",
+    "verificationCode": "Verification Code",
+    "codeExpires": "Code expires in",
+    "minutes": "minutes",
+    "verify": "Verify",
+    "noCodeReceived": "Didn't receive the code?",
+    "resendCode": "Resend Code",
+    "resendIn": "Resend in",
+    "wrongEmail": "Used wrong email?",
+    "signUpAgain": "Sign up again",
+    "forgotPassword": "Forgot Your Password?",
+    "email": "Email",
+    "sendResetLink": "Send Reset Link",
+    "linkExpires": "Link expires in 30 minutes",
+    "remembered": "Remembered your password?",
+    "loginHere": "Login here",
+    "secureEmail": "Your email is secure and will only be used for password recovery.",
+    "resetPassword": "Reset Your Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordWeak": "Password must be at least 6 characters",
+    "tokenExpired": "Reset link has expired",
+    "resetSuccess": "Password reset successfully",
+    "redirecting": "Redirecting to login...",
+    "verifyingToken": "Verifying token..."
   }
 }

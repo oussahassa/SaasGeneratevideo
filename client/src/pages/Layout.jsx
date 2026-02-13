@@ -3,15 +3,18 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import { Menu, X } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
-import { SignIn, useUser } from '@clerk/clerk-react'
+import { useSelector } from 'react-redux'
 
 const Layout = () => {
 
   const navigate = useNavigate()
   const [sidebar, setSidebar] = useState(false)
-  const { user } = useUser()
+  const { isAuthenticated } = useSelector(state => state.auth)
 
-  return user ? (
+  if (!isAuthenticated) {
+    navigate('/login')
+    return null
+  }
     <div className='fixed inset-0 flex flex-col'>
 
       <nav className='w-full px-8 h-14 flex items-center justify-between border-b border-gray-200 shrink-0 bg-white z-10'>
@@ -27,12 +30,7 @@ const Layout = () => {
         </div>
       </div>
 
-    </div>
-  ) : (
-    <div className='flex items-center justify-center h-screen'>
-      <SignIn />
-    </div>
-  )
+  return (
 }
 
 export default Layout

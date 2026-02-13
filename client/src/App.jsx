@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
 import Home from './pages/Home'
 import Layout from './pages/Layout'
 import Dashboard from './pages/Dashboard'
@@ -15,11 +16,18 @@ import GenerateVideos from './pages/GenerateVideos'
 import FAQ from './pages/FAQ'
 import Support from './pages/Support'
 import AdminDashboard from './pages/AdminDashboard'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import EmailVerification from './pages/EmailVerification'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import {Toaster} from 'react-hot-toast'
-import '../i18n/i18n'
+import { verifyToken } from './redux/slices/authSlice'
+import './i18n/i18n'
 
 const App = () => {
   const { i18n } = useTranslation()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     // Set document direction based on language
@@ -32,11 +40,21 @@ const App = () => {
     }
   }, [i18n.language])
 
+  useEffect(() => {
+    // Verify token on app load
+    dispatch(verifyToken())
+  }, [dispatch])
+
   return (
     <div>
       <Toaster />
       <Routes>
         <Route path='/' element={<Home />}/>
+        <Route path='/login' element={<Login />}/>
+        <Route path='/signup' element={<Signup />}/>
+        <Route path='/verify-email' element={<EmailVerification />}/>
+        <Route path='/forgot-password' element={<ForgotPassword />}/>
+        <Route path='/reset-password' element={<ResetPassword />}/>
         <Route path='/ai' element={<Layout />}>
           <Route index element={<Dashboard />}/>
           <Route path='write-article' element={<WriteArticle />}/>

@@ -1,14 +1,22 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, LogOut } from 'lucide-react';
 import { useState } from 'react';
-import { UserButton, useUser } from '@clerk/clerk-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { logoutUser } from '../redux/slices/authSlice';
 
 export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user } = useUser();
+  const { user, isAuthenticated } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
 
-  const isAdmin = user?.publicMetadata?.isAdmin;
+  const isAdmin = user?.is_admin;
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/');
+  };
 
   const navLinks = [
     { path: '/', label: 'Home' },
@@ -51,9 +59,23 @@ export default function NavBar() {
           </div>
 
           {/* User Profile */}
-          <div className="hidden md:flex">
-            <UserButton />
-          </div>
+          {isAuthenticated ? (
+            <div className="hidden md:flex items-center gap-4">
+              <span className="text-slate-300 text-sm">{user?.email}</span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-4">
+              <Link to="/login" className="text-slate-300 hover:text-white transition">Login</Link>
+              <Link to="/signup" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">Sign Up</Link>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -81,10 +103,23 @@ export default function NavBar() {
                 {link.label}
               </Link>
             ))}
-            <div className="px-3 py-2">
-              <UserButton />
-            </div>
-          </div>
+            {isAuthenticated ? (
+              <div className="px-3 py-2 border-t border-slate-700 mt-2 flex items-center justify-between">
+                <span className="text-slate-300 text-sm">{user?.email}</span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded transition"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className='border-t border-slate-700 mt-2 py-2 space-y-2'>
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="block px-3 py-2 text-slate-300 hover:bg-slate-700 rounded-lg">Login</Link>
+                <Link to="/signup" onClick={() => setMobileOpen(false)} className="block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Sign Up</Link>
+              </div>
+            )}
         )}
       </div>
     </nav>

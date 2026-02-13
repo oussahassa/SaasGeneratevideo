@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { useUser } from '@clerk/clerk-react'
+import { useSelector } from 'react-redux'
 import { Heart } from 'lucide-react'
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useAuth } from "@clerk/clerk-react";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const Community = () => {
 
   const [creations, setCreations] = useState([])
-  const {user} = useUser()
+  const { user } = useSelector(state => state.auth)
 
   const [loading, setLoading] = useState(true);
 
-  const { getToken } = useAuth();
+  const { token } = useSelector(state => state.auth);
 
   const fetchCreations = async ()=> {
     try {
       const { data } = await axios.get('/api/user/get-published-creations', {
-        headers: { Authorization: `Bearer ${await getToken()}`}
+        headers: { Authorization: `Bearer ${token}`}
       })
       if(data.success) {
         setCreations(data.creations)
@@ -36,7 +35,7 @@ const Community = () => {
   const imageLikeToggle = async (id)=> {
     try {
       const { data } = await axios.post('/api/user/toggle-like-creation', {id},{
-        headers: { Authorization: `Bearer ${await getToken()}`}
+        headers: { Authorization: `Bearer ${token}`}
       })
       
       if(data.success) {

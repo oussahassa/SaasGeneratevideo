@@ -17,6 +17,31 @@
     "filter": "Filtrer",
     "pagination": "Pagination"
   },
+  "nav": {
+    "dashboard": "Tableau de Bord",
+    "plans": "Plans",
+    "getStarted": "Commencer",
+    "logout": "Déconnexion"
+  },
+  "hero": {
+    "badge": "🚀 Création de Contenu Alimentée par l'IA",
+    "title": {
+      "part1": "Créez du Contenu Incroyable",
+      "part2": "Avec les Outils IA"
+    },
+    "description": "Transformez votre création de contenu avec notre suite d'outils IA premium. Écrivez des articles, générez des images, créez des vidéos et optimisez votre flux de travail. Tout propulsé par la technologie IA de pointe.",
+    "startBtn": "Commencer à Créer",
+    "watchBtn": "Regarder la Démo",
+    "trustedBy": "Approuvé par 10k+ créateurs dans le monde",
+    "features": {
+      "ai": "Alimenté par l'IA",
+      "aiDesc": "Algorithmes IA avancés pour vous aider à créer du contenu plus rapidement et mieux",
+      "fast": "Extrêmement Rapide",
+      "fastDesc": "Générez des résultats instantanément sans temps d'attente",
+      "secure": "Sécurisé et Privé",
+      "secureDesc": "Vos données sont protégées par une sécurité de niveau entreprise"
+    }
+  },
   "admin": {
     "dashboard": "Tableau de Bord Admin",
     "title": "Gestion de la Plateforme",
@@ -237,5 +262,33 @@
     "failedToSubmit": "Impossible de soumettre la réclamation",
     "failedToLoad": "Impossible de charger les réclamations",
     "adminResponse": "Réponse de l'Admin"
+  },
+  "auth": {
+    "verifyEmail": "Vérifiez Votre Email",
+    "verificationCode": "Code de Vérification",
+    "codeExpires": "Le code expire dans",
+    "minutes": "minutes",
+    "verify": "Vérifier",
+    "noCodeReceived": "Vous n'avez pas reçu le code?",
+    "resendCode": "Renvoyer le Code",
+    "resendIn": "Renvoyer dans",
+    "wrongEmail": "Mauvaise adresse email?",
+    "signUpAgain": "S'inscrire à nouveau",
+    "forgotPassword": "Mot de Passe Oublié?",
+    "email": "Email",
+    "sendResetLink": "Envoyer le Lien de Réinitialisation",
+    "linkExpires": "Le lien expire dans 30 minutes",
+    "remembered": "Vous avez retrouvé votre mot de passe?",
+    "loginHere": "Se connecter ici",
+    "secureEmail": "Votre email est sécurisé et ne sera utilisé que pour la récupération de mot de passe.",
+    "resetPassword": "Réinitialiser Votre Mot de Passe",
+    "newPassword": "Nouveau Mot de Passe",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordWeak": "Le mot de passe doit contenir au moins 6 caractères",
+    "tokenExpired": "Le lien de réinitialisation a expiré",
+    "resetSuccess": "Mot de passe réinitialisé avec succès",
+    "redirecting": "Redirection vers la connexion...",
+    "verifyingToken": "Vérification du jeton..."
   }
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Edit, Sparkles } from 'lucide-react'
 import axios from 'axios'
 import toast from 'react-hot-toast';
-import { useAuth } from '@clerk/clerk-react';
+import { useSelector } from 'react-redux';
 import Markdown from 'react-markdown';
 
 
@@ -22,7 +22,7 @@ const WriteArticle = () => {
   const [loading, setLoading] = useState(false)
   const [content, setContent] = useState('')
 
-  const {getToken} = useAuth()
+  const { token } = useSelector(state => state.auth)
 
   const onSubmitHandler = async (e)=> {
     e.preventDefault();
@@ -31,7 +31,7 @@ const WriteArticle = () => {
       const prompt = `Write an article about ${input} in ${selectedLength.text}`
 
       const { data } = await axios.post('/api/ai/generate-article', {prompt, length:selectedLength.length}, {
-        headers: {Authorization: `Bearer ${await getToken()}`}
+        headers: {Authorization: `Bearer ${token}`}
       })
 
       if(data.success) {

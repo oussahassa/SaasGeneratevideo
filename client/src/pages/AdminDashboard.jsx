@@ -2,7 +2,38 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Users, FileText, Video, Package, AlertCircle, BarChart3, Plus, Trash2, Edit2 } from 'lucide-react';
+import { Users, FileText, Video, Package, AlertCircle, BarChart3, Plus, Trash2, Edit2, TrendingUp, CheckCircle, Clock } from 'lucide-react';
+
+// Reusable StatCard Component
+const StatCard = ({ icon: Icon, title, value, subtitle, gradientColor }) => (
+  <div className={`bg-gradient-to-br ${gradientColor} rounded-xl p-6 text-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300`}>
+    <div className="flex items-start justify-between">
+      <div>
+        <p className="text-white/70 text-sm font-medium mb-1">{title}</p>
+        <h3 className="text-4xl font-bold">{value || 0}</h3>
+        {subtitle && <p className="text-white/60 text-xs mt-2">{subtitle}</p>}
+      </div>
+      <div className="p-3 rounded-lg bg-white/10 backdrop-blur">
+        <Icon className="w-6 h-6" />
+      </div>
+    </div>
+  </div>
+);
+
+// Tab Component
+const Tab = ({ label, active, onClick, icon: Icon }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-2 px-6 py-3 font-medium transition-all duration-300 border-b-2 whitespace-nowrap ${
+      active
+        ? 'text-blue-400 border-blue-400'
+        : 'text-gray-400 border-transparent hover:text-gray-300 hover:border-gray-300'
+    }`}
+  >
+    <Icon className="w-5 h-5" />
+    {label}
+  </button>
+);
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -13,54 +44,49 @@ export default function AdminDashboard() {
   const [packs, setPacks] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, pages: 1, total: 0 });
+  const [dailyStats, setDailyStats] = useState([]);
 
-  // Modal states
+  // Modals
   const [showPackModal, setShowPackModal] = useState(false);
   const [showFaqModal, setShowFaqModal] = useState(false);
+  const [showComplaintModal, setShowComplaintModal] = useState(null);
   const [editingPack, setEditingPack] = useState(null);
   const [editingFaq, setEditingFaq] = useState(null);
-  const [showComplaintModal, setShowComplaintModal] = useState(null);
 
   // Form states
-  const [packForm, setPackForm] = useState({ name: '', description: '', price: 0, monthly_limit: 0, features: [] });
+  const [packForm, setPackForm] = useState({ name: '', description: '', price: 0, monthly_limit: 0 });
   const [faqForm, setFaqForm] = useState({ question: '', answer: '', category: 'general' });
   const [complaintResponse, setComplaintResponse] = useState('');
 
-  useEffect(() => {
-    fetchDashboardStats();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === 'users') {
-      fetchUsers();
-    } else if (activeTab === 'complaints') {
-      fetchComplaints();
-    } else if (activeTab === 'packs') {
-      fetchPacks();
-    } else if (activeTab === 'faqs') {
-      fetchFaqs();
-    }
-  }, [activeTab]);
-
+  // Fetch Dashboard Stats
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/admin/dashboard-stats');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard-stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
         setStats(response.data.stats);
       }
     } catch (error) {
       toast.error(t('admin.overview.failedToLoad'));
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchUsers = async () => {
+  // Fetch Users
+  const fetchUsers = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/admin/get-all-users?page=${pagination.page}&limit=${pagination.limit}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/admin/get-all-users?page=${page}&limit=10`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (response.data.success) {
         setUsers(response.data.users);
         setPagination(response.data.pagination);
@@ -72,10 +98,14 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch Complaints
   const fetchComplaints = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/support/get-all-complaints');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/support/get-all-complaints`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
         setComplaints(response.data.complaints || []);
       }
@@ -86,12 +116,16 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch Packs
   const fetchPacks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/packs/get-all-packs');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/packs/get-all-packs`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
-        setPacks(response.data.packs);
+        setPacks(response.data.packs || []);
       }
     } catch (error) {
       toast.error(t('admin.packs.failedToLoad'));
@@ -100,12 +134,16 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch FAQs
   const fetchFaqs = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/support/get-faqs');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/support/get-faqs`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
-        setFaqs(response.data.faqs);
+        setFaqs(response.data.faqs || []);
       }
     } catch (error) {
       toast.error(t('admin.faqs.failedToLoad'));
@@ -114,24 +152,55 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch Daily Stats
+  const fetchDailyStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/daily-stats?days=30`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.data.success) {
+        setDailyStats(response.data.stats);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'users') fetchUsers(1);
+    else if (activeTab === 'complaints') fetchComplaints();
+    else if (activeTab === 'packs') fetchPacks();
+    else if (activeTab === 'faqs') fetchFaqs();
+    else if (activeTab === 'analytics') fetchDailyStats();
+  }, [activeTab]);
+
   // Pack operations
   const handleSavePack = async () => {
     if (!packForm.name || packForm.price === null) {
       toast.error(t('common.error'));
       return;
     }
-
     try {
+      const token = localStorage.getItem('token');
       if (editingPack) {
-        await axios.put(`/api/packs/update-pack/${editingPack.id}`, packForm);
+        await axios.put(`${import.meta.env.VITE_API_URL}/packs/update-pack/${editingPack.id}`, packForm, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         toast.success(t('admin.packs.packUpdated'));
       } else {
-        await axios.post('/api/packs/create-pack', packForm);
+        await axios.post(`${import.meta.env.VITE_API_URL}/packs/create-pack`, packForm, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         toast.success(t('admin.packs.packCreated'));
       }
       setShowPackModal(false);
       setEditingPack(null);
-      setPackForm({ name: '', description: '', price: 0, monthly_limit: 0, features: [] });
+      setPackForm({ name: '', description: '', price: 0, monthly_limit: 0 });
       fetchPacks();
     } catch (error) {
       toast.error(editingPack ? t('admin.packs.failedToUpdate') : t('admin.packs.failedToCreate'));
@@ -141,7 +210,10 @@ export default function AdminDashboard() {
   const handleDeletePack = async (packId) => {
     if (!window.confirm(t('admin.packs.confirmDelete'))) return;
     try {
-      await axios.delete(`/api/packs/delete-pack/${packId}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${import.meta.env.VITE_API_URL}/packs/delete-pack/${packId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success(t('admin.packs.packDeleted'));
       fetchPacks();
     } catch (error) {
@@ -155,13 +227,17 @@ export default function AdminDashboard() {
       toast.error(t('common.error'));
       return;
     }
-
     try {
+      const token = localStorage.getItem('token');
       if (editingFaq) {
-        await axios.put(`/api/support/update-faq/${editingFaq.id}`, faqForm);
+        await axios.put(`${import.meta.env.VITE_API_URL}/support/update-faq/${editingFaq.id}`, faqForm, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         toast.success(t('admin.faqs.faqUpdated'));
       } else {
-        await axios.post('/api/support/create-faq', faqForm);
+        await axios.post(`${import.meta.env.VITE_API_URL}/support/create-faq`, faqForm, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         toast.success(t('admin.faqs.faqCreated'));
       }
       setShowFaqModal(false);
@@ -176,7 +252,10 @@ export default function AdminDashboard() {
   const handleDeleteFaq = async (faqId) => {
     if (!window.confirm(t('admin.faqs.confirmDelete'))) return;
     try {
-      await axios.delete(`/api/support/delete-faq/${faqId}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${import.meta.env.VITE_API_URL}/support/delete-faq/${faqId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success(t('admin.faqs.faqDeleted'));
       fetchFaqs();
     } catch (error) {
@@ -190,11 +269,13 @@ export default function AdminDashboard() {
       toast.error(t('common.error'));
       return;
     }
-
     try {
-      await axios.put(`/api/support/update-complaint/${complaintId}`, {
+      const token = localStorage.getItem('token');
+      await axios.put(`${import.meta.env.VITE_API_URL}/support/update-complaint/${complaintId}`, {
         status: 'resolved',
         response: complaintResponse
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(t('admin.complaints.complaintUpdated'));
       setShowComplaintModal(null);
@@ -205,13 +286,17 @@ export default function AdminDashboard() {
     }
   };
 
+  // User operations
   const handleToggleUserStatus = async (userId, currentStatus) => {
     try {
-      await axios.put(`/api/admin/toggle-user-status/${userId}`, {
+      const token = localStorage.getItem('token');
+      await axios.put(`${import.meta.env.VITE_API_URL}/admin/toggle-user-status/${userId}`, {
         isBlocked: !currentStatus
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(currentStatus ? t('admin.users.userUnblocked') : t('admin.users.userBlocked'));
-      fetchUsers();
+      fetchUsers(pagination.page);
     } catch (error) {
       toast.error(t('admin.users.failedToUpdate'));
     }
@@ -220,98 +305,113 @@ export default function AdminDashboard() {
   const handleDeleteUser = async (userId) => {
     if (!window.confirm(t('admin.users.confirmDelete'))) return;
     try {
-      await axios.delete(`/api/admin/delete-user/${userId}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/delete-user/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success(t('admin.users.userDeleted'));
-      fetchUsers();
+      fetchUsers(1);
     } catch (error) {
       toast.error(t('admin.users.failedToDelete'));
     }
   };
 
-  const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-slate-400 text-sm mb-2">{label}</p>
-          <p className={`text-3xl font-bold ${color}`}>{value || 0}</p>
-        </div>
-        <Icon className={`${color} opacity-20`} size={40} />
-      </div>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            {t('admin.dashboard')}
-          </h1>
-          <p className="text-slate-400">
-            {t('admin.description')}
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white pt-8 pb-12 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-4xl font-bold mb-2">{t('admin.dashboard')}</h1>
+          <p className="text-blue-100">{t('admin.description')}</p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Tabs Navigation */}
+        <div className="flex gap-2 mb-8 border-b border-slate-700 overflow-x-auto">
+          <Tab label={t('admin.tabs.overview')} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={BarChart3} />
+          <Tab label={t('admin.tabs.users')} active={activeTab === 'users'} onClick={() => setActiveTab('users')} icon={Users} />
+          <Tab label={t('admin.tabs.packs')} active={activeTab === 'packs'} onClick={() => setActiveTab('packs')} icon={Package} />
+          <Tab label={t('admin.tabs.faqs')} active={activeTab === 'faqs'} onClick={() => setActiveTab('faqs')} icon={FileText} />
+          <Tab label={t('admin.tabs.complaints')} active={activeTab === 'complaints'} onClick={() => setActiveTab('complaints')} icon={AlertCircle} />
+          <Tab label={t('admin.tabs.analytics')} active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} icon={TrendingUp} />
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-slate-700 overflow-x-auto">
-          {['overview', 'users', 'packs', 'faqs', 'complaints', 'analytics'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
-                activeTab === tab
-                  ? 'text-blue-500 border-b-2 border-blue-500'
-                  : 'text-slate-400 hover:text-slate-300'
-              }`}
-            >
-              {t(`admin.tabs.${tab}`)}
-            </button>
-          ))}
-        </div>
-
-        {/* Overview Tab */}
+        {/* Overview Tab*/}
         {activeTab === 'overview' && (
           <div className="space-y-8">
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-slate-400 py-12">{t('common.loading')}</div>
             ) : stats ? (
               <>
+                {/* Users Stats */}
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.tabs.users')}</h2>
+                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Users className="w-6 h-6 text-blue-400" />
+                    {t('admin.overview.users')}
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <StatCard icon={Users} label={t('admin.overview.totalUsers')} value={stats.users?.total_users} color="text-blue-400" />
-                    <StatCard icon={Users} label={t('admin.overview.newToday')} value={stats.users?.new_today} color="text-green-400" />
-                    <StatCard icon={Users} label={t('admin.overview.newThisWeek')} value={stats.users?.new_this_week} color="text-purple-400" />
+                    <StatCard
+                      icon={Users}
+                      title={t('admin.overview.totalUsers')}
+                      value={stats.users?.total_users}
+                      gradientColor="from-blue-500 to-blue-600"
+                    />
+                    <StatCard
+                      icon={Plus}
+                      title={t('admin.overview.newToday')}
+                      value={stats.users?.new_today}
+                      subtitle="Last 24h"
+                      gradientColor="from-green-500 to-green-600"
+                    />
+                    <StatCard
+                      icon={TrendingUp}
+                      title={t('admin.overview.newThisWeek')}
+                      value={stats.users?.new_this_week}
+                      subtitle="Last 7 days"
+                      gradientColor="from-purple-500 to-purple-600"
+                    />
                   </div>
                 </div>
 
+                {/* Creations Stats */}
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.overview.creations')}</h2>
+                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-cyan-400" />
+                    {t('admin.overview.creations')}
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <StatCard icon={FileText} label={t('admin.overview.totalCreations')} value={stats.creations?.total_creations} color="text-blue-400" />
-                    <StatCard icon={FileText} label={t('admin.overview.articles')} value={stats.creations?.articles} color="text-indigo-400" />
-                    <StatCard icon={FileText} label={t('admin.overview.blogTitles')} value={stats.creations?.blog_titles} color="text-cyan-400" />
-                    <StatCard icon={FileText} label={t('admin.overview.images')} value={stats.creations?.images} color="text-pink-400" />
-                    <StatCard icon={FileText} label={t('admin.overview.published')} value={stats.creations?.published} color="text-green-400" />
+                    <StatCard icon={FileText} title={t('admin.overview.totalCreations')} value={stats.creations?.total_creations} gradientColor="from-indigo-500 to-indigo-600" />
+                    <StatCard icon={FileText} title={t('admin.overview.articles')} value={stats.creations?.articles} gradientColor="from-blue-500 to-blue-600" />
+                    <StatCard icon={FileText} title={t('admin.overview.blogTitles')} value={stats.creations?.blog_titles} gradientColor="from-cyan-500 to-cyan-600" />
+                    <StatCard icon={FileText} title={t('admin.overview.images')} value={stats.creations?.images} gradientColor="from-pink-500 to-pink-600" />
+                    <StatCard icon={FileText} title={t('admin.overview.published')} value={stats.creations?.published} gradientColor="from-green-500 to-green-600" />
                   </div>
                 </div>
 
+                {/* Videos Stats */}
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.overview.videos')}</h2>
+                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Video className="w-6 h-6 text-red-400" />
+                    {t('admin.overview.videos')}
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <StatCard icon={Video} label={t('admin.overview.totalVideos')} value={stats.videos?.total_videos} color="text-red-400" />
-                    <StatCard icon={Video} label={t('admin.overview.completed')} value={stats.videos?.completed} color="text-green-400" />
-                    <StatCard icon={Video} label={t('admin.overview.processing')} value={stats.videos?.processing} color="text-yellow-400" />
+                    <StatCard icon={Video} title={t('admin.overview.totalVideos')} value={stats.videos?.total_videos} gradientColor="from-red-500 to-red-600" />
+                    <StatCard icon={CheckCircle} title={t('admin.overview.completed')} value={stats.videos?.completed} gradientColor="from-green-500 to-green-600" />
+                    <StatCard icon={Clock} title={t('admin.overview.processing')} value={stats.videos?.processing} gradientColor="from-yellow-500 to-yellow-600" />
                   </div>
                 </div>
 
+                {/* Complaints Stats */}
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.tabs.complaints')}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <StatCard icon={AlertCircle} label={t('admin.overview.open')} value={stats.complaints?.open_complaints} color="text-yellow-400" />
-                    <StatCard icon={AlertCircle} label={t('admin.overview.inProgress')} value={stats.complaints?.in_progress} color="text-blue-400" />
-                    <StatCard icon={AlertCircle} label={t('admin.overview.resolved')} value={stats.complaints?.resolved} color="text-green-400" />
+                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <AlertCircle className="w-6 h-6 text-orange-400" />
+                    {t('admin.tabs.complaints')}
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <StatCard icon={AlertCircle} title={t('admin.overview.open')} value={stats.complaints?.open_complaints} gradientColor="from-red-500 to-red-600" />
+                    <StatCard icon={Clock} title={t('admin.overview.inProgress')} value={stats.complaints?.in_progress} gradientColor="from-yellow-500 to-yellow-600" />
+                    <StatCard icon={CheckCircle} title={t('admin.overview.resolved')} value={stats.complaints?.resolved} gradientColor="from-green-500 to-green-600" />
                   </div>
                 </div>
               </>
@@ -321,40 +421,40 @@ export default function AdminDashboard() {
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+          <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-xl">
             {loading ? (
-              <div className="p-8 text-center text-slate-400">{t('common.loading')}</div>
+              <div className="p-12 text-center text-slate-400">{t('common.loading')}</div>
             ) : (
               <>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-slate-900 border-b border-slate-700">
                       <tr>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.email')}</th>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.name')}</th>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.joined')}</th>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.actions')}</th>
+                        <th className="px-6 py-4 text-left text-white font-semibold">{t('admin.users.email')}</th>
+                        <th className="px-6 py-4 text-left text-white font-semibold">{t('admin.users.name')}</th>
+                        <th className="px-6 py-4 text-left text-white font-semibold">{t('admin.users.joined')}</th>
+                        <th className="px-6 py-4 text-left text-white font-semibold">{t('admin.users.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {users.map(user => (
-                        <tr key={user.id} className="border-b border-slate-700 hover:bg-slate-700/50">
-                          <td className="px-6 py-3 text-white">{user.email}</td>
-                          <td className="px-6 py-3 text-slate-300">{user.first_name} {user.last_name}</td>
-                          <td className="px-6 py-3 text-slate-400 text-sm">{new Date(user.created_at).toLocaleDateString()}</td>
-                          <td className="px-6 py-3">
+                        <tr key={user.id} className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors">
+                          <td className="px-6 py-4 text-white">{user.email}</td>
+                          <td className="px-6 py-4 text-slate-300">{user.first_name} {user.last_name}</td>
+                          <td className="px-6 py-4 text-slate-400">{new Date(user.created_at).toLocaleDateString()}</td>
+                          <td className="px-6 py-4">
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleToggleUserStatus(user.id, user.is_blocked)}
-                                className="px-3 py-1 rounded text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-white transition-colors"
+                                className="px-3 py-1 rounded font-medium text-sm bg-yellow-600 hover:bg-yellow-700 text-white transition-colors"
                               >
                                 {user.is_blocked ? t('admin.users.unblock') : t('admin.users.block')}
                               </button>
                               <button
                                 onClick={() => handleDeleteUser(user.id)}
-                                className="px-3 py-1 rounded text-sm font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                className="px-3 py-1 rounded font-medium text-sm bg-red-600 hover:bg-red-700 text-white transition-colors"
                               >
-                                {t('admin.users.delete')}
+                                <Trash2 className="w-4 h-4 inline" />
                               </button>
                             </div>
                           </td>
@@ -363,32 +463,22 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
-
-                {/* Pagination */}
-                <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-between">
-                  <p className="text-slate-400 text-sm">
-                    {t('admin.users.page')} {pagination.page} {t('admin.users.of')} {pagination.pages} ({pagination.total} {t('admin.users.total')})
-                  </p>
+                <div className="px-6 py-4 bg-slate-900 border-t border-slate-700 flex items-center justify-between">
+                  <p className="text-slate-400 text-sm">{t('admin.users.page')} {pagination.page} of {pagination.pages}</p>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => {
-                        setPagination(p => ({ ...p, page: Math.max(1, p.page - 1) }));
-                        fetchUsers();
-                      }}
+                      onClick={() => fetchUsers(Math.max(1, pagination.page - 1))}
                       disabled={pagination.page === 1}
                       className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white"
                     >
-                      {t('admin.users.previous')}
+                      Prev
                     </button>
                     <button
-                      onClick={() => {
-                        setPagination(p => ({ ...p, page: Math.min(p.pages, p.page + 1) }));
-                        fetchUsers();
-                      }}
+                      onClick={() => fetchUsers(Math.min(pagination.pages, pagination.page + 1))}
                       disabled={pagination.page === pagination.pages}
                       className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white"
                     >
-                      {t('admin.users.next')}
+                      Next
                     </button>
                   </div>
                 </div>
@@ -399,29 +489,29 @@ export default function AdminDashboard() {
 
         {/* Packs Tab */}
         {activeTab === 'packs' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <button
               onClick={() => {
                 setEditingPack(null);
-                setPackForm({ name: '', description: '', price: 0, monthly_limit: 0, features: [] });
+                setPackForm({ name: '', description: '', price: 0, monthly_limit: 0 });
                 setShowPackModal(true);
               }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               <Plus size={20} />
               {t('admin.packs.create')}
             </button>
 
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-slate-400 py-12">{t('common.loading')}</div>
             ) : packs.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {packs.map(pack => (
-                  <div key={pack.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                    <h3 className="text-white font-bold text-lg mb-2">{pack.name}</h3>
-                    <p className="text-blue-400 font-bold mb-4">${pack.price} {t('admin.packs.perMonth')}</p>
+                  <div key={pack.id} className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 hover:border-blue-500 transition-colors shadow-lg">
+                    <h3 className="text-white font-bold text-xl mb-2">{pack.name}</h3>
+                    <p className="text-3xl font-bold text-blue-400 mb-4">${pack.price}</p>
                     <p className="text-slate-400 text-sm mb-4">{pack.description}</p>
-                    <p className="text-slate-400 text-sm mb-4">{pack.monthly_limit} {t('admin.packs.limit')}</p>
+                    <p className="text-slate-500 text-xs mb-6">Monthly limit: {pack.monthly_limit}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
@@ -429,14 +519,14 @@ export default function AdminDashboard() {
                           setPackForm(pack);
                           setShowPackModal(true);
                         }}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
                       >
                         <Edit2 size={16} />
                         {t('common.edit')}
                       </button>
                       <button
                         onClick={() => handleDeletePack(pack.id)}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition-colors"
                       >
                         <Trash2 size={16} />
                         {t('common.delete')}
@@ -451,246 +541,61 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* FAQs Tab */}
-        {activeTab === 'faqs' && (
-          <div className="space-y-4">
-            <button
-              onClick={() => {
-                setEditingFaq(null);
-                setFaqForm({ question: '', answer: '', category: 'general' });
-                setShowFaqModal(true);
-              }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Plus size={20} />
-              {t('admin.faqs.create')}
-            </button>
-
-            {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
-            ) : faqs.length > 0 ? (
+        {/* Modals - Pack Modal */}
+        {showPackModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-slate-700 shadow-2xl">
+              <h3 className="text-white font-bold text-2xl mb-6">
+                {editingPack ? t('admin.packs.edit') : t('admin.packs.create')}
+              </h3>
               <div className="space-y-4">
-                {faqs.map(faq => (
-                  <div key={faq.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                    <h3 className="text-white font-bold mb-2">{faq.question}</h3>
-                    <p className="text-slate-400 text-sm mb-4">{faq.answer}</p>
-                    <p className="text-slate-500 text-xs mb-4">{faq.category}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setEditingFaq(faq);
-                          setFaqForm(faq);
-                          setShowFaqModal(true);
-                        }}
-                        className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                      >
-                        <Edit2 size={14} />
-                        {t('common.edit')}
-                      </button>
-                      <button
-                        onClick={() => handleDeleteFaq(faq.id)}
-                        className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                      >
-                        <Trash2 size={14} />
-                        {t('common.delete')}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-slate-400 py-12">{t('admin.faqs.noFAQs')}</div>
-            )}
-          </div>
-        )}
-
-        {/* Complaints Tab */}
-        {activeTab === 'complaints' && (
-          <div className="space-y-4">
-            {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
-            ) : complaints.length > 0 ? (
-              complaints.map(complaint => (
-                <div key={complaint.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-white font-bold">{complaint.title}</h3>
-                      <p className="text-slate-400 text-sm">{t('admin.complaints.from')}: {complaint.email}</p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      complaint.status === 'open' ? 'bg-red-900 text-red-300' :
-                      complaint.status === 'in_progress' ? 'bg-yellow-900 text-yellow-300' :
-                      'bg-green-900 text-green-300'
-                    }`}>
-                      {t(`admin.complaints.${complaint.status}`)}
-                    </span>
-                  </div>
-                  <p className="text-slate-300 mb-4">{complaint.description}</p>
-                  {complaint.admin_response && (
-                    <p className="text-blue-300 mb-4 text-sm"><strong>{t('support.adminResponse')}:</strong> {complaint.admin_response}</p>
-                  )}
+                <input
+                  type="text"
+                  placeholder={t('admin.packs.name')}
+                  value={packForm.name}
+                  onChange={(e) => setPackForm({...packForm, name: e.target.value})}
+                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder={t('admin.packs.description')}
+                  value={packForm.description}
+                  onChange={(e) => setPackForm({...packForm, description: e.target.value})}
+                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                />
+                <input
+                  type="number"
+                  placeholder={t('admin.packs.price')}
+                  value={packForm.price}
+                  onChange={(e) => setPackForm({...packForm, price: parseFloat(e.target.value)})}
+                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                />
+                <input
+                  type="number"
+                  placeholder={t('admin.packs.limit')}
+                  value={packForm.monthly_limit}
+                  onChange={(e) => setPackForm({...packForm, monthly_limit: parseInt(e.target.value)})}
+                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                />
+                <div className="flex gap-3 pt-4">
                   <button
-                    onClick={() => {
-                      setShowComplaintModal(complaint.id);
-                      setComplaintResponse(complaint.admin_response || '');
-                    }}
-                    className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                    onClick={() => setShowPackModal(false)}
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
                   >
-                    {complaint.status === 'resolved' ? t('admin.complaints.details') : t('admin.complaints.respond')} →
+                    {t('common.cancel')}
+                  </button>
+                  <button
+                    onClick={handleSavePack}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
+                  >
+                    {t('common.save')}
                   </button>
                 </div>
-              ))
-            ) : (
-              <div className="text-center text-slate-400 py-12">{t('admin.complaints.noComplaints')}</div>
-            )}
-          </div>
-        )}
-
-        {/* Analytics Tab */}
-        {activeTab === 'analytics' && (
-          <div className="bg-slate-800 rounded-lg p-8 border border-slate-700 text-center">
-            <BarChart3 size={64} className="text-slate-600 mx-auto mb-4" />
-            <h3 className="text-white font-bold mb-2">{t('admin.tabs.analytics')}</h3>
-            <p className="text-slate-400">Coming soon...</p>
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Pack Modal */}
-      {showPackModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-            <h3 className="text-white font-bold text-lg mb-4">
-              {editingPack ? t('admin.packs.edit') : t('admin.packs.create')}
-            </h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder={t('admin.packs.name')}
-                value={packForm.name}
-                onChange={(e) => setPackForm({...packForm, name: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-              />
-              <input
-                type="text"
-                placeholder={t('admin.packs.description')}
-                value={packForm.description}
-                onChange={(e) => setPackForm({...packForm, description: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-              />
-              <input
-                type="number"
-                placeholder={t('admin.packs.price')}
-                value={packForm.price}
-                onChange={(e) => setPackForm({...packForm, price: parseFloat(e.target.value)})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-              />
-              <input
-                type="number"
-                placeholder={t('admin.packs.limit')}
-                value={packForm.monthly_limit}
-                onChange={(e) => setPackForm({...packForm, monthly_limit: parseInt(e.target.value)})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-              />
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowPackModal(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={handleSavePack}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
-                >
-                  {t('common.save')}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* FAQ Modal */}
-      {showFaqModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-            <h3 className="text-white font-bold text-lg mb-4">
-              {editingFaq ? t('admin.faqs.edit') : t('admin.faqs.create')}
-            </h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder={t('admin.faqs.question')}
-                value={faqForm.question}
-                onChange={(e) => setFaqForm({...faqForm, question: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-              />
-              <textarea
-                placeholder={t('admin.faqs.answer')}
-                value={faqForm.answer}
-                onChange={(e) => setFaqForm({...faqForm, answer: e.target.value})}
-                rows="4"
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white resize-none"
-              />
-              <select
-                value={faqForm.category}
-                onChange={(e) => setFaqForm({...faqForm, category: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-              >
-                <option value="general">General</option>
-                <option value="subscription">Subscription</option>
-                <option value="features">Features</option>
-                <option value="technical">Technical</option>
-              </select>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowFaqModal(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={handleSaveFaq}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
-                >
-                  {t('common.save')}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Complaint Response Modal */}
-      {showComplaintModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-            <h3 className="text-white font-bold text-lg mb-4">{t('admin.complaints.respond')}</h3>
-            <textarea
-              placeholder={t('admin.complaints.respond')}
-              value={complaintResponse}
-              onChange={(e) => setComplaintResponse(e.target.value)}
-              rows="4"
-              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white resize-none mb-4"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowComplaintModal(null)}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={() => handleRespondComplaint(showComplaintModal)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
-              >
-                {t('common.save')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
