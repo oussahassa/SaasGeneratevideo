@@ -15,6 +15,8 @@ const Layout = () => {
     navigate('/login')
     return null
   }
+
+  return (
     <div className='fixed inset-0 flex flex-col'>
 
       <nav className='w-full px-8 h-14 flex items-center justify-between border-b border-gray-200 shrink-0 bg-white z-10'>
@@ -29,8 +31,9 @@ const Layout = () => {
           <Outlet />
         </div>
       </div>
+    </div>
+  )
 
-  return (
 }
 
 export default Layout

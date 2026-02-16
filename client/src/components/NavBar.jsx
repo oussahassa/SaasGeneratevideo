@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, LogOut, User, LanguageIcon, Menu, X } from 'lucide-react'
+import { ArrowRight, LogOut, User, Menu, X } from 'lucide-react'
 import { logoutUser } from '../redux/slices/authSlice'
 import LanguageSwitcher from './LanguageSwitcher'
 

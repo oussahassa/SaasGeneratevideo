@@ -209,7 +209,7 @@ cd client
 npm run dev
 ```
 
-Backend runs on: `http://localhost:3000`
+Backend runs on: `http://localhost:5000`
 Frontend runs on: `http://localhost:5173`
 
 ---
@@ -406,13 +406,13 @@ NODE_ENV=production npm start
 
 ```env
 VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-VITE_BASE_URL=http://localhost:3000
+VITE_BASE_URL=http://localhost:5000
 ```
 
 ### Backend (`server/.env`)
 
 ```env
-PORT=3000
+PORT=5000
 
 # Database (Neon)
 DATABASE_URL=your_neon_postgresql_url
@@ -510,6 +510,6 @@ Give a ⭐️ if this project helped you!
 
 **[⬆ back to top](#nexai-)**
 
-Made with 💙 by Jay Varshney
+Made with 💙 by oussama
 
 </div>
