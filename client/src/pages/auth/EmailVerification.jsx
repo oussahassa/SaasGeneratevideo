@@ -55,6 +55,8 @@ const EmailVerification = () => {
       if (response.data.success) {
         // Store token
         localStorage.setItem('token', response.data.token)
+        if (response.data.refreshToken) localStorage.setItem('refreshToken', response.data.refreshToken)
+        if (response.data.user) dispatch({ type: 'auth/setUser', payload: response.data.user })
         
         toast.success(t('auth.emailVerified') || 'Email verified successfully!')
         navigate('/ai')

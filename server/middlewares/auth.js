@@ -43,6 +43,18 @@ export const attachPlanInfo = async (req, res, next) => {
         )
 
         req.plan = subscription.length > 0 ? 'premium' : 'free'
+
+        // Update session last_active_at if possible (match by ip + user agent)
+        try {
+            const ip = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress || null
+            const userAgent = req.headers['user-agent'] || null
+            if (ip || userAgent) {
+                await sql(`UPDATE sessions SET last_active_at = NOW() WHERE user_id = $1 AND (ip_address = $2 OR user_agent = $3)`, [req.user.id, ip, userAgent])
+            }
+        } catch (e) {
+            // non-fatal
+        }
+
         next()
     } catch (error) {
         req.plan = 'free'

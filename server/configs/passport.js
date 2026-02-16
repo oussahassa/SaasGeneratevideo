@@ -63,6 +63,14 @@ export const generateToken = (user) => {
   )
 }
 
+export const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { id: user.id, email: user.email },
+    process.env.REFRESH_TOKEN_SECRET || 'your_refresh_secret',
+    { expiresIn: '30d' }
+  )
+}
+
 export const hashPassword = async (password) => {
   const salt = await bcryptjs.genSalt(10)
   return bcryptjs.hash(password, salt)

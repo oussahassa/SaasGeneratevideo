@@ -58,7 +58,21 @@ const NavBar = () => {
               >
                 {t('nav.plans')}
               </button>
+              <button
+                onClick={() => navigate('/faq')}
+                className='text-gray-300 hover:text-white transition-colors font-medium'
+              >
+                {t('nav.faq')}
+              </button>
             </>
+          )}
+          {!isAuthenticated && (
+            <button
+              onClick={() => navigate('/faq')}
+              className='text-gray-300 hover:text-white transition-colors font-medium'
+            >
+              {t('nav.faq')}
+            </button>
           )}
         </div>
 
@@ -135,6 +149,15 @@ const NavBar = () => {
                   {t('nav.plans')}
                 </button>
                 <button
+                  onClick={() => {
+                    navigate('/faq')
+                    setShowMobileMenu(false)
+                  }}
+                  className='block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors'
+                >
+                  {t('nav.faq')}
+                </button>
+                <button
                   onClick={handleLogout}
                   className='block w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-600/10 rounded-lg transition-colors flex items-center gap-2'
                 >
@@ -143,12 +166,23 @@ const NavBar = () => {
                 </button>
               </>
             ) : (
-              <button
-                onClick={handleGetStarted}
-                className='block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all'
-              >
-                {t('nav.getStarted')}
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    navigate('/faq')
+                    setShowMobileMenu(false)
+                  }}
+                  className='block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors'
+                >
+                  {t('nav.faq')}
+                </button>
+                <button
+                  onClick={handleGetStarted}
+                  className='block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all'
+                >
+                  {t('nav.getStarted')}
+                </button>
+              </>
             )}
           </div>
         </div>

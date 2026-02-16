@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function FAQ() {
+  const { t } = useTranslation();
   const [faqs, setFaqs] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -21,7 +23,7 @@ export default function FAQ() {
         setFaqs(response.data.faqs);
       }
     } catch (error) {
-      toast.error('Failed to load FAQs');
+      toast.error(t('faq.failedToLoad', 'Failed to load FAQs'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -29,11 +31,11 @@ export default function FAQ() {
   };
 
   const categories = [
-    { value: 'all', label: 'All' },
-    { value: 'general', label: 'General' },
-    { value: 'subscription', label: 'Subscription' },
-    { value: 'features', label: 'Features' },
-    { value: 'technical', label: 'Technical' }
+    { value: 'all', label: t('faq.all') },
+    { value: 'general', label: t('faq.general') },
+    { value: 'subscription', label: t('faq.subscription') },
+    { value: 'features', label: t('faq.features') },
+    { value: 'technical', label: t('faq.technical') }
   ];
 
   const filteredFAQs = selectedCategory === 'all' 
@@ -50,10 +52,10 @@ export default function FAQ() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Frequently Asked Questions
+            {t('faq.title')}
           </h1>
           <p className="text-xl text-slate-400">
-            Find answers to common questions about NexAI
+            {t('faq.subtitle')}
           </p>
         </div>
 
@@ -76,7 +78,7 @@ export default function FAQ() {
 
         {/* FAQs */}
         {loading ? (
-          <div className="text-center text-slate-400">Loading FAQs...</div>
+          <div className="text-center text-slate-400">{t('common.loading')}</div>
         ) : (
           <div className="space-y-4">
             {filteredFAQs.length > 0 ? (
@@ -110,7 +112,7 @@ export default function FAQ() {
               ))
             ) : (
               <div className="text-center text-slate-400">
-                No FAQs found in this category.
+                {t('faq.noFaqs', 'No FAQs found in this category.')}
               </div>
             )}
           </div>
@@ -119,13 +121,13 @@ export default function FAQ() {
         {/* Contact Support */}
         <div className="mt-12 bg-slate-800 rounded-lg p-8 border border-slate-700 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">
-            Didn't find your answer?
+            {t('faq.didntFind')}
           </h2>
           <p className="text-slate-400 mb-6">
-            Don't worry! Our support team is here to help. Submit a complaint and we'll get back to you as soon as possible.
+            {t('faq.support')}
           </p>
           <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
-            Contact Support
+            {t('faq.contactSupport')}
           </button>
         </div>
       </div>

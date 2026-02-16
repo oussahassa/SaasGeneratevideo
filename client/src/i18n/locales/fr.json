@@ -20,6 +20,7 @@
   "nav": {
     "dashboard": "Tableau de Bord",
     "plans": "Plans",
+    "faq": "FAQ",
     "getStarted": "Commencer",
     "logout": "Déconnexion"
   },
@@ -232,6 +233,9 @@
     "didntFind": "Vous n'avez pas trouvé votre réponse?",
     "support": "Ne vous inquiétez pas! Notre équipe d'assistance est là pour vous aider.",
     "contactSupport": "Contacter le Support"
+    ,
+    "failedToLoad": "Impossible de charger les FAQ",
+    "noFaqs": "Aucune FAQ trouvée dans cette catégorie."
   },
   "support": {
     "title": "Support et Réclamations",
@@ -328,5 +332,99 @@
     "minCharacters": "Au moins 6 caractères",
     "rememberedPassword": "Vous avez retrouvé votre mot de passe?",
     "linkExpiresTime": "Le lien expire dans 30 minutes à partir du moment où il a été envoyé"
+  }
+  ,
+  "dashboard": {
+    "totalCreations": "Créations Totales",
+    "videos": "Vidéos générées",
+    "images": "Images générées",
+    "articles": "Articles générés",
+    "recentCreations": "Créations Récentes",
+    "noSessions": "Aucune session active",
+    "sessionRevoked": "Session révoquée",
+    "tokenRefreshed": "Jeton actualisé",
+    "save": "Enregistrer",
+    "refreshToken": "Actualiser le jeton",
+    "refresh": "Actualiser",
+    "connectedUsers": "Utilisateurs Connectés",
+    "imagesGenerated": "Images Générées",
+    "videosGenerated": "Vidéos Générées",
+    "articlesGenerated": "Articles Générés",
+    "activePlan": "Plan Actif",
+    "sessions": "Sessions",
+    "sessionType": "Type de Session",
+    "ipAddress": "Adresse IP",
+    "userAgent": "Agent Utilisateur",
+    "lastActive": "Dernière Activité",
+    "revoke": "Révoquer",
+    "noSessions": "Aucune session active trouvée",
+    "profile": "Profil",
+    "updateProfile": "Mettre à jour le profil",
+    "profileUpdated": "Profil mis à jour avec succès",
+    "failedToUpdateProfile": "Échec de la mise à jour du profil"
+  },
+  "community": {
+    "title": "Communauté",
+    "join": "Rejoindre la communauté",
+    "createPost": "Créer une publication",
+    "latestPosts": "Dernières publications",
+    "noPosts": "Aucune publication pour le moment",
+    "viewAll": "Voir tout",
+    "postSuccess": "Publication créée avec succès",
+    "postFailed": "Échec de la création de la publication"
+  },
+  "blogTitles": {
+    "title": "Titres de Blog",
+    "prompt": "Entrez un sujet ou un mot-clé",
+    "generate": "Générer des Titres",
+    "generating": "Génération des titres...",
+    "noTitles": "Aucun titre généré pour le moment",
+    "useTitle": "Utiliser ce titre",
+    "copy": "Copier"
+  },
+  "aiTools": {
+    "title": "Outils IA Puissants",
+    "subtitle": "Tout ce dont vous avez besoin pour créer, améliorer et optimiser votre contenu avec la technologie IA de pointe."
+  },
+  "testimonials": {
+    "title": "Aimé des Créateurs",
+    "subtitle": "Ne nous faites pas confiance sur parole. Voici ce que disent nos utilisateurs."
+  },
+  "planDetails": {
+    "choosePlan": "Choisissez votre plan",
+    "description": "Commencez gratuitement et augmentez à mesure que vous grandissez. Trouvez le plan parfait pour vos besoins en création de contenu.",
+    "currentPlan": "Plan Actuel:",
+    "credits": "Crédits:",
+    "loading": "Chargement des plans...",
+    "error": "Erreur du chargement des plans:",
+    "free": "Gratuit",
+    "freeDesc": "Parfait pour commencer",
+    "pro": "Pro",
+    "proDesc": "Pour les créateurs en croissance",
+    "premium": "Premium",
+    "premiumDesc": "Pour les créateurs professionnels",
+    "mostPopular": "Le Plus Populaire",
+    "perMonth": "/mois",
+    "currentPlanBtn": "Plan Actuel",
+    "downgrade": "Rétrograder",
+    "upgradeTooltip": "Passer à {{plan}}",
+    "pleasLogin": "Veuillez vous connecter pour passer à un plan supérieur",
+    "upgradedSuccess": "Plan mis à jour avec succès!",
+    "upgradeFailed": "Échec de la mise à jour du plan",
+    "free5": "5 créations par mois",
+    "basicAI": "Outils IA de base",
+    "communityAccess": "Accès à la communauté",
+    "unlimited": "Créations illimitées",
+    "allAI": "Tous les outils IA",
+    "prioritySupport": "Support prioritaire",
+    "videoGen": "Génération vidéo",
+    "everythingPro": "Tout dans Pro",
+    "customAPI": "Accès API personnalisé",
+    "dedicatedSupport": "Support dédiée",
+    "advancedAnalytics": "Analytique avancée"
+  },
+  "footer": {
+    "description": "Découvrez la puissance de l'IA avec NexAI. Transformez votre création de contenu avec notre suite d'outils IA premium. Écrivez des articles, générez des images et optimisez votre flux de travail.",
+    "copyright": "©2026. Tous droits réservés."
   }
 }

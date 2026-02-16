@@ -20,6 +20,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "plans": "Plans",
+    "faq": "FAQ",
     "getStarted": "Get Started",
     "logout": "Logout"
   },
@@ -232,6 +233,9 @@
     "didntFind": "Didn't find your answer?",
     "support": "Don't worry! Our support team is here to help.",
     "contactSupport": "Contact Support"
+    ,
+    "failedToLoad": "Failed to load FAQs",
+    "noFaqs": "No FAQs found in this category."
   },
   "support": {
     "title": "Support & Complaints",
@@ -328,5 +332,99 @@
     "minCharacters": "At least 6 characters",
     "rememberedPassword": "Remembered your password?",
     "linkExpiresTime": "Link expires in 30 minutes from when it was sent"
+  }
+  ,
+  "dashboard": {
+    "totalCreations": "Total Creations",
+    "videos": "Videos generated",
+    "images": "Images generated",
+    "articles": "Articles generated",
+    "recentCreations": "Recent Creations",
+    "noSessions": "No active sessions",
+    "sessionRevoked": "Session revoked",
+    "tokenRefreshed": "Token refreshed",
+    "save": "Save",
+    "refreshToken": "Refresh Token",
+    "refresh": "Refresh",
+    "connectedUsers": "Connected Users",
+    "imagesGenerated": "Images Generated",
+    "videosGenerated": "Videos Generated",
+    "articlesGenerated": "Articles Generated",
+    "activePlan": "Active Plan",
+    "sessions": "Sessions",
+    "sessionType": "Session Type",
+    "ipAddress": "IP Address",
+    "userAgent": "User Agent",
+    "lastActive": "Last Active",
+    "revoke": "Revoke",
+    "noSessions": "No active sessions found",
+    "profile": "Profile",
+    "updateProfile": "Update Profile",
+    "profileUpdated": "Profile updated successfully",
+    "failedToUpdateProfile": "Failed to update profile"
+  },
+  "community": {
+    "title": "Community",
+    "join": "Join the community",
+    "createPost": "Create Post",
+    "latestPosts": "Latest Posts",
+    "noPosts": "No posts yet",
+    "viewAll": "View All",
+    "postSuccess": "Post created successfully",
+    "postFailed": "Failed to create post"
+  },
+  "blogTitles": {
+    "title": "Blog Titles",
+    "prompt": "Enter a topic or keyword",
+    "generate": "Generate Titles",
+    "generating": "Generating titles...",
+    "noTitles": "No titles generated yet",
+    "useTitle": "Use this title",
+    "copy": "Copy"
+  },
+  "aiTools": {
+    "title": "Powerful AI Tools",
+    "subtitle": "Everything you need to create, enhance and optimize your content with cutting-edge AI technology."
+  },
+  "testimonials": {
+    "title": "Loved by Creators",
+    "subtitle": "Don't just take our word for it. Here's what our users are saying."
+  },
+  "planDetails": {
+    "choosePlan": "Choose your plan",
+    "description": "Start for free and scale up as you grow. Find the perfect plan for your content creation needs.",
+    "currentPlan": "Current Plan:",
+    "credits": "Credits:",
+    "loading": "Loading plans...",
+    "error": "Error loading plans:",
+    "free": "Free",
+    "freeDesc": "Perfect for getting started",
+    "pro": "Pro",
+    "proDesc": "For growing creators",
+    "premium": "Premium",
+    "premiumDesc": "For professional creators",
+    "mostPopular": "Most Popular",
+    "perMonth": "/month",
+    "currentPlanBtn": "Current Plan",
+    "downgrade": "Downgrade",
+    "upgradeTooltip": "Upgrade to {{plan}}",
+    "pleasLogin": "Please login to upgrade your plan",
+    "upgradedSuccess": "Plan upgraded successfully!",
+    "upgradeFailed": "Failed to upgrade plan",
+    "free5": "5 creations per month",
+    "basicAI": "Basic AI tools",
+    "communityAccess": "Community access",
+    "unlimited": "Unlimited creations",
+    "allAI": "All AI tools",
+    "prioritySupport": "Priority support",
+    "videoGen": "Video generation",
+    "everythingPro": "Everything in Pro",
+    "customAPI": "Custom API access",
+    "dedicatedSupport": "Dedicated support",
+    "advancedAnalytics": "Advanced analytics"
+  },
+  "footer": {
+    "description": "Experience the power of AI with NexAI. Transform your content creation with our suite of premium AI tools. Write articles, generate images and enhance your workflow.",
+    "copyright": "©2026. All rights reserved."
   }
 }

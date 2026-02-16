@@ -7,6 +7,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, 
   try {
     const response = await axios.post(`${API_URL}/auth/login`, credentials)
     localStorage.setItem('token', response.data.token)
+    if (response.data.refreshToken) localStorage.setItem('refreshToken', response.data.refreshToken)
     localStorage.setItem('user', JSON.stringify(response.data.user))
     return response.data
   } catch (error) {
@@ -30,6 +31,7 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { reject
     await axios.post(`${API_URL}/auth/logout`)
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    localStorage.removeItem('refreshToken')
     return null
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Logout failed')
@@ -64,6 +66,12 @@ const initialState = {
 const authSlice = createSlice({
   name: 'auth',
   initialState,
+  reducers: {
+    setUser(state, action) {
+      state.user = action.payload
+      localStorage.setItem('user', JSON.stringify(action.payload))
+    }
+  },
   extraReducers: (builder) => {
     builder
       // Login
@@ -137,3 +145,4 @@ const authSlice = createSlice({
 })
 
 export default authSlice.reducer
+export const { setUser } = authSlice.actions

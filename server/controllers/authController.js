@@ -2,7 +2,7 @@
 
 import sql from '../configs/db.js'
 import bcrypt from 'bcryptjs'
-import { hashPassword, generateToken } from '../configs/passport.js'
+import { hashPassword, generateToken, generateRefreshToken } from '../configs/passport.js'
 import { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } from '../configs/mailtrap.js'
 import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
@@ -134,11 +134,27 @@ export const verifyEmail = async (req, res) => {
 
     // Generate token
     const token = generateToken({ id: user.id, email: user.email })
+    const refreshToken = generateRefreshToken({ id: user.id, email: user.email })
+
+    // Record session
+    try {
+      const sessionId = uuidv4()
+      const ip = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress || null
+      const userAgent = req.headers['user-agent'] || null
+      const deviceType = /Mobile|Android|iPhone|iPad/i.test(userAgent) ? 'mobile' : 'web'
+      await sql`
+        INSERT INTO sessions (id, user_id, ip_address, user_agent, device_type, created_at, last_active_at)
+        VALUES (${sessionId}, ${user.id}, ${ip}, ${userAgent}, ${deviceType}, NOW(), NOW())
+      `
+    } catch (e) {
+      console.warn('Failed to record session:', e.message)
+    }
 
     res.json({
       success: true,
       message: 'Email verified successfully',
       token,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -219,10 +235,12 @@ export const login = async (req, res) => {
     await sql`UPDATE users SET last_sign_in_at = NOW() WHERE id = ${user.id}`
 
     const token = generateToken({ id: user.id, email: user.email })
+    const refreshToken = generateRefreshToken({ id: user.id, email: user.email })
 
     res.json({
       success: true,
       token,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -319,6 +337,37 @@ export const verifyToken = async (req, res) => {
 
     res.json({ success: true, valid: true, user })
   } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const { token } = req.body
+    if (!token) return res.status(400).json({ success: false, message: 'Refresh token required' })
+
+    // verify refresh token
+    const { default: jwtLib } = await import('jsonwebtoken')
+    const secret = process.env.REFRESH_TOKEN_SECRET || 'your_refresh_secret'
+    let payload
+    try {
+      payload = jwtLib.verify(token, secret)
+    } catch (err) {
+      return res.status(401).json({ success: false, message: 'Invalid refresh token' })
+    }
+
+    // Optionally: check user still exists
+    const users = await sql`SELECT * FROM users WHERE id = ${payload.id}`
+    if (!users || users.length === 0) return res.status(404).json({ success: false, message: 'User not found' })
+
+    const user = users[0]
+    // Issue new access token and a new refresh token (rotation)
+    const newAccessToken = generateToken({ id: user.id, email: user.email })
+    const newRefreshToken = generateRefreshToken({ id: user.id, email: user.email })
+
+    res.json({ success: true, token: newAccessToken, refreshToken: newRefreshToken })
+  } catch (error) {
+    console.error('Refresh token error:', error)
     res.status(500).json({ success: false, message: error.message })
   }
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Gem, Sparkles } from 'lucide-react'
 import { useSelector, useDispatch } from 'react-redux'
-import CreationItem from '../components/CreationItem'
-import api from '../utils/api'
+import CreationItem from '../../components/CreationItem'
+import api from '../../utils/api'
 import toast from 'react-hot-toast'
+import { setUser } from '../../redux/slices/authSlice'
 import { useTranslation } from 'react-i18next'
-import { setUser } from '../redux/slices/authSlice'
 
 const Dashboard = () => {
 
