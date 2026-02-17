@@ -265,7 +265,11 @@
     "submitted": "Réclamation soumise avec succès",
     "failedToSubmit": "Impossible de soumettre la réclamation",
     "failedToLoad": "Impossible de charger les réclamations",
-    "adminResponse": "Réponse de l'Admin"
+    "adminResponse": "Réponse de l'Admin",
+    "all": "Tous",
+    "open": "Ouvert",
+    "inProgress": "En Cours",
+    "resolved": "Résolu"
   },
   "auth": {
     "verifyEmail": "Vérifiez Votre Email",

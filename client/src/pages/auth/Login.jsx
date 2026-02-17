@@ -14,7 +14,7 @@ const Login = () => {
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { isLoading, error } = useSelector(state => state.auth)
+  const { isLoading, error, user } = useSelector(state => state.auth)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -35,7 +35,13 @@ const Login = () => {
     try {
       const result = await dispatch(loginUser(formData)).unwrap()
       toast.success(t('auth.loginSuccess') || 'Login successful!')
-      navigate('/ai')
+      
+      // Redirect based on user role
+      if (result.user?.role === 'admin') {
+        navigate('/admin-dashboard')
+      } else {
+        navigate('/ai')
+      }
     } catch (err) {
       // Check if email is not verified
       if (err.includes && err.includes('not verified')) {

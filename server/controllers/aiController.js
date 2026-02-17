@@ -32,9 +32,12 @@ export const generateArticle = async (req, res) => {
     });
 
     const content = response.choices[0].message.content
+await sql`
+  INSERT INTO creations (user_id, prompt, content, type)
+  VALUES (${userId}, ${prompt}, ${content}, ${'article'})
+`;
 
-    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
-      [userId, prompt, content, 'article']);
+
 
     res.json({success: true, content})
 
@@ -76,8 +79,10 @@ export const generateBlogTitle = async (req, res) => {
       });
     }
 
-    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
-      [userId, uiPrompt, content, 'blog-title']);
+    await sql`
+      INSERT INTO creations (user_id, prompt, content, type)
+      VALUES (${userId}, ${uiPrompt}, ${content}, ${'blog-title'})
+    `;
 
     res.json({success: true, content})
 
@@ -109,8 +114,10 @@ export const generateImage = async (req, res) => {
 
     const {secure_url} = await cloudinary.uploader.upload(base64Image)
 
-    await sql('INSERT INTO creations (user_id, prompt, content, type, publish) VALUES ($1, $2, $3, $4, $5)', 
-      [userId, prompt, secure_url, 'image', publish ?? false]);
+    await sql`
+      INSERT INTO creations (user_id, prompt, content, type, publish)
+      VALUES (${userId}, ${prompt}, ${secure_url}, ${'image'}, ${publish ?? false})
+    `;
 
     res.json({success: true, content: secure_url})
 
@@ -142,9 +149,11 @@ export const removeImageBackground = async (req, res) => {
       ]
     })
 
-    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
-      [userId, 'Remove background from image', secure_url, 'image']);
 
+      await sql`
+      INSERT INTO creations (user_id, prompt, content, type)
+      VALUES (${userId}, 'Remove background from image', ${secure_url}, ${'image'})
+    `;
     res.json({success: true, content: secure_url})
 
   } catch (error) {
@@ -172,9 +181,11 @@ export const removeImageObject = async (req, res) => {
       resource_type: 'image'
     })
 
-    await sql('INSERT INTO creations (user_id, prompt, content, type) VALUES ($1, $2, $3, $4)', 
-      [userId, `Removed ${object} from image`, imageUrl, 'image']);
-
+    await sql`
+      INSERT INTO creations (user_id, prompt, content, type)
+      VALUES (${userId}, ${`Removed ${object} from image`}, ${imageUrl}, ${'image'})
+    `;
+    
     res.json({success: true, content: imageUrl})
 
   } catch (error) {

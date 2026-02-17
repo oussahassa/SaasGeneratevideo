@@ -1,23 +1,26 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Hash, House, SquarePen,Image, Eraser, Scissors, FileText, Users, LogOut } from 'lucide-react';
+import { useTranslation } from 'react-i18next'
+import { Hash, House, SquarePen, Image, Eraser, Scissors, FileText, Users, LogOut, Video, MessageSquare } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { logoutUser } from '../redux/slices/authSlice'
 
-const navItems = [
-  {to: '/ai', label: 'Dashboard', Icon: House},
-  {to: '/ai/write-article', label: 'Write Article', Icon: SquarePen},
-  {to: '/ai/blog-titles', label: 'Blog Titles', Icon: Hash},
-  {to: '/ai/generate-images', label: 'Generate Images', Icon: Image},
-  {to: '/ai/remove-background', label: 'Remove Background', Icon: Eraser},
-  {to: '/ai/remove-object', label: 'Remove Object', Icon: Scissors},
-  {to: '/ai/community', label: 'Community', Icon: Users},
-]
-
 const Sidebar = ({ sidebar, setSidebar }) => {
-
+  const { t } = useTranslation()
   const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+
+  const navItems = [
+    {to: '/ai', label: t('user.dashboard') || 'Dashboard', Icon: House},
+    {to: '/ai/write-article', label: t('dashboard.articles') || 'Write Article', Icon: SquarePen},
+    {to: '/ai/blog-titles', label: t('blogTitles.title') || 'Blog Titles', Icon: Hash},
+    {to: '/ai/generate-images', label: t('dashboard.imagesGenerated') || 'Generate Images', Icon: Image},
+    {to: '/ai/remove-background', label: 'Remove Background', Icon: Eraser},
+    {to: '/ai/remove-object', label: 'Remove Object', Icon: Scissors},
+    {to: '/ai/generate-videos', label: t('videos.generateVideo') || 'Generate Videos', Icon: Video},
+    {to: '/ai/community', label: t('community.title') || 'Community', Icon: Users},
+    {to: '/ai/my-complaints', label: t('user.myComplaints') || 'My Complaints', Icon: MessageSquare},
+  ]
 
   const handleSignOut = () => {
     dispatch(logoutUser());

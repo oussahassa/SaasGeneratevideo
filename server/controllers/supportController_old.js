@@ -1,14 +1,7 @@
 import sql from "../configs/db.js";
 
 // Vérifier le statut admin
-const checkAdminStatus = async (userId) => {
-  try {
-    const user = await sql('SELECT is_admin FROM users WHERE id = $1', [userId]);
-    return user.length > 0 && user[0].is_admin === true;
-  } catch (error) {
-    return false;
-  }
-};
+
 
 // Récupérer toutes les FAQ
 export const getAllFAQs = async (req, res) => {

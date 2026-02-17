@@ -42,8 +42,10 @@ passport.use('jwt', new JWTStrategy.Strategy(
   },
   async (payload, done) => {
     try {
-      const user = await sql('SELECT * FROM users WHERE id = $1', [payload.id])
-      
+      const user = await sql`
+  SELECT * FROM users WHERE id = ${payload.id}
+`;
+
       if (!user || user.length === 0) {
         return done(null, false)
       }

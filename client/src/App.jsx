@@ -14,6 +14,7 @@ import GenerateImages from './pages/client/GenerateImages'
 import RemoveBackground from './pages/client/RemoveBackground'
 import RemoveObject from './pages/client/RemoveObject'
 import Community from './pages/client/Community'
+import MyComplaints from './pages/client/MyComplaints'
 import Plan from './pages/Plan'
 import GenerateVideos from './pages/client/GenerateVideos'
 import FAQ from './pages/FAQ'
@@ -76,6 +77,7 @@ const App = () => {
           <Route path='remove-object' element={<RemoveObject />}/>
           <Route path='community' element={<Community />}/>
           <Route path='generate-videos' element={<GenerateVideos />}/>
+          <Route path='my-complaints' element={<MyComplaints />}/>
         </Route>
 
         <Route path='/support' element={

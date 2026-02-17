@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
 
 export default function Support() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('submit');
   const [myComplaints, setMyComplaints] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,18 +17,18 @@ export default function Support() {
   });
 
   const categories = [
-    { value: 'bug', label: 'Bug Report' },
-    { value: 'feature', label: 'Feature Request' },
-    { value: 'billing', label: 'Billing Issue' },
-    { value: 'account', label: 'Account Issue' },
-    { value: 'other', label: 'Other' }
+    { value: 'bug', label: t('support.categories.bug') },
+    { value: 'feature', label: t('support.categories.feature') },
+    { value: 'billing', label: t('support.categories.billing') },
+    { value: 'account', label: t('support.categories.account') },
+    { value: 'other', label: t('support.categories.other') }
   ];
 
   const priorities = [
-    { value: 'low', label: 'Low' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
-    { value: 'critical', label: 'Critical' }
+    { value: 'low', label: t('support.priorities.low') },
+    { value: 'medium', label: t('support.priorities.medium') },
+    { value: 'high', label: t('support.priorities.high') },
+    { value: 'critical', label: t('support.priorities.critical') }
   ];
 
   const handleInputChange = (e) => {
@@ -40,7 +42,7 @@ export default function Support() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.description) {
-      toast.error('Please fill all fields');
+      toast.error(t('support.submit') || 'Please fill all fields');
       return;
     }
 
@@ -48,7 +50,7 @@ export default function Support() {
       setLoading(true);
       const response = await axios.post('/api/support/create-complaint', formData);
       if (response.data.success) {
-        toast.success('Complaint submitted successfully');
+        toast.success(t('support.submitted') || 'Complaint submitted successfully');
         setFormData({
           title: '',
           description: '',
@@ -59,7 +61,7 @@ export default function Support() {
         fetchMyComplaints();
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit complaint');
+      toast.error(error.response?.data?.message || t('support.failedToSubmit') || 'Failed to submit complaint');
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,7 @@ export default function Support() {
         setMyComplaints(response.data.complaints);
       }
     } catch (error) {
-      toast.error('Failed to load complaints');
+      toast.error(t('support.failedToLoad') || 'Failed to load complaints');
     } finally {
       setLoading(false);
     }
@@ -98,10 +100,10 @@ export default function Support() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Support & Complaints
+            {t('support.title')}
           </h1>
           <p className="text-xl text-slate-400">
-            Have an issue? We're here to help!
+            {t('support.subtitle')}
           </p>
         </div>
 
@@ -117,7 +119,7 @@ export default function Support() {
                 : 'text-slate-400 hover:text-slate-300'
             }`}
           >
-            Submit Complaint
+            {t('support.submitComplaint')}
           </button>
           <button
             onClick={() => {
@@ -130,7 +132,7 @@ export default function Support() {
                 : 'text-slate-400 hover:text-slate-300'
             }`}
           >
-            My Complaints
+            {t('support.myComplaints')}
           </button>
         </div>
 
@@ -140,27 +142,27 @@ export default function Support() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-white font-medium mb-2">
-                  Title
+                  {t('support.complaintTitle')}
                 </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  placeholder="Brief description of your issue"
+                  placeholder={t('support.complaintTitle')}
                   className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
                 <label className="block text-white font-medium mb-2">
-                  Description
+                  {t('support.description')}
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Please provide detailed information about the issue"
+                  placeholder={t('support.description')}
                   rows="5"
                   className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
                 />
@@ -169,7 +171,7 @@ export default function Support() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-white font-medium mb-2">
-                    Category
+                    {t('support.category')}
                   </label>
                   <select
                     name="category"
@@ -187,7 +189,7 @@ export default function Support() {
 
                 <div>
                   <label className="block text-white font-medium mb-2">
-                    Priority
+                    {t('support.priority')}
                   </label>
                   <select
                     name="priority"
@@ -209,7 +211,7 @@ export default function Support() {
                 disabled={loading}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
               >
-                {loading ? 'Submitting...' : 'Submit Complaint'}
+                {loading ? t('support.submitting') : t('support.submit')}
               </button>
             </form>
           </div>
@@ -219,7 +221,7 @@ export default function Support() {
         {activeTab === 'my-complaints' && (
           <div className="space-y-4">
             {loading ? (
-              <div className="text-center text-slate-400">Loading complaints...</div>
+              <div className="text-center text-slate-400">{t('common.loading')}</div>
             ) : myComplaints.length > 0 ? (
               myComplaints.map(complaint => (
                 <div
@@ -238,7 +240,7 @@ export default function Support() {
                     <div className="flex items-center gap-2">
                       {getStatusIcon(complaint.status)}
                       <span className="text-white font-medium capitalize">
-                        {complaint.status.replace('_', ' ')}
+                        {t(`support.${complaint.status}`) || complaint.status.replace('_', ' ')}
                       </span>
                     </div>
                   </div>
@@ -249,16 +251,16 @@ export default function Support() {
 
                   <div className="flex gap-4 text-sm">
                     <span className="text-slate-400">
-                      Category: <span className="text-white capitalize">{complaint.category}</span>
+                      {t('support.category')}: <span className="text-white capitalize">{complaint.category}</span>
                     </span>
                     <span className="text-slate-400">
-                      Priority: <span className="text-white capitalize">{complaint.priority}</span>
+                      {t('support.priority')}: <span className="text-white capitalize">{complaint.priority}</span>
                     </span>
                   </div>
 
                   {complaint.admin_response && (
                     <div className="mt-4 pt-4 border-t border-slate-700">
-                      <p className="text-slate-400 text-sm mb-2">Admin Response:</p>
+                      <p className="text-slate-400 text-sm mb-2">{t('support.adminResponse')}:</p>
                       <p className="text-slate-300">
                         {complaint.admin_response}
                       </p>
@@ -268,7 +270,7 @@ export default function Support() {
               ))
             ) : (
               <div className="text-center text-slate-400 py-12">
-                You have no complaints yet.
+                {t('support.noComplaints')}
               </div>
             )}
           </div>

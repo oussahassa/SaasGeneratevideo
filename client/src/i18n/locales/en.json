@@ -265,7 +265,11 @@
     "submitted": "Complaint submitted successfully",
     "failedToSubmit": "Failed to submit complaint",
     "failedToLoad": "Failed to load complaints",
-    "adminResponse": "Admin Response"
+    "adminResponse": "Admin Response",
+    "all": "All",
+    "open": "Open",
+    "inProgress": "In Progress",
+    "resolved": "Resolved"
   },
   "auth": {
     "verifyEmail": "Verify Your Email",
