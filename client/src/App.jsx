@@ -20,6 +20,11 @@ import GenerateVideos from './pages/client/GenerateVideos'
 import FAQ from './pages/FAQ'
 import Support from './pages/Support'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminOverview from './pages/admin/AdminOverview'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminPacks from './pages/admin/AdminPacks'
+import AdminComplaints from './pages/admin/AdminComplaints'
+import AdminFAQs from './pages/admin/AdminFAQs'
 import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import EmailVerification from './pages/auth/EmailVerification'
@@ -28,10 +33,14 @@ import ResetPassword from './pages/auth/ResetPassword'
 import {Toaster} from 'react-hot-toast'
 import { verifyToken } from './redux/slices/authSlice'
 import './i18n/i18n'
+import { useState } from 'react'
+import ThemeToggle from './components/ThemeToggle'
+import { ThemeProvider } from './context/ThemeContext'
 
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
+  const [themeInitialized, setThemeInitialized] = useState(false)
 
   useEffect(() => {
     // Set document direction based on language
@@ -49,10 +58,32 @@ const App = () => {
     dispatch(verifyToken())
   }, [dispatch])
 
+  useEffect(() => {
+    // Initialize theme on app load (ensure class applied before render)
+    try {
+      const saved = localStorage.getItem('theme')
+      const root = document.documentElement
+      if (saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        root.classList.add('dark')
+      } else {
+        root.classList.remove('dark')
+      }
+    } catch (e) {
+      // ignore
+    } finally {
+      setThemeInitialized(true)
+    }
+  }, [])
+
   return (
-    <div>
-      <Toaster />
-      <Routes>
+    <ThemeProvider>
+      <div>
+        <Toaster />
+        {/* Theme toggle (desktop fixed) - also present in headers */}
+        <div className="fixed top-4 right-4 z-50 hidden md:block">
+          <ThemeToggle />
+        </div>
+        <Routes>
         {/* Public Routes */}
         <Route path='/' element={<Home />}/>
         <Route path='/login' element={<Login />}/>
@@ -92,15 +123,16 @@ const App = () => {
             <AdminLayout />
           </AdminRoute>
         }>
-          <Route index element={<AdminDashboard />}/>
-          <Route path='users' element={<AdminDashboard />}/>
-          <Route path='packs' element={<AdminDashboard />}/>
-          <Route path='complaints' element={<AdminDashboard />}/>
-          <Route path='faqs' element={<AdminDashboard />}/>
-          <Route path='analytics' element={<AdminDashboard />}/>
+          <Route index element={<AdminOverview />}/>
+          <Route path='users' element={<AdminUsers />}/>
+          <Route path='packs' element={<AdminPacks />}/>
+          <Route path='complaints' element={<AdminComplaints />}/>
+          <Route path='faqs' element={<AdminFAQs />}/>
+          <Route path='analytics' element={<AdminOverview />}/>
         </Route>
       </Routes>
-    </div>
+      </div>
+    </ThemeProvider>
   )
 }
 

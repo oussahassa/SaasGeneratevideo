@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowRight, LogOut, User, Menu, X } from 'lucide-react'
 import { logoutUser } from '../redux/slices/authSlice'
 import LanguageSwitcher from './LanguageSwitcher'
+import ThemeToggle from './ThemeToggle'
 
 const NavBar = () => {
   const navigate = useNavigate()
@@ -12,7 +13,8 @@ const NavBar = () => {
   const { t } = useTranslation()
   const [showMobileMenu, setShowMobileMenu] = useState(false)
 
-  const { isAuthenticated, user } = useSelector(state => state.auth)
+  const auth = useSelector(state => state.auth) || {}
+  const { isAuthenticated, user } = auth
 
   const handleLogout = () => {
     dispatch(logoutUser())
@@ -47,7 +49,15 @@ const NavBar = () => {
           {isAuthenticated && (
             <>
               <button
-                onClick={() => navigate('/dashboard')}
+                    onClick={() => {
+              if (!isAuthenticated) {
+                navigate('/signup')
+              } else if (user?.role === 'admin') {
+                navigate('/admin-dashboard')
+              } else {
+                navigate('/ai')
+              }
+            }}
                 className='text-gray-300 hover:text-white transition-colors font-medium'
               >
                 {t('nav.dashboard')}
@@ -79,6 +89,7 @@ const NavBar = () => {
         {/* Right Side - Desktop */}
         <div className='hidden md:flex items-center gap-4'>
           <LanguageSwitcher />
+          <ThemeToggle />
           
           {isAuthenticated ? (
             <div className='flex items-center gap-3 pl-4 border-l border-white/10'>
@@ -111,6 +122,7 @@ const NavBar = () => {
         {/* Mobile Menu Button */}
         <div className='md:hidden flex items-center gap-4'>
           <LanguageSwitcher />
+          <ThemeToggle />
           <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
             className='p-2 rounded-lg hover:bg-white/10 text-white transition-colors'

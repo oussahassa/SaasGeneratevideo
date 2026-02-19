@@ -60,11 +60,25 @@ export const createPack = async (req, res) => {
         ${name},
         ${description},
         ${price},
-        ${JSON.stringify(features || [])}::jsonb,
+        ${features || []},
         ${monthly_limit}
       )
       RETURNING *
     `;
+
+    // Trigger async translation (best-effort) for pack fields (admin creates in FR)
+    try {
+      const fetch = (await import('node-fetch')).default
+      const apiUrl = `${process.env.VITE_API_URL || process.env.API_URL || ''}/api/translate/translate-and-save`
+      // fire-and-forget
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${req.headers.authorization?.split(' ')[1] || ''}` },
+        body: JSON.stringify({ entityType: 'pack', entityId: pack[0].id, sourceLocale: 'fr', fields: { name, description } })
+      }).catch(() => {})
+    } catch (e) {
+      // ignore translation failures
+    }
 
     res.json({
       success: true,

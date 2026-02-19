@@ -13,6 +13,7 @@
     "edit": "تعديل",
     "create": "إنشاء",
     "update": "تحديث",
+    "add": "إضافة",
     "search": "بحث",
     "filter": "تصفية",
     "pagination": "الترقيم"
@@ -335,6 +336,17 @@
   }
   ,
   "dashboard": {
+    "totalCreations": "إجمالي الإنشاءات",
+    "videos": "الفيديوهات المولدة",
+    "images": "الصور المولدة",
+    "articles": "المقالات المولدة",
+    "recentCreations": "الإنشاءات الأخيرة",
+    "noSessions": "لا توجد جلسات نشطة",
+    "sessionRevoked": "تم إلغاء الجلسة",
+    "tokenRefreshed": "تم تحديث الرمز المميز",
+    "save": "حفظ",
+    "refreshToken": "تحديث الرمز المميز",
+    "refresh": "تحديث",
     "connectedUsers": "المستخدمون المتصلون",
     "imagesGenerated": "الصور المولدة",
     "videosGenerated": "الفيديوهات المولدة",

@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
 
 export default function Support() {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('submit');
   const [myComplaints, setMyComplaints] = useState([]);
@@ -48,7 +50,7 @@ export default function Support() {
 
     try {
       setLoading(true);
-      const response = await axios.post('/api/support/create-complaint', formData);
+      const response = await axios.post(`${API_URL}/support/create-complaint`, formData);
       if (response.data.success) {
         toast.success(t('support.submitted') || 'Complaint submitted successfully');
         setFormData({
@@ -70,7 +72,8 @@ export default function Support() {
   const fetchMyComplaints = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/support/get-my-complaints');
+      const response = await axios.get(`${API_URL}/support/get-my-complaints`);
+  
       if (response.data.success) {
         setMyComplaints(response.data.complaints);
       }

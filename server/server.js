@@ -10,6 +10,7 @@ import videoRouter from './routes/videoRoutes.js';
 import supportRouter from './routes/supportRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import authRouter from './routes/authRoutes.js';
+import translationRouter from './routes/translationRoutes.js'
 import { auth, attachPlanInfo } from './middlewares/auth.js';
 
 const app = express()
@@ -38,6 +39,7 @@ app.use('/api/packs', packRouter)
 app.use('/api/videos', videoRouter)
 app.use('/api/support', supportRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/translate', translationRouter)
 
 const PORT = process.env.PORT || 4000;
 

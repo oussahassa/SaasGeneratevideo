@@ -42,6 +42,19 @@ export const createFAQ = async (req, res) => {
       RETURNING *
     `;
 
+    // Async translation trigger (best-effort)
+    try {
+      const fetch = (await import('node-fetch')).default
+      const apiUrl = `${process.env.VITE_API_URL || process.env.API_URL || ''}/api/translate/translate-and-save`
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${req.headers.authorization?.split(' ')[1] || ''}` },
+        body: JSON.stringify({ entityType: 'faq', entityId: faq[0].id, sourceLocale: 'fr', fields: { question, answer } })
+      }).catch(() => {})
+    } catch (e) {
+      // ignore
+    }
+
     res.json({ success: true, message: "FAQ created successfully", faq: faq[0] });
 
   } catch (error) {

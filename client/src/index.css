@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
 @import "tailwindcss";
+
 
 * {
   font-family: "Outfit", sans-serif;
@@ -30,4 +32,23 @@
 .marquee-inner {
   animation: marqueeScroll 30s linear infinite;
   will-change: transform;
+}
+
+/* Smooth theme transition utility */
+.theme-transition {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Basic dark theme variables to improve contrast */
+:root {
+  --bg: #0b1220;
+  --panel: #0f1724;
+  --muted: #94a3b8;
+}
+.dark :root {
+  /* fallback - not used but keeps specificity clear */
+}
+
+html {
+  background-color: var(--bg);
 }

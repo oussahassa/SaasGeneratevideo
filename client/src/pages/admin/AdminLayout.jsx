@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import AdminSidebar from '../../components/AdminSidebar'
+import ThemeToggle from '../../components/ThemeToggle'
 import { useSelector } from 'react-redux'
 
 const AdminLayout = () => {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const { user } = useSelector(state => state.auth)
+  const auth = useSelector(state => state.auth) || {}
+  const { user } = auth
 
   return (
     <div className='fixed inset-0 flex flex-col bg-gray-900'>
@@ -33,6 +35,7 @@ const AdminLayout = () => {
 
         {/* Admin User Info */}
         <div className='flex items-center gap-4'>
+          <ThemeToggle />
           <div className='text-right hidden sm:block'>
             <p className='text-white font-medium text-sm'>{user?.firstName} {user?.lastName}</p>
             <p className='text-gray-400 text-xs'>Administrator</p>
