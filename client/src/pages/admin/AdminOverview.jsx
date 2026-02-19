@@ -6,12 +6,12 @@ import { Users, FileText, Video, Package, AlertCircle, BarChart3, TrendingUp } f
 
 // Reusable StatCard Component
 const StatCard = ({ icon: Icon, title, value, subtitle, gradientColor }) => (
-  <div className={`bg-gradient-to-br ${gradientColor} rounded-xl p-6 text-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300`}>
+  <div className={`bg-gradient-to-br ${gradientColor} rounded-xl p-6 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300`}>
     <div className="flex items-start justify-between">
       <div>
-        <p className="text-white/70 text-sm font-medium mb-1">{title}</p>
+        <p className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white/70 text-sm font-medium mb-1">{title}</p>
         <h3 className="text-4xl font-bold">{value || 0}</h3>
-        {subtitle && <p className="text-white/60 text-xs mt-2">{subtitle}</p>}
+        {subtitle && <p className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white/60 text-xs mt-2">{subtitle}</p>}
       </div>
       <div className="p-3 rounded-lg bg-white/10 backdrop-blur">
         <Icon className="w-6 h-6" />
@@ -69,7 +69,7 @@ export default function AdminOverview() {
     return (
       <div className="p-6">
         <div className="text-center py-12">
-          <div className="text-gray-400">{t('common.loading')}</div>
+          <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -78,8 +78,8 @@ export default function AdminOverview() {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">{t('admin.overview.title')}</h1>
-        <p className="text-gray-400">{t('admin.overview.title')}</p>
+        <h1 className="text-3xl font-bold dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">{t('admin.overview.title')}</h1>
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.overview.title')}</p>
       </div>
 
       {/* Stats Grid */}
@@ -115,8 +115,8 @@ export default function AdminOverview() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-slate-800 rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white    dark:bg-slate-800 rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <TrendingUp className="w-5 h-5" />
           {t('admin.overview.title')}
         </h2>
@@ -124,8 +124,8 @@ export default function AdminOverview() {
         {dailyStats.length > 0 ? (
           <div className="space-y-4">
             {dailyStats.slice(0, 7).map((day, index) => (
-              <div key={index} className="flex items-center justify-between py-2 border-b border-slate-700 last:border-b-0">
-                <div className="text-gray-300">
+              <div key={index} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 last:border-b-0">
+                <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
                   {new Date(day.date).toLocaleDateString()}
                 </div>
                 <div className="flex gap-6 text-sm">
@@ -137,7 +137,7 @@ export default function AdminOverview() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
             {t('common.loading')}
           </div>
         )}

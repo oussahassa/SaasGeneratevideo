@@ -1,5 +1,5 @@
 import sql from '../configs/db.js'
-import fetch from 'node-fetch'
+import axios from 'axios'
 import { getCache, setCache } from '../middlewares/cache.js'
 
 // Basic translator function - uses external provider if available
@@ -12,12 +12,11 @@ async function translateText(text, from, to) {
       const cacheKey = `trans:${from}:${to}:${text}`
       const cached = getCache(cacheKey)
       if (cached) return cached
-      const resp = await fetch(providerUrl, {
-        method: 'POST',
+      const resp = await axios.post(providerUrl, {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({ q: text, source: from, target: to })
+        data: { q: text, source: from, target: to }
       })
-      const data = await resp.json()
+      const data = resp.data      
       const result = data?.translatedText || data?.translations?.[0]?.text || text
       try { setCache(cacheKey, result, 60 * 60) } catch (e) {}
       return result

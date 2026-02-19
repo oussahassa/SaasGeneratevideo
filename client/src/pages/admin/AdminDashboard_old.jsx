@@ -229,10 +229,10 @@ export default function AdminDashboard() {
   };
 
   const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+    <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-slate-400 text-sm mb-2">{label}</p>
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-2">{label}</p>
           <p className={`text-3xl font-bold ${color}`}>{value || 0}</p>
         </div>
         <Icon className={`${color} opacity-20`} size={40} />
@@ -241,20 +241,20 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">
             {t('admin.dashboard')}
           </h1>
-          <p className="text-slate-400">
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
             {t('admin.description')}
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-slate-700 overflow-x-auto">
+        <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 overflow-x-auto">
           {['overview', 'users', 'packs', 'faqs', 'complaints', 'analytics'].map(tab => (
             <button
               key={tab}
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
               className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
                 activeTab === tab
                   ? 'text-blue-500 border-b-2 border-blue-500'
-                  : 'text-slate-400 hover:text-slate-300'
+                  : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-slate-300'
               }`}
             >
               {t(`admin.tabs.${tab}`)}
@@ -274,11 +274,11 @@ export default function AdminDashboard() {
         {activeTab === 'overview' && (
           <div className="space-y-8">
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
             ) : stats ? (
               <>
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.tabs.users')}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">{t('admin.tabs.users')}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <StatCard icon={Users} label={t('admin.overview.totalUsers')} value={stats.users?.total_users} color="text-blue-400" />
                     <StatCard icon={Users} label={t('admin.overview.newToday')} value={stats.users?.new_today} color="text-green-400" />
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.overview.creations')}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">{t('admin.overview.creations')}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <StatCard icon={FileText} label={t('admin.overview.totalCreations')} value={stats.creations?.total_creations} color="text-blue-400" />
                     <StatCard icon={FileText} label={t('admin.overview.articles')} value={stats.creations?.articles} color="text-indigo-400" />
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.overview.videos')}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">{t('admin.overview.videos')}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <StatCard icon={Video} label={t('admin.overview.totalVideos')} value={stats.videos?.total_videos} color="text-red-400" />
                     <StatCard icon={Video} label={t('admin.overview.completed')} value={stats.videos?.completed} color="text-green-400" />
@@ -307,7 +307,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">{t('admin.tabs.complaints')}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">{t('admin.tabs.complaints')}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <StatCard icon={AlertCircle} label={t('admin.overview.open')} value={stats.complaints?.open_complaints} color="text-yellow-400" />
                     <StatCard icon={AlertCircle} label={t('admin.overview.inProgress')} value={stats.complaints?.in_progress} color="text-blue-400" />
@@ -321,38 +321,38 @@ export default function AdminDashboard() {
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+          <div className="bg-white    dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 overflow-hidden">
             {loading ? (
-              <div className="p-8 text-center text-slate-400">{t('common.loading')}</div>
+              <div className="p-8 text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
             ) : (
               <>
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-slate-900 border-b border-slate-700">
+                    <thead className="bg-white    dark:bg-slate-900 border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
                       <tr>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.email')}</th>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.name')}</th>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.joined')}</th>
-                        <th className="px-6 py-3 text-left text-white font-medium">{t('admin.users.actions')}</th>
+                        <th className="px-6 py-3 text-left text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium">{t('admin.users.email')}</th>
+                        <th className="px-6 py-3 text-left text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium">{t('admin.users.name')}</th>
+                        <th className="px-6 py-3 text-left text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium">{t('admin.users.joined')}</th>
+                        <th className="px-6 py-3 text-left text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium">{t('admin.users.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {users.map(user => (
-                        <tr key={user.id} className="border-b border-slate-700 hover:bg-slate-700/50">
-                          <td className="px-6 py-3 text-white">{user.email}</td>
+                        <tr key={user.id} className="border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700/50">
+                          <td className="px-6 py-3 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white">{user.email}</td>
                           <td className="px-6 py-3 text-slate-300">{user.first_name} {user.last_name}</td>
-                          <td className="px-6 py-3 text-slate-400 text-sm">{new Date(user.created_at).toLocaleDateString()}</td>
+                          <td className="px-6 py-3 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">{new Date(user.created_at).toLocaleDateString()}</td>
                           <td className="px-6 py-3">
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleToggleUserStatus(user.id, user.is_blocked)}
-                                className="px-3 py-1 rounded text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-white transition-colors"
+                                className="px-3 py-1 rounded text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white transition-colors"
                               >
                                 {user.is_blocked ? t('admin.users.unblock') : t('admin.users.block')}
                               </button>
                               <button
                                 onClick={() => handleDeleteUser(user.id)}
-                                className="px-3 py-1 rounded text-sm font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                className="px-3 py-1 rounded text-sm font-medium bg-red-600 hover:bg-red-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white transition-colors"
                               >
                                 {t('admin.users.delete')}
                               </button>
@@ -365,8 +365,8 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Pagination */}
-                <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-between">
-                  <p className="text-slate-400 text-sm">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 flex items-center justify-between">
+                  <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
                     {t('admin.users.page')} {pagination.page} {t('admin.users.of')} {pagination.pages} ({pagination.total} {t('admin.users.total')})
                   </p>
                   <div className="flex gap-2">
@@ -376,7 +376,7 @@ export default function AdminDashboard() {
                         fetchUsers();
                       }}
                       disabled={pagination.page === 1}
-                      className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white"
+                      className="px-4 py-2 rounded bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
                     >
                       {t('admin.users.previous')}
                     </button>
@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                         fetchUsers();
                       }}
                       disabled={pagination.page === pagination.pages}
-                      className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white"
+                      className="px-4 py-2 rounded bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
                     >
                       {t('admin.users.next')}
                     </button>
@@ -406,22 +406,22 @@ export default function AdminDashboard() {
                 setPackForm({ name: '', description: '', price: 0, monthly_limit: 0, features: [] });
                 setShowPackModal(true);
               }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus size={20} />
               {t('admin.packs.create')}
             </button>
 
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
             ) : packs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {packs.map(pack => (
-                  <div key={pack.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                    <h3 className="text-white font-bold text-lg mb-2">{pack.name}</h3>
+                  <div key={pack.id} className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+                    <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-lg mb-2">{pack.name}</h3>
                     <p className="text-blue-400 font-bold mb-4">${pack.price} {t('admin.packs.perMonth')}</p>
-                    <p className="text-slate-400 text-sm mb-4">{pack.description}</p>
-                    <p className="text-slate-400 text-sm mb-4">{pack.monthly_limit} {t('admin.packs.limit')}</p>
+                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-4">{pack.description}</p>
+                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-4">{pack.monthly_limit} {t('admin.packs.limit')}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
@@ -429,14 +429,14 @@ export default function AdminDashboard() {
                           setPackForm(pack);
                           setShowPackModal(true);
                         }}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
                       >
                         <Edit2 size={16} />
                         {t('common.edit')}
                       </button>
                       <button
                         onClick={() => handleDeletePack(pack.id)}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
                       >
                         <Trash2 size={16} />
                         {t('common.delete')}
@@ -446,7 +446,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-slate-400 py-12">{t('admin.packs.noPacks')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 py-12">{t('admin.packs.noPacks')}</div>
             )}
           </div>
         )}
@@ -460,20 +460,20 @@ export default function AdminDashboard() {
                 setFaqForm({ question: '', answer: '', category: 'general' });
                 setShowFaqModal(true);
               }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus size={20} />
               {t('admin.faqs.create')}
             </button>
 
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
             ) : faqs.length > 0 ? (
               <div className="space-y-4">
                 {faqs.map(faq => (
-                  <div key={faq.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                    <h3 className="text-white font-bold mb-2">{faq.question}</h3>
-                    <p className="text-slate-400 text-sm mb-4">{faq.answer}</p>
+                  <div key={faq.id} className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+                    <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold mb-2">{faq.question}</h3>
+                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-4">{faq.answer}</p>
                     <p className="text-slate-500 text-xs mb-4">{faq.category}</p>
                     <div className="flex gap-2">
                       <button
@@ -482,14 +482,14 @@ export default function AdminDashboard() {
                           setFaqForm(faq);
                           setShowFaqModal(true);
                         }}
-                        className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                        className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-3 py-1 rounded text-sm transition-colors"
                       >
                         <Edit2 size={14} />
                         {t('common.edit')}
                       </button>
                       <button
                         onClick={() => handleDeleteFaq(faq.id)}
-                        className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                        className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-3 py-1 rounded text-sm transition-colors"
                       >
                         <Trash2 size={14} />
                         {t('common.delete')}
@@ -499,7 +499,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-slate-400 py-12">{t('admin.faqs.noFAQs')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 py-12">{t('admin.faqs.noFAQs')}</div>
             )}
           </div>
         )}
@@ -508,14 +508,14 @@ export default function AdminDashboard() {
         {activeTab === 'complaints' && (
           <div className="space-y-4">
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
             ) : complaints.length > 0 ? (
               complaints.map(complaint => (
-                <div key={complaint.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div key={complaint.id} className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-white font-bold">{complaint.title}</h3>
-                      <p className="text-slate-400 text-sm">{t('admin.complaints.from')}: {complaint.email}</p>
+                      <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold">{complaint.title}</h3>
+                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">{t('admin.complaints.from')}: {complaint.email}</p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                       complaint.status === 'open' ? 'bg-red-900 text-red-300' :
@@ -541,17 +541,17 @@ export default function AdminDashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-center text-slate-400 py-12">{t('admin.complaints.noComplaints')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 py-12">{t('admin.complaints.noComplaints')}</div>
             )}
           </div>
         )}
 
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
-          <div className="bg-slate-800 rounded-lg p-8 border border-slate-700 text-center">
+          <div className="bg-white    dark:bg-slate-800 rounded-lg p-8 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 text-center">
             <BarChart3 size={64} className="text-slate-600 mx-auto mb-4" />
-            <h3 className="text-white font-bold mb-2">{t('admin.tabs.analytics')}</h3>
-            <p className="text-slate-400">Coming soon...</p>
+            <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold mb-2">{t('admin.tabs.analytics')}</h3>
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">Coming soon...</p>
           </div>
         )}
       </div>
@@ -559,8 +559,8 @@ export default function AdminDashboard() {
       {/* Pack Modal */}
       {showPackModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-            <h3 className="text-white font-bold text-lg mb-4">
+          <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+            <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-lg mb-4">
               {editingPack ? t('admin.packs.edit') : t('admin.packs.create')}
             </h3>
             <div className="space-y-4">
@@ -569,39 +569,39 @@ export default function AdminDashboard() {
                 placeholder={t('admin.packs.name')}
                 value={packForm.name}
                 onChange={(e) => setPackForm({...packForm, name: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               />
               <input
                 type="text"
                 placeholder={t('admin.packs.description')}
                 value={packForm.description}
                 onChange={(e) => setPackForm({...packForm, description: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               />
               <input
                 type="number"
                 placeholder={t('admin.packs.price')}
                 value={packForm.price}
                 onChange={(e) => setPackForm({...packForm, price: parseFloat(e.target.value)})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               />
               <input
                 type="number"
                 placeholder={t('admin.packs.limit')}
                 value={packForm.monthly_limit}
                 onChange={(e) => setPackForm({...packForm, monthly_limit: parseInt(e.target.value)})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               />
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPackModal(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
+                  className="flex-1 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleSavePack}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                 >
                   {t('common.save')}
                 </button>
@@ -614,8 +614,8 @@ export default function AdminDashboard() {
       {/* FAQ Modal */}
       {showFaqModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-            <h3 className="text-white font-bold text-lg mb-4">
+          <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+            <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-lg mb-4">
               {editingFaq ? t('admin.faqs.edit') : t('admin.faqs.create')}
             </h3>
             <div className="space-y-4">
@@ -624,19 +624,19 @@ export default function AdminDashboard() {
                 placeholder={t('admin.faqs.question')}
                 value={faqForm.question}
                 onChange={(e) => setFaqForm({...faqForm, question: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               />
               <textarea
                 placeholder={t('admin.faqs.answer')}
                 value={faqForm.answer}
                 onChange={(e) => setFaqForm({...faqForm, answer: e.target.value})}
                 rows="4"
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white resize-none"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white resize-none"
               />
               <select
                 value={faqForm.category}
                 onChange={(e) => setFaqForm({...faqForm, category: e.target.value})}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               >
                 <option value="general">General</option>
                 <option value="subscription">Subscription</option>
@@ -646,13 +646,13 @@ export default function AdminDashboard() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowFaqModal(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
+                  className="flex-1 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleSaveFaq}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                 >
                   {t('common.save')}
                 </button>
@@ -665,25 +665,25 @@ export default function AdminDashboard() {
       {/* Complaint Response Modal */}
       {showComplaintModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-            <h3 className="text-white font-bold text-lg mb-4">{t('admin.complaints.respond')}</h3>
+          <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+            <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-lg mb-4">{t('admin.complaints.respond')}</h3>
             <textarea
               placeholder={t('admin.complaints.respond')}
               value={complaintResponse}
               onChange={(e) => setComplaintResponse(e.target.value)}
               rows="4"
-              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white resize-none mb-4"
+              className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white resize-none mb-4"
             />
             <div className="flex gap-3">
               <button
                 onClick={() => setShowComplaintModal(null)}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
+                className="flex-1 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={() => handleRespondComplaint(showComplaintModal)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
               >
                 {t('common.save')}
               </button>

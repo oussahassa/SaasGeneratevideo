@@ -149,12 +149,12 @@ export default function AdminPacks() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('admin.packs.title')}</h1>
-          <p className="text-gray-400">{t('admin.packs.title')}</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">{t('admin.packs.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.packs.title')}</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg font-medium transition-colors"
         >
           <Plus className="w-5 h-5" />
           {t('admin.packs.create')}
@@ -165,32 +165,32 @@ export default function AdminPacks() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full text-center py-12">
-            <div className="text-gray-400">{t('common.loading')}</div>
+            <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
           </div>
         ) : packs.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <div className="text-gray-400">{t('admin.packs.noPacks')}</div>
+            <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.packs.noPacks')}</div>
           </div>
         ) : (
           packs.map((pack) => (
-            <div key={pack.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-slate-600 transition-colors">
+            <div key={pack.id} className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 hover:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 transition-colors">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-white mb-1">{pack.name}</h3>
-                  <p className="text-gray-400 text-sm">{pack.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-1">{pack.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">{pack.description}</p>
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => openEditModal(pack)}
-                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-slate-700 rounded"
+                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded"
                     title={t('admin.packs.edit')}
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeletePack(pack.id)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-slate-700 rounded"
+                    className="p-2 text-red-400 hover:text-red-300 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded"
                     title={t('admin.packs.delete')}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -200,12 +200,12 @@ export default function AdminPacks() {
 
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">{t('admin.packs.price')}:</span>
-                  <span className="text-white font-semibold">${pack.price}</span>
+                  <span className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.packs.price')}:</span>
+                  <span className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold">${pack.price}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">{t('admin.packs.limit')}:</span>
-                  <span className="text-white">
+                  <span className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.packs.limit')}:</span>
+                  <span className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white">
                     {pack.monthly_limit === 0 ? t('admin.packs.unlimited') : pack.monthly_limit}
                   </span>
                 </div>
@@ -213,8 +213,8 @@ export default function AdminPacks() {
 
               {pack.features && pack.features.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">{t('admin.packs.features')}:</h4>
-                  <ul className="text-sm text-gray-400 space-y-1">
+                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-2">{t('admin.packs.features')}:</h4>
+                  <ul className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 space-y-1">
                     {pack.features.map((feature, index) => (
                       <li key={index} className="flex items-center">
                         <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"></span>
@@ -232,14 +232,14 @@ export default function AdminPacks() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white">
                 {editingPack ? t('admin.packs.edit') : t('admin.packs.create')}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -247,33 +247,33 @@ export default function AdminPacks() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-1">
                   {t('admin.packs.name')}
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-1">
                   {t('admin.packs.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-1">
                     {t('admin.packs.price')}
                   </label>
                   <input
@@ -281,27 +281,27 @@ export default function AdminPacks() {
                     step="0.01"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-1">
                     {t('admin.packs.limit')}
                   </label>
                   <input
                     type="number"
                     value={formData.monthly_limit}
                     onChange={(e) => setFormData({ ...formData, monthly_limit: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-300">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     {t('admin.packs.features')}
                   </label>
                   <button
@@ -319,14 +319,14 @@ export default function AdminPacks() {
                         type="text"
                         value={feature}
                         onChange={(e) => handleFeatureChange(index, e.target.value)}
-                        className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                        className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                         placeholder={`${t('admin.packs.features')} ${index + 1}`}
                       />
                       {formData.features.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeFeature(index)}
-                          className="p-2 text-red-400 hover:text-red-300 hover:bg-slate-700 rounded"
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -340,13 +340,13 @@ export default function AdminPacks() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg transition-colors"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg transition-colors"
                 >
                   <Save className="w-4 h-4" />
                   {editingPack ? t('common.save') : t('common.create')}

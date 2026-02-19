@@ -53,7 +53,7 @@ const Login = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4'>
+    <div className='min-h-screen bg-gradient-to-br to-indigo-100 flex items-center justify-center px-4'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-lg shadow-lg p-8'>
           <div className='text-center mb-8'>
@@ -101,7 +101,7 @@ const Login = () => {
             <button
               type='submit'
               disabled={isLoading}
-              className='w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition'
+              className='w-full py-3 bg-blue-500 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition'
             >
               {isLoading ? `${t('common.loading')}...` : t('auth.signIn') || 'Sign In'}
             </button>

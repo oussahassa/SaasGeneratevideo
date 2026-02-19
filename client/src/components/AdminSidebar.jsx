@@ -66,7 +66,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div className='md:hidden flex justify-end p-4'>
           <button
             onClick={() => setSidebarOpen(false)}
-            className='p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white'
+            className='p-2 hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
           >
             <X className='w-5 h-5' />
           </button>
@@ -74,7 +74,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
         {/* Menu Items */}
         <nav className='flex-1 px-4 py-6 space-y-2'>
-          <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-4'>
+          <h3 className='text-xs font-semibold text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 uppercase tracking-wider px-3 mb-4'>
             {t('admin.title')}
           </h3>
 
@@ -89,8 +89,8 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                   ${
                     active
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white shadow-lg'
+                      : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:bg-gray-700 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
                   }
                 `}
               >

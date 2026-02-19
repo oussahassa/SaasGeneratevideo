@@ -89,7 +89,7 @@ export default function AdminComplaints() {
       case 'open': return 'bg-red-500/20 text-red-400 border-red-500/30';
       case 'in_progress': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'resolved': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default: return 'bg-gray-500/20 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 border-gray-500/30';
     }
   };
 
@@ -100,7 +100,7 @@ export default function AdminComplaints() {
       case 'medium': return 'text-yellow-400';
       case 'high': return 'text-orange-400';
       case 'critical': return 'text-red-400';
-      default: return 'text-gray-400';
+      default: return 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300';
     }
   };
 
@@ -111,28 +111,28 @@ export default function AdminComplaints() {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">{t('admin.complaints.title')}</h1>
-        <p className="text-gray-400">{t('admin.complaints.title')}</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">{t('admin.complaints.title')}</h1>
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.complaints.title')}</p>
       </div>
 
       {/* Complaints List */}
       <div className="space-y-4">
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-gray-400">{t('common.loading')}</div>
+            <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
           </div>
         ) : complaints.length === 0 ? (
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <div className="text-gray-400">{t('admin.complaints.noComplaints')}</div>
+            <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.complaints.noComplaints')}</div>
           </div>
         ) : (
           complaints.map((complaint) => (
-            <div key={complaint.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-slate-600 transition-colors">
+            <div key={complaint.id} className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 hover:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 transition-colors">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-white">{complaint.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white">{complaint.title}</h3>
                     <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(complaint.status)}`}>
                       {t(`admin.complaints.${complaint.status}`)}
                     </span>
@@ -140,18 +140,18 @@ export default function AdminComplaints() {
                       {t(`admin.complaints.${complaint.priority}`)}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-400 mb-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-2">
                     {t('admin.complaints.from')}: {complaint.user_name} ({complaint.user_email})
                   </div>
-                  <div className="text-sm text-gray-400 mb-3">
+                  <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-3">
                     {t('admin.complaints.date')}: {formatDate(complaint.created_at)}
                   </div>
-                  <p className="text-gray-300 mb-3">{complaint.description}</p>
+                  <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-3">{complaint.description}</p>
 
                   {complaint.admin_response && (
-                    <div className="bg-slate-700 rounded-lg p-3 mb-3">
+                    <div className="bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded-lg p-3 mb-3">
                       <div className="text-sm font-medium text-blue-400 mb-1">{t('support.adminResponse')}:</div>
-                      <p className="text-gray-300 text-sm">{complaint.admin_response}</p>
+                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">{complaint.admin_response}</p>
                     </div>
                   )}
                 </div>
@@ -159,14 +159,14 @@ export default function AdminComplaints() {
                 <div className="flex space-x-2 ml-4">
                   <button
                     onClick={() => openResponseModal(complaint)}
-                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-slate-700 rounded"
+                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded"
                     title={t('admin.complaints.respond')}
                   >
                     <MessageSquare className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteComplaint(complaint.id)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-slate-700 rounded"
+                    className="p-2 text-red-400 hover:text-red-300 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded"
                     title={t('admin.complaints.delete')}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -181,29 +181,29 @@ export default function AdminComplaints() {
       {/* Response Modal */}
       {showResponseModal && selectedComplaint && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-white mb-2">{t('admin.complaints.respond')}</h2>
-              <div className="text-sm text-gray-400">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">{t('admin.complaints.respond')}</h2>
+              <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
                 {t('admin.complaints.from')}: {selectedComplaint.user_name} ({selectedComplaint.user_email})
               </div>
-              <div className="text-sm text-gray-400 mb-4">
+              <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-4">
                 {t('admin.complaints.subject')}: {selectedComplaint.title}
               </div>
-              <div className="bg-slate-700 rounded-lg p-4 mb-4">
-                <p className="text-gray-300">{selectedComplaint.description}</p>
+              <div className="bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded-lg p-4 mb-4">
+                <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{selectedComplaint.description}</p>
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-2">
                 {t('support.adminResponse')}
               </label>
               <textarea
                 value={responseText}
                 onChange={(e) => setResponseText(e.target.value)}
                 rows={6}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 placeholder={t('support.adminResponse')}
               />
             </div>
@@ -211,13 +211,13 @@ export default function AdminComplaints() {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowResponseModal(false)}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg transition-colors"
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={() => handleRespond(selectedComplaint.id)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg transition-colors"
               >
                 <Send className="w-4 h-4" />
                 {t('admin.complaints.respond')}

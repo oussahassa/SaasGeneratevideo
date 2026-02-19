@@ -120,26 +120,26 @@ export default function GenerateVideos() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
+    <div className="min-h-screen  py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">
             Video Generation
           </h1>
-          <p className="text-xl text-slate-400">
+          <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
             Create AI-powered videos and share them on social media
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-slate-700">
+        <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
           <button
             onClick={() => setActiveTab('generate')}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'generate'
                 ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-slate-400 hover:text-slate-300'
+                : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-slate-300'
             }`}
           >
             Generate Video
@@ -149,7 +149,7 @@ export default function GenerateVideos() {
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'my-videos'
                 ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-slate-400 hover:text-slate-300'
+                : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-slate-300'
             }`}
           >
             My Videos
@@ -160,14 +160,14 @@ export default function GenerateVideos() {
         {activeTab === 'generate' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-slate-800 rounded-lg p-8 border border-slate-700">
-                <h2 className="text-2xl font-bold text-white mb-6">
+              <div className="bg-white    dark:bg-slate-800 rounded-lg p-8 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-6">
                   Create a New Video
                 </h2>
 
                 <form onSubmit={handleGenerateScript} className="space-y-6">
                   <div>
-                    <label className="block text-white font-medium mb-2">
+                    <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                       Video Topic
                     </label>
                     <input
@@ -176,13 +176,13 @@ export default function GenerateVideos() {
                       value={formData.topic}
                       onChange={handleInputChange}
                       placeholder="e.g., How to cook pasta"
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                      className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-3 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white font-medium mb-2">
+                      <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                         Duration (seconds)
                       </label>
                       <input
@@ -192,19 +192,19 @@ export default function GenerateVideos() {
                         onChange={handleInputChange}
                         min="15"
                         max="300"
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                        className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-3 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-white font-medium mb-2">
+                      <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                         Tone
                       </label>
                       <select
                         name="tone"
                         value={formData.tone}
                         onChange={handleInputChange}
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                        className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-3 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white focus:outline-none focus:border-blue-500"
                       >
                         <option value="professional">Professional</option>
                         <option value="casual">Casual</option>
@@ -218,7 +218,7 @@ export default function GenerateVideos() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
                     {loading && <Loader size={20} className="animate-spin" />}
                     {loading ? 'Generating...' : 'Generate Video Script'}
@@ -235,19 +235,19 @@ export default function GenerateVideos() {
 
             {/* Stats */}
             <div className="space-y-4">
-              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                <h3 className="text-white font-bold mb-4">Quick Stats</h3>
+              <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+                <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold mb-4">Quick Stats</h3>
                 <div className="space-y-3 text-slate-300">
                   <div>
-                    <p className="text-slate-400 text-sm">Total Videos</p>
+                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">Total Videos</p>
                     <p className="text-2xl font-bold text-blue-400">0</p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Social Shares</p>
+                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">Social Shares</p>
                     <p className="text-2xl font-bold text-green-400">0</p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Status</p>
+                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">Status</p>
                     <p className="text-blue-400">Active</p>
                   </div>
                 </div>
@@ -260,19 +260,19 @@ export default function GenerateVideos() {
         {activeTab === 'my-videos' && (
           <div className="space-y-6">
             {loading ? (
-              <div className="text-center text-slate-400">Loading videos...</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">Loading videos...</div>
             ) : videos.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videos.map(video => (
                   <div
                     key={video.id}
-                    className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-blue-600 transition-colors"
+                    className="bg-white    dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 hover:border-blue-600 transition-colors"
                   >
                     {/* Video Thumbnail */}
-                    <div className="bg-slate-900 aspect-video flex items-center justify-center">
+                    <div className="bg-white    dark:bg-slate-900 aspect-video flex items-center justify-center">
                       <div className="text-center">
                         <div className="text-4xl mb-2">🎬</div>
-                        <p className="text-slate-400 text-sm">
+                        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
                           {video.status === 'completed' ? 'Completed' : 'Processing'}
                         </p>
                       </div>
@@ -280,10 +280,10 @@ export default function GenerateVideos() {
 
                     {/* Video Info */}
                     <div className="p-4">
-                      <p className="text-slate-400 text-xs mb-2">
+                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-xs mb-2">
                         {new Date(video.created_at).toLocaleDateString()}
                       </p>
-                      <p className="text-white font-medium mb-4 line-clamp-2">
+                      <p className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-4 line-clamp-2">
                         {video.script?.substring(0, 80)}...
                       </p>
 
@@ -293,13 +293,13 @@ export default function GenerateVideos() {
                           <>
                             <button
                               onClick={() => setShareModal(video.id)}
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
                             >
                               <Share2 size={16} /> Share
                             </button>
                             <button
                               onClick={() => handleDeleteVideo(video.id)}
-                              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                              className="flex-1 bg-red-600 hover:bg-red-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -311,7 +311,7 @@ export default function GenerateVideos() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-slate-400 py-12">
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 py-12">
                 <div className="text-6xl mb-4">📹</div>
                 <p>No videos yet. Create your first video!</p>
               </div>
@@ -322,18 +322,18 @@ export default function GenerateVideos() {
         {/* Share Modal */}
         {shareModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-              <h3 className="text-white font-bold text-lg mb-4">Share Video</h3>
+            <div className="bg-white    dark:bg-slate-800 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+              <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-lg mb-4">Share Video</h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                     Platform
                   </label>
                   <select
                     value={sharePlatform}
                     onChange={(e) => setSharePlatform(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="instagram">Instagram</option>
                     <option value="tiktok">TikTok</option>
@@ -343,7 +343,7 @@ export default function GenerateVideos() {
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                     Caption
                   </label>
                   <textarea
@@ -351,21 +351,21 @@ export default function GenerateVideos() {
                     onChange={(e) => setShareCaption(e.target.value)}
                     placeholder="Add a caption..."
                     rows="4"
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
                   />
                 </div>
 
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShareModal(null)}
-                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
+                    className="flex-1 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleShareVideo(shareModal)}
                     disabled={loading}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                   >
                     {loading ? 'Sharing...' : 'Share'}
                   </button>

@@ -33,10 +33,10 @@ const Sidebar = ({ sidebar, setSidebar }) => {
         <h1 className='mt-1 text-center'>{user?.first_name} {user?.last_name}</h1>
         <div className='px-6 mt-5 text-sm text-gray-600 font-medium'>
           {navItems.map(({to, label, Icon})=> (
-            <NavLink key={to} to={to} end={to === '/ai'} onClick={()=> setSidebar(false)} className={({isActive})=> `px-3.5 py-2.5 flex items.center gap-3 rounded ${isActive ? 'bg-linear-to-r from-[#E24A4A] to-[#B0001E] text-white' : ''}`}>
+            <NavLink key={to} to={to} end={to === '/ai'} onClick={()=> setSidebar(false)} className={({isActive})=> `px-3.5 py-2.5 flex items.center gap-3 rounded ${isActive ? 'bg-linear-to-r from-[#E24A4A] to-[#B0001E] text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white' : ''}`}>
               {({ isActive })=>(
                 <>
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : ''}`}/>
+                <Icon className={`w-4 h-4 ${isActive ? 'text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white' : ''}`}/>
                 {label}
                 </>
               )}
@@ -53,7 +53,7 @@ const Sidebar = ({ sidebar, setSidebar }) => {
             <p className='text-xs text-gray-500'>Free Plan</p>
           </div>
         </div>
-        <LogOut onClick={handleSignOut} className='w-4.5 text-gray-400 hover:text-gray-700 transition cursor-pointer'/>
+        <LogOut onClick={handleSignOut} className='w-4.5 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-700 transition cursor-pointer'/>
       </div>
     </div>
   )

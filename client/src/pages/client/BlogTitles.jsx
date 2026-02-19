@@ -75,7 +75,7 @@ Here are 5 SEO-friendly blog titles for the keyword "${input}":
           ))}
         </div>
         <br />
-        <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#C341f6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
+        <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#C341f6] to-[#8E37EB] text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
           {
             loading ? <span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span> : <Hash className='w-5'/>
           }
@@ -92,7 +92,7 @@ Here are 5 SEO-friendly blog titles for the keyword "${input}":
 
         {!content ? (
           <div className='flex-1 flex justify-center items-center'>
-          <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
+          <div className='text-sm flex flex-col items-center gap-5 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300'>
             <Hash className='w-9 h-9'/>
             <p>Enter a topic and click "Generate title" to get started</p>
           </div>

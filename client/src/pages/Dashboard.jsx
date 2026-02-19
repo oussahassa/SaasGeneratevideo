@@ -127,13 +127,13 @@ const Dashboard = () => {
         </div>
 
         <div className='mt-4 w-full flex gap-4'>
-          <button onClick={() => setProfileOpen(true)} className='px-4 py-2 bg-blue-600 text-white rounded-lg'>
+          <button onClick={() => setProfileOpen(true)} className='px-4 py-2 bg-blue-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg'>
             {t('dashboard.updateProfile') || 'Update Profile'}
           </button>
-          <button onClick={handleRefreshToken} className='px-4 py-2 bg-emerald-600 text-white rounded-lg'>
+          <button onClick={handleRefreshToken} className='px-4 py-2 bg-emerald-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg'>
             {t('dashboard.refreshToken') || 'Refresh Token'}
           </button>
-          <button onClick={fetchAll} className='px-4 py-2 bg-slate-700 text-white rounded-lg'>
+          <button onClick={fetchAll} className='px-4 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg'>
             {t('dashboard.refresh') || 'Refresh'}
           </button>
         </div>
@@ -165,7 +165,7 @@ const Dashboard = () => {
                     <p className='text-xs text-gray-500'>{s.ip || 'Unknown IP'} • {new Date(s.lastActive).toLocaleString()}</p>
                   </div>
                   <div className='flex items-center gap-2'>
-                    <button onClick={() => handleRevokeSession(s.id)} className='px-3 py-1 bg-red-600 text-white rounded'>
+                    <button onClick={() => handleRevokeSession(s.id)} className='px-3 py-1 bg-red-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded'>
                       {t('dashboard.revoke') || 'Revoke'}
                     </button>
                   </div>
@@ -196,7 +196,7 @@ const Dashboard = () => {
               </div>
               <div className='flex justify-end gap-3'>
                 <button type='button' onClick={() => setProfileOpen(false)} className='px-4 py-2 rounded border'>Cancel</button>
-                <button type='submit' className='px-4 py-2 bg-blue-600 text-white rounded'>{t('dashboard.save') || 'Save'}</button>
+                <button type='submit' className='px-4 py-2 bg-blue-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded'>{t('dashboard.save') || 'Save'}</button>
               </div>
             </form>
           </div>

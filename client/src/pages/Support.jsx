@@ -98,20 +98,20 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-white     dark:bg-slate-900 text-gray-900 dark:text-gray-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">
             {t('support.title')}
           </h1>
-          <p className="text-xl text-slate-400">
+          <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
             {t('support.subtitle')}
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-slate-700">
+        <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
           <button
             onClick={() => {
               setActiveTab('submit');
@@ -119,7 +119,7 @@ export default function Support() {
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'submit'
                 ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-slate-400 hover:text-slate-300'
+                : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
           >
             {t('support.submitComplaint')}
@@ -132,7 +132,7 @@ export default function Support() {
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'my-complaints'
                 ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-slate-400 hover:text-slate-300'
+                : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
           >
             {t('support.myComplaints')}
@@ -141,10 +141,10 @@ export default function Support() {
 
         {/* Submit Tab */}
         {activeTab === 'submit' && (
-          <div className="bg-slate-800 rounded-lg p-8 border border-slate-700">
+          <div className="bg-gray-50     dark:bg-slate-800 rounded-lg p-8 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-white font-medium mb-2">
+                <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                   {t('support.complaintTitle')}
                 </label>
                 <input
@@ -153,12 +153,12 @@ export default function Support() {
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder={t('support.complaintTitle')}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white     dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-white font-medium mb-2">
+                <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                   {t('support.description')}
                 </label>
                 <textarea
@@ -167,20 +167,20 @@ export default function Support() {
                   onChange={handleInputChange}
                   placeholder={t('support.description')}
                   rows="5"
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-white     dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                     {t('support.category')}
                   </label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white     dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white focus:outline-none focus:border-blue-500"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>
@@ -191,14 +191,14 @@ export default function Support() {
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">
                     {t('support.priority')}
                   </label>
                   <select
                     name="priority"
                     value={formData.priority}
                     onChange={handleInputChange}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white     dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white focus:outline-none focus:border-blue-500"
                   >
                     {priorities.map(pri => (
                       <option key={pri.value} value={pri.value}>
@@ -212,7 +212,7 @@ export default function Support() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold py-3 rounded-lg transition-colors"
               >
                 {loading ? t('support.submitting') : t('support.submit')}
               </button>
@@ -224,46 +224,46 @@ export default function Support() {
         {activeTab === 'my-complaints' && (
           <div className="space-y-4">
             {loading ? (
-              <div className="text-center text-slate-400">{t('common.loading')}</div>
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
             ) : myComplaints.length > 0 ? (
               myComplaints.map(complaint => (
                 <div
                   key={complaint.id}
-                  className="bg-slate-800 rounded-lg p-6 border border-slate-700"
+                  className="bg-gray-50     dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-white font-bold text-lg">
+                      <h3 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-lg">
                         {complaint.title}
                       </h3>
-                      <p className="text-slate-400 text-sm">
+                      <p className="text-gray-500 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
                         {new Date(complaint.created_at).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
                       {getStatusIcon(complaint.status)}
-                      <span className="text-white font-medium capitalize">
+                      <span className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium capitalize">
                         {t(`support.${complaint.status}`) || complaint.status.replace('_', ' ')}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-slate-300 mb-4">
+                  <p className="text-gray-700 dark:text-gray-200 mb-4">
                     {complaint.description}
                   </p>
 
                   <div className="flex gap-4 text-sm">
-                    <span className="text-slate-400">
-                      {t('support.category')}: <span className="text-white capitalize">{complaint.category}</span>
+                    <span className="text-gray-500 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                      {t('support.category')}: <span className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white capitalize">{complaint.category}</span>
                     </span>
-                    <span className="text-slate-400">
-                      {t('support.priority')}: <span className="text-white capitalize">{complaint.priority}</span>
+                    <span className="text-gray-500 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                      {t('support.priority')}: <span className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white capitalize">{complaint.priority}</span>
                     </span>
                   </div>
 
                   {complaint.admin_response && (
-                    <div className="mt-4 pt-4 border-t border-slate-700">
-                      <p className="text-slate-400 text-sm mb-2">{t('support.adminResponse')}:</p>
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-2">{t('support.adminResponse')}:</p>
                       <p className="text-slate-300">
                         {complaint.admin_response}
                       </p>
@@ -272,7 +272,7 @@ export default function Support() {
                 </div>
               ))
             ) : (
-              <div className="text-center text-slate-400 py-12">
+              <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 py-12">
                 {t('support.noComplaints')}
               </div>
             )}

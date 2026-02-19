@@ -35,12 +35,9 @@ import { verifyToken } from './redux/slices/authSlice'
 import './i18n/i18n'
 import { useState } from 'react'
 import ThemeToggle from './components/ThemeToggle'
-import { ThemeProvider } from './context/ThemeContext'
-
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
-  const [themeInitialized, setThemeInitialized] = useState(false)
 
   useEffect(() => {
     // Set document direction based on language
@@ -58,26 +55,10 @@ const App = () => {
     dispatch(verifyToken())
   }, [dispatch])
 
-  useEffect(() => {
-    // Initialize theme on app load (ensure class applied before render)
-    try {
-      const saved = localStorage.getItem('theme')
-      const root = document.documentElement
-      if (saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        root.classList.add('dark')
-      } else {
-        root.classList.remove('dark')
-      }
-    } catch (e) {
-      // ignore
-    } finally {
-      setThemeInitialized(true)
-    }
-  }, [])
+
 
   return (
-    <ThemeProvider>
-      <div>
+<div>
         <Toaster />
         {/* Theme toggle (desktop fixed) - also present in headers */}
         <div className="fixed top-4 right-4 z-50 hidden md:block">
@@ -132,7 +113,6 @@ const App = () => {
         </Route>
       </Routes>
       </div>
-    </ThemeProvider>
   )
 }
 

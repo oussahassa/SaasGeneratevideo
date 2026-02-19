@@ -22,13 +22,13 @@ const EmailVerification = () => {
 
   if (!email) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-        <div className="bg-slate-800 p-8 rounded-lg border border-slate-700">
-          <h2 className="text-white font-bold text-xl mb-4">{t('common.error')}</h2>
-          <p className="text-gray-300 mb-6">{t('auth.noEmailFound') || 'No email found. Please sign up again.'}</p>
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="bg-white    dark:bg-slate-800 p-8 rounded-lg border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+          <h2 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-xl mb-4">{t('common.error')}</h2>
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-6">{t('auth.noEmailFound') || 'No email found. Please sign up again.'}</p>
           <button
             onClick={() => navigate('/signup')}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg transition-colors"
           >
             {t('auth.backToSignup') || 'Back to Signup'}
           </button>
@@ -99,15 +99,15 @@ const EmailVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 pt-24">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 pt-24">
       <div className="max-w-md w-full">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl">
+        <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 p-8 rounded-xl border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-2xl">📧</span>
             </div>
-            <h1 className="text-white font-bold text-2xl mb-2">{t('auth.verifyEmail')}</h1>
-            <p className="text-gray-400">
+            <h1 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-2xl mb-2">{t('auth.verifyEmail')}</h1>
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
               {t('auth.codeSentTo') || "We've sent a 6-digit code to"}<br />
               <span className="font-semibold text-blue-400">{email}</span>
             </p>
@@ -115,16 +115,16 @@ const EmailVerification = () => {
 
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
-              <label className="block text-white font-medium mb-2">{t('auth.verificationCode')}</label>
+              <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">{t('auth.verificationCode')}</label>
               <input
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="000000"
                 maxLength="6"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white text-center text-2xl tracking-widest placeholder-slate-500 focus:border-blue-500 outline-none transition-colors"
+                className="w-full px-4 py-3 bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white text-center text-2xl tracking-widest placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:border-blue-500 outline-none transition-colors"
               />
-              <p className="text-gray-400 text-xs mt-2">
+              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-xs mt-2">
                 {t('auth.codeExpires')} 10 {t('auth.minutes')}
               </p>
             </div>
@@ -132,18 +132,18 @@ const EmailVerification = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all"
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-lg transition-all"
             >
               {loading ? `${t('common.loading')}...` : t('auth.verify')}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-700">
-            <p className="text-gray-400 text-sm text-center mb-4">{t('auth.noCodeReceived')}</p>
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm text-center mb-4">{t('auth.noCodeReceived')}</p>
             <button
               onClick={handleResend}
               disabled={resendDisabled || resendLoading}
-              className="w-full px-6 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors text-sm"
+              className="w-full px-6 py-2 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-lg transition-colors text-sm"
             >
               {resendLoading ? `${t('common.loading')}...` : 
                resendDisabled ? `${t('auth.resendIn')} ${timer}s` : 
@@ -152,7 +152,7 @@ const EmailVerification = () => {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
               {t('auth.wrongEmail')}{' '}
               <button
                 onClick={() => navigate('/signup')}

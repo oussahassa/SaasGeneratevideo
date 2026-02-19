@@ -96,7 +96,7 @@ const Plan = () => {
           {/* Pro Plan */}
           <div className='border-2 border-blue-500 rounded-xl p-8 relative transform scale-105'>
             <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-              <span className='bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold'>{t('planDetails.mostPopular')}</span>
+              <span className='bg-blue-500 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-1 rounded-full text-sm font-semibold'>{t('planDetails.mostPopular')}</span>
             </div>
             <h3 className='text-2xl font-bold text-slate-800 mb-2 mt-4'>{t('planDetails.pro')}</h3>
             <p className='text-gray-500 mb-6'>{t('planDetails.proDesc')}</p>
@@ -132,7 +132,7 @@ const Plan = () => {
             <button 
               onClick={() => handleUpgrade('pro')}
               disabled={plan.type === 'pro' || isLoading}
-              className='w-full py-3 px-6 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition'
+              className='w-full py-3 px-6 bg-blue-500 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition'
             >
               {plan.type === 'pro' ? t('planDetails.currentPlanBtn') : t('planDetails.upgradeTooltip', { plan: 'Pro' })}
             </button>

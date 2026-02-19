@@ -88,13 +88,13 @@ const ResetPassword = () => {
 
   if (tokenValid === false) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-        <div className="bg-slate-800 p-8 rounded-lg border border-slate-700 text-center max-w-md">
-          <h2 className="text-white font-bold text-xl mb-4">{t('auth.invalidLink') || 'Invalid Reset Link'}</h2>
-          <p className="text-gray-300 mb-6">{t('auth.linkInvalidExpired') || 'This password reset link is invalid or has expired.'}</p>
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="bg-white    dark:bg-slate-800 p-8 rounded-lg border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 text-center max-w-md">
+          <h2 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-xl mb-4">{t('auth.invalidLink') || 'Invalid Reset Link'}</h2>
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-6">{t('auth.linkInvalidExpired') || 'This password reset link is invalid or has expired.'}</p>
           <button
             onClick={() => navigate('/forgot-password')}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors w-full"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg transition-colors w-full"
           >
             {t('auth.requestNewLink') || 'Request New Link'}
           </button>
@@ -105,20 +105,20 @@ const ResetPassword = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 pt-24">
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 pt-24">
         <div className="max-w-md w-full">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl text-center">
+          <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 p-8 rounded-xl border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 shadow-2xl text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-bounce">
               <span className="text-2xl">✅</span>
             </div>
-            <h2 className="text-white font-bold text-2xl mb-3">{t('auth.passwordResetSuccess') || 'Password Reset Success!'}</h2>
-            <p className="text-gray-400 mb-6">
+            <h2 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-2xl mb-3">{t('auth.passwordResetSuccess') || 'Password Reset Success!'}</h2>
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-6">
               {t('auth.passwordResetSuccessMsg') || 'Your password has been reset successfully. You can now log in with your new password.'}
             </p>
             <p className="text-gray-500 text-sm mb-6">{t('auth.redirecting') || 'Redirecting to login page...'}</p>
             <button
               onClick={() => navigate('/login')}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all"
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-lg transition-all"
             >
               {t('auth.goToLogin') || 'Go to Login'}
             </button>
@@ -129,15 +129,15 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 pt-24">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 pt-24">
       <div className="max-w-md w-full">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl">
+        <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 p-8 rounded-xl border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Lock className="w-8 h-8 text-white" />
+              <Lock className="w-8 h-8 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white" />
             </div>
-            <h1 className="text-white font-bold text-2xl mb-2">{t('auth.resetPassword')}</h1>
-            <p className="text-gray-400">
+            <h1 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-2xl mb-2">{t('auth.resetPassword')}</h1>
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
               {t('auth.enterNewPassword') || 'Enter your new password below'}
             </p>
           </div>
@@ -145,7 +145,7 @@ const ResetPassword = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* New Password */}
             <div>
-              <label className="block text-white font-medium mb-2">{t('auth.newPassword')}</label>
+              <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">{t('auth.newPassword')}</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -153,22 +153,22 @@ const ResetPassword = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 outline-none transition-colors pr-10"
+                  className="w-full px-4 py-3 bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:border-blue-500 outline-none transition-colors pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              <p className="text-gray-400 text-xs mt-2">{t('auth.minCharacters') || 'At least 6 characters'}</p>
+              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-xs mt-2">{t('auth.minCharacters') || 'At least 6 characters'}</p>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-white font-medium mb-2">{t('auth.confirmPassword')}</label>
+              <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">{t('auth.confirmPassword')}</label>
               <div className="relative">
                 <input
                   type={showConfirm ? 'text' : 'password'}
@@ -176,12 +176,12 @@ const ResetPassword = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 outline-none transition-colors pr-10"
+                  className="w-full px-4 py-3 bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:border-blue-500 outline-none transition-colors pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300"
                 >
                   {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -198,14 +198,14 @@ const ResetPassword = () => {
             <button
               type="submit"
               disabled={loading || formData.password !== formData.confirmPassword}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all"
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-lg transition-all"
             >
               {loading ? `${t('common.loading')}...` : t('auth.resetPassword')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
               {t('auth.rememberedPassword')}{' '}
               <button
                 onClick={() => navigate('/login')}
@@ -216,7 +216,7 @@ const ResetPassword = () => {
             </p>
           </div>
 
-          <div className="mt-6 pt-6 border-t border-slate-700">
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
             <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4">
               <p className="text-blue-300 text-xs">
                 ⏱️ {t('auth.linkExpiresTime') || 'Link expires in 30 minutes from when it was sent'}

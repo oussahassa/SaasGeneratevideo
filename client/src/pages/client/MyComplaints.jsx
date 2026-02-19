@@ -91,7 +91,7 @@ export default function MyComplaints() {
       <div className='mb-6'>
         <button
           onClick={() => navigate('/support')}
-          className='flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition'
+          className='flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-6 py-3 rounded-lg font-medium transition'
         >
           <Plus className='w-5 h-5' />
           {t('support.submitComplaint')}
@@ -104,7 +104,7 @@ export default function MyComplaints() {
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg font-medium transition ${
             filter === 'all'
-              ? 'bg-blue-600 text-white'
+              ? 'bg-blue-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -114,7 +114,7 @@ export default function MyComplaints() {
           onClick={() => setFilter('open')}
           className={`px-4 py-2 rounded-lg font-medium transition ${
             filter === 'open'
-              ? 'bg-yellow-500 text-white'
+              ? 'bg-yellow-500 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -124,7 +124,7 @@ export default function MyComplaints() {
           onClick={() => setFilter('in_progress')}
           className={`px-4 py-2 rounded-lg font-medium transition ${
             filter === 'in_progress'
-              ? 'bg-blue-500 text-white'
+              ? 'bg-blue-500 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -134,7 +134,7 @@ export default function MyComplaints() {
           onClick={() => setFilter('resolved')}
           className={`px-4 py-2 rounded-lg font-medium transition ${
             filter === 'resolved'
-              ? 'bg-green-600 text-white'
+              ? 'bg-green-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -196,7 +196,7 @@ export default function MyComplaints() {
         </div>
       ) : (
         <div className='text-center py-12'>
-          <AlertCircle className='w-16 h-16 text-gray-300 mx-auto mb-4' />
+          <AlertCircle className='w-16 h-16 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mx-auto mb-4' />
           <p className='text-gray-500 mb-4'>
             {t('support.noComplaints')}
           </p>

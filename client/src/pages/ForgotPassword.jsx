@@ -39,14 +39,14 @@ const ForgotPassword = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 pt-24">
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 pt-24">
         <div className="max-w-md w-full">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl text-center">
+          <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 p-8 rounded-xl border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 shadow-2xl text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-2xl">✅</span>
             </div>
-            <h2 className="text-white font-bold text-2xl mb-3">Check Your Email</h2>
-            <p className="text-gray-400 mb-6">
+            <h2 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-2xl mb-3">Check Your Email</h2>
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-6">
               We've sent a password reset link to <span className="font-semibold text-blue-400">{email}</span>
             </p>
             <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4 mb-6">
@@ -54,12 +54,12 @@ const ForgotPassword = () => {
                 ⏱️ {t('auth.linkExpires')} 30 {t('auth.minutes')}
               </p>
             </div>
-            <p className="text-gray-400 text-sm mb-6">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-6">
               The link will open a page where you can create a new password.
             </p>
             <button
               onClick={() => navigate('/login')}
-              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
             >
               Back to Login
             </button>
@@ -70,50 +70,50 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 pt-24">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 pt-24">
       <div className="max-w-md w-full">
         <button
           onClick={() => navigate('/login')}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Login
         </button>
 
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl">
+        <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 p-8 rounded-xl border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Mail className="w-8 h-8 text-white" />
+              <Mail className="w-8 h-8 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white" />
             </div>
-            <h1 className="text-white font-bold text-2xl mb-2">{t('auth.forgotPassword')}</h1>
-            <p className="text-gray-400">
+            <h1 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold text-2xl mb-2">{t('auth.forgotPassword')}</h1>
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
               Enter your email address and we'll send you a link to reset your password.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-white font-medium mb-2">{t('auth.email')}</label>
+              <label className="block text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-medium mb-2">{t('auth.email')}</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 outline-none transition-colors"
+                className="w-full px-4 py-3 bg-white    dark:bg-slate-900 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-600 rounded-lg text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-slate-500 focus:border-blue-500 outline-none transition-colors"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all"
+              className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 disabled:opacity-50 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-lg transition-all"
             >
               {loading ? `${t('common.loading')}...` : t('auth.sendResetLink')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
               {t('auth.remembered')}{' '}
               <button
                 onClick={() => navigate('/login')}

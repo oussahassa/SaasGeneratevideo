@@ -131,7 +131,7 @@ const GenerateImages = () => {
 
         <button
           disabled={loading}
-          className="w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#00AD25] to-[#04ff50] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
+          className="w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#00AD25] to-[#04ff50] text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
         >
           {loading ? (
             <span className="w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin"></span>
@@ -150,7 +150,7 @@ const GenerateImages = () => {
 
         {!content ? (
           <div className="flex-1 flex justify-center items-center">
-            <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
+            <div className="text-sm flex flex-col items-center gap-5 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
               <Image className="w-9 h-9" />
               <p>Enter a topic and click "Generate image" to get started</p>
             </div>
@@ -163,7 +163,7 @@ const GenerateImages = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleDownload}
-                className="flex-1 bg-linear-to-r from-[#00AD25] to-[#04ff50] text-white py-2 rounded-lg text-sm cursor-pointer mt-5"
+                className="flex-1 bg-linear-to-r from-[#00AD25] to-[#04ff50] text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white py-2 rounded-lg text-sm cursor-pointer mt-5"
               >
                 Download
               </button>
