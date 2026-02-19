@@ -5,7 +5,8 @@ import {
   getPackById,
   createPack,
   updatePack,
-  deletePack
+  deletePack,
+  subscribeToPack
 } from '../controllers/packController.js';
 
 const packRouter = express.Router();
@@ -15,5 +16,6 @@ packRouter.get('/get-pack/:id', auth, getPackById);
 packRouter.post('/create-pack', auth, createPack);
 packRouter.put('/update-pack/:id', auth, updatePack);
 packRouter.delete('/delete-pack/:id', auth, deletePack);
+packRouter.post('/subscribe', auth, subscribeToPack);
 
 export default packRouter;
