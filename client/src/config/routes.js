@@ -7,6 +7,8 @@ export const routes = [
   { path: '/plan', element: 'Plans', component: 'Plan' },
   { path: '/faq', element: 'FAQ', component: 'FAQ' },
   { path: '/support', element: 'Support', component: 'Support' },
+  { path: '/payment/success', element: 'Payment Success', component: 'PaymentSuccess' },
+  { path: '/payment/cancel', element: 'Payment Cancel', component: 'PaymentCancel' },
 
   // Pages utilisateur
   { path: '/write-article', element: 'Write Article', component: 'WriteArticle', protected: true },
@@ -28,6 +30,8 @@ export const componentMap = {
   Plan: () => import('../pages/Plan').then(m => m.default),
   FAQ: () => import('../pages/FAQ').then(m => m.default),
   Support: () => import('../pages/Support').then(m => m.default),
+  PaymentSuccess: () => import('../pages/PaymentSuccess').then(m => m.default),
+  PaymentCancel: () => import('../pages/PaymentCancel').then(m => m.default),
   WriteArticle: () => import('../pages/WriteArticle').then(m => m.default),
   BlogTitles: () => import('../pages/BlogTitles').then(m => m.default),
   GenerateImages: () => import('../pages/GenerateImages').then(m => m.default),

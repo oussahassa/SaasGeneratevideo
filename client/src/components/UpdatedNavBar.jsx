@@ -85,8 +85,7 @@ export default function NavBar() {
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
-
-        {/* Mobile Navigation */}
+    
         {mobileOpen && (
           <div className="md:hidden pb-4 space-y-2">
             {navLinks.map((link) => (
@@ -120,8 +119,10 @@ export default function NavBar() {
                 <Link to="/signup" onClick={() => setMobileOpen(false)} className="block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded-lg">Sign Up</Link>
               </div>
             )}
+            </div>
         )}
-      </div>
+        
+        </div>
     </nav>
   );
 }

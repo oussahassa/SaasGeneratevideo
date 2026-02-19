@@ -11,22 +11,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^2.2.0",
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.3",
+    "date-fns": "^3.0.0",
+    "i18next": "^23.7.6",
     "lucide-react": "^0.562.0",
+    "paypal-rest-sdk": "^1.8.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
+    "react-i18next": "^13.5.0",
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.11.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "tailwindcss": "^4.1.18",
-    "date-fns": "^3.0.0",
-    "i18next": "^23.7.6",
-    "react-i18next": "^13.5.0"
+    "stripe": "^20.3.1",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Check, X } from 'lucide-react';
+import { Check, X, CreditCard, DollarSign, Smartphone } from 'lucide-react';
 
 export default function Plans() {
   const [packs, setPacks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPackForPayment, setSelectedPackForPayment] = useState(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   useEffect(() => {
     fetchPacks();
@@ -27,14 +30,38 @@ export default function Plans() {
     }
   };
 
-  const handleSelectPlan = async (pack) => {
+  const handlePayment = async (paymentMethod) => {
+    if (!selectedPackForPayment) return;
+
+    setPaymentLoading(true);
     try {
-      // This would integrate with your payment system
-      toast.success(`Selected ${pack.name} plan`);
-      setSelectedPlan(pack.id);
-      // Call your subscription endpoint
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`/api/payments/${paymentMethod}/create`, {
+        packId: selectedPackForPayment.id,
+        amount: selectedPackForPayment.price,
+        currency: paymentMethod === 'paymee' ? 'TND' : 'USD'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        if (paymentMethod === 'stripe') {
+          // Redirect to Stripe Checkout
+          window.location.href = response.data.url;
+        } else if (paymentMethod === 'paypal') {
+          // Redirect to PayPal approval
+          window.location.href = response.data.approvalUrl;
+        } else if (paymentMethod === 'paymee') {
+          // Redirect to Paymee payment page
+          window.location.href = response.data.paymentUrl;
+        }
+      }
     } catch (error) {
-      toast.error('Failed to select plan');
+      toast.error('Payment initialization failed');
+      console.error(error);
+    } finally {
+      setPaymentLoading(false);
+      setShowPaymentModal(false);
     }
   };
 
@@ -248,6 +275,67 @@ export default function Plans() {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && selectedPackForPayment && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-slate-700">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Choose Payment Method
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Subscribe to {selectedPackForPayment.name} plan for ${selectedPackForPayment.price}/month
+            </p>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handlePayment('stripe')}
+                disabled={paymentLoading}
+                className="w-full flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors disabled:opacity-50"
+              >
+                <CreditCard className="w-6 h-6 text-blue-600" />
+                <div className="text-left">
+                  <div className="font-semibold text-gray-900 dark:text-white">Stripe</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Credit/Debit Card</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handlePayment('paypal')}
+                disabled={paymentLoading}
+                className="w-full flex items-center gap-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800 transition-colors disabled:opacity-50"
+              >
+                <DollarSign className="w-6 h-6 text-yellow-600" />
+                <div className="text-left">
+                  <div className="font-semibold text-gray-900 dark:text-white">PayPal</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">PayPal Account</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handlePayment('paymee')}
+                disabled={paymentLoading}
+                className="w-full flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800 transition-colors disabled:opacity-50"
+              >
+                <Smartphone className="w-6 h-6 text-green-600" />
+                <div className="text-left">
+                  <div className="font-semibold text-gray-900 dark:text-white">Paymee</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Tunisian Payment</div>
+                </div>
+              </button>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="flex-1 py-2 px-4 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -159,3 +159,36 @@ export const deletePack = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Souscrire à un pack (gratuit)
+export const subscribeToPack = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { packId } = req.body;
+
+    // Vérifier que le pack existe et est gratuit
+    const pack = await sql`
+      SELECT * FROM packs WHERE id = ${packId} AND price = 0
+    `;
+
+    if (!pack.length) {
+      return res.status(400).json({ success: false, message: "Invalid pack or pack is not free" });
+    }
+
+    // Mettre à jour le pack de l'utilisateur
+    await sql`
+      UPDATE users
+      SET pack_id = ${packId}, subscription_status = 'active'
+      WHERE id = ${userId}
+    `;
+
+    res.json({
+      success: true,
+      message: "Successfully subscribed to pack",
+      pack: pack[0]
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
