@@ -39,7 +39,7 @@ Here are 5 SEO-friendly blog titles for the keyword "${input}":
 5. [Title 5]`;
 
 
-      const { data } = await axios.post(API_URL+'/api/ai/generate-blog-title', { uiPrompt, aiPrompt }, {headers: {Authorization: `Bearer ${token}`}})
+      const { data } = await axios.post(API_URL+'/ai/generate-blog-title', { uiPrompt, aiPrompt }, {headers: {Authorization: `Bearer ${token}`}})
 
       if(data.success) {
         setContent(data.content)
