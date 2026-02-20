@@ -20,7 +20,7 @@ export default function Plans() {
   const fetchPacks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(API_URL+'/api/packs/get-all-packs');
+      const response = await axios.get(API_URL+'/without-auth/get-packs-clients');
       if (response.data.success) {
         setPacks(response.data.packs);
       }
