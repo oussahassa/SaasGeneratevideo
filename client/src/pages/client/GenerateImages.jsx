@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Image, Hash, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
-import axios from "axios";
-import { useSelector } from "react-redux";
-
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+import { useDispatch, useSelector } from "react-redux";
+import { generateImages, resetState } from "../../redux/slices/aiSlice";
 
 const GenerateImages = () => {
   const imageStyle = [
@@ -21,45 +19,29 @@ const GenerateImages = () => {
   const [input, setInput] = useState("");
   const [publish, setPublish] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
-
+  const dispatch = useDispatch();
+  const { data, isLoading, error, success } = useSelector(state => state.ai);
   const { token } = useSelector(state => state.auth);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-
-      const prompt = `Generate an image of ${input} in the style ${selectedStyle}`;
-
-      const { data } = await axios.post(
-        "/api/ai/generate-image",
-        { prompt, publish },
-        { headers: { Authorization: `Bearer ${await getToken()}` } },
-      );
-
-      if (data.success) {
-        setContent(data.content);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
+    const prompt = `Generate an image of ${input} in the style ${selectedStyle}`;
+    dispatch(generateImages({ prompt, publish }));
   };
 
   // Reset without reload
   const handleReset = () => {
-    window.location.reload();
+    setInput("");
+    setSelectedStyle("Realistic");
+    setPublish(false);
+    dispatch(resetState());
   };
 
   // Download image
   const handleDownload = async () => {
+    if (!data?.content) return;
     try {
-      const response = await fetch(content, { mode: "cors" });
+      const response = await fetch(data.content, { mode: "cors" });
       const blob = await response.blob();
 
       const url = window.URL.createObjectURL(blob);
@@ -76,6 +58,16 @@ const GenerateImages = () => {
       console.error("Download failed", error);
     }
   };
+
+  // Show toast on success or error
+  React.useEffect(() => {
+    if (success && data) {
+      toast.success("Image generated successfully!");
+    }
+    if (error) {
+      toast.error(error);
+    }
+  }, [success, error, data]);
 
   return (
     <div className="h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700">
@@ -130,10 +122,11 @@ const GenerateImages = () => {
         </div>
 
         <button
-          disabled={loading}
-          className="w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#00AD25] to-[#04ff50] text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
+
+          disabled={isLoading}
+          className="w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#00AD25] to-[#04ff50] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
         >
-          {loading ? (
+          {isLoading ? (
             <span className="w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin"></span>
           ) : (
             <Image className="w-5" />
@@ -148,7 +141,7 @@ const GenerateImages = () => {
           <h1 className="text-xl font-semibold">Generated Images</h1>
         </div>
 
-        {!content ? (
+        {!data?.content ? (
           <div className="flex-1 flex justify-center items-center">
             <div className="text-sm flex flex-col items-center gap-5 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
               <Image className="w-9 h-9" />
@@ -157,7 +150,7 @@ const GenerateImages = () => {
           </div>
         ) : (
           <div className="mt-3 h-full">
-            <img src={content} alt="image" className="w-full h-full" />
+            <img src={data.content} alt="image" className="w-full h-full" />
 
             {/* ACTION BUTTONS */}
             <div className="flex gap-3">

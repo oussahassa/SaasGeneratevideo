@@ -8,4 +8,5 @@ const router = express.Router()
 router.post('/translate-and-save', rateLimit({ windowMs: 60*1000, max: 30 }), translateAndSave)
 router.get('/get', getTranslations)
 
+
 export default router

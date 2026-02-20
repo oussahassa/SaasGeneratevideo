@@ -10,7 +10,10 @@ import videoRouter from './routes/videoRoutes.js';
 import supportRouter from './routes/supportRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import authRouter from './routes/authRoutes.js';
-import translationRouter from './routes/translationRoutes.js'
+
+import withoutAuthRouter from './routes/without-authRouter.js';
+
+import translationRouter from './routes/translationRoutes.js';
 import paymentRouter from './routes/paymentRoutes.js';
 import { auth, attachPlanInfo } from './middlewares/auth.js';
 
@@ -29,6 +32,7 @@ app.get('/', (req, res)=>res.send('Server is Live!'))
 
 // Public auth routes
 app.use('/api/auth', authRouter)
+app.use('/api/without-auth', withoutAuthRouter)
 
 // Protected routes
 app.use(auth)

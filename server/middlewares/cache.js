@@ -28,3 +28,4 @@ export default function cacheMiddleware(ttl = 60) {
     next()
   }
 }
+

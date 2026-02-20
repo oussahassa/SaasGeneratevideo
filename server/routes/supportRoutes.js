@@ -17,6 +17,7 @@ const supportRouter = express.Router();
 
 // FAQ routes
 supportRouter.get('/get-faqs', auth, getAllFAQs);
+
 supportRouter.post('/create-faq', auth, createFAQ);
 supportRouter.put('/update-faq/:id', auth, updateFAQ);
 supportRouter.delete('/delete-faq/:id', auth, deleteFAQ);

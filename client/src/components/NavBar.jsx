@@ -61,6 +61,7 @@ const NavBar = () => {
               }
             }}
                 className='text-gray-700 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white transition-colors font-medium'
+
               >
                 {t('nav.dashboard')}
               </button>
@@ -146,7 +147,7 @@ const NavBar = () => {
                 </div>
                 <button
                   onClick={() => {
-                    navigate('/dashboard')
+                    navigate('/ai')
                     setShowMobileMenu(false)
                   }}
                   className='block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 rounded-lg transition-colors'

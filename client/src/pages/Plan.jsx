@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import { Check, X, CreditCard, DollarSign, Smartphone } from 'lucide-react';
 
 export default function Plans() {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
   const [packs, setPacks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -18,7 +20,7 @@ export default function Plans() {
   const fetchPacks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/packs/get-all-packs');
+      const response = await axios.get(API_URL+'/api/packs/get-all-packs');
       if (response.data.success) {
         setPacks(response.data.packs);
       }
@@ -36,7 +38,7 @@ export default function Plans() {
     setPaymentLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`/api/payments/${paymentMethod}/create`, {
+      const response = await axios.post(API_URL+`/api/payments/${paymentMethod}/create`, {
         packId: selectedPackForPayment.id,
         amount: selectedPackForPayment.price,
         currency: paymentMethod === 'paymee' ? 'TND' : 'USD'

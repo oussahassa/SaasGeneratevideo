@@ -14,6 +14,7 @@ const RemoveObject = () => {
   const [content, setContent] = useState("");
 
   const { token } = useSelector(state => state.auth);
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -29,7 +30,7 @@ const RemoveObject = () => {
       formData.append("object", object);
 
       const { data } = await axios.post(
-        "/api/ai/remove-image-object",
+        API_URL+"/api/ai/remove-image-object",
         formData,
         { headers: { Authorization: `Bearer ${token}` } },
       );

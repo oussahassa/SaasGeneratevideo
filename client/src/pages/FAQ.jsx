@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 export default function FAQ() {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
   const { t } = useTranslation();
   const [faqs, setFaqs] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
@@ -18,7 +20,7 @@ export default function FAQ() {
   const fetchFAQs = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/support/get-faqs');
+      const response = await axios.get(API_URL+'/without-auth/get-faqs-clients');
       if (response.data.success) {
         setFaqs(response.data.faqs);
       }
