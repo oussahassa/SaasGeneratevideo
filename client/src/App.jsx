@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import Home from './pages/Home'

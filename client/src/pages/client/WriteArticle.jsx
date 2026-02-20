@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import Markdown from 'react-markdown';
 
 
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const WriteArticle = () => {
 
@@ -30,7 +30,7 @@ const WriteArticle = () => {
       setLoading(true)
       const prompt = `Write an article about ${input} in ${selectedLength.text}`
 
-      const { data } = await axios.post('/api/ai/generate-article', {prompt, length:selectedLength.length}, {
+      const { data } = await axios.post(API_URL+'/ai/generate-article', {prompt, length:selectedLength.length}, {
         headers: {Authorization: `Bearer ${token}`}
       })
 

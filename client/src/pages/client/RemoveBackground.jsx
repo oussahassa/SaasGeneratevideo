@@ -1,54 +1,34 @@
 import React, { useState } from "react";
 import { Eraser, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
-import axios from "axios";
-import { useSelector } from "react-redux";
-
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+import { useDispatch, useSelector } from "react-redux";
+import { removeBackground, resetState } from "../../redux/slices/aiSlice";
 
 const RemoveBackground = () => {
   const [input, setInput] = useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
-
+  const dispatch = useDispatch();
+  const { data, isLoading, error, success } = useSelector(state => state.ai);
   const { token } = useSelector(state => state.auth);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-
-      const formData = new FormData();
-      formData.append("image", input);
-
-      const { data } = await axios.post(
-        "/api/ai/remove-image-background",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-
-      if (data.success) {
-        setContent(data.content);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
+    const formData = new FormData();
+    formData.append("image", input);
+    dispatch(removeBackground(formData));
   };
 
   // Reset
   const handleReset = () => {
-    window.location.reload();
+    setInput("");
+    dispatch(resetState());
   };
 
   // Download image
   const handleDownload = async () => {
+    if (!data?.content) return;
     try {
-      const response = await fetch(content);
+      const response = await fetch(data.content);
       const blob = await response.blob();
 
       const url = URL.createObjectURL(blob);
@@ -62,6 +42,16 @@ const RemoveBackground = () => {
       console.error("Download failed", err);
     }
   };
+
+  // Show toast on success or error
+  React.useEffect(() => {
+    if (success && data) {
+      toast.success("Background removed successfully!");
+    }
+    if (error) {
+      toast.error(error);
+    }
+  }, [success, error, data]);
 
 
   return (
@@ -90,10 +80,10 @@ const RemoveBackground = () => {
         </p>
 
         <button
-          disabled={loading}
+          disabled={isLoading}
           className="w-full flex justify-center items-center gap-2 bg-linear-to-r from-[#F6AB41] to-[#FF4938] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
         >
-          {loading ? (
+          {isLoading ? (
             <span className="w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin"></span>
           ) : (
             <Eraser className="w-5" />
@@ -108,7 +98,7 @@ const RemoveBackground = () => {
           <h1 className="text-xl font-semibold">Processed Image</h1>
         </div>
 
-        {!content ? (
+        {!data?.content ? (
           <div className="flex-1 flex justify-center items-center">
             <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
               <Eraser className="w-9 h-9" />
@@ -119,7 +109,7 @@ const RemoveBackground = () => {
           </div>
         ) : (
           <div className="mt-3 h-full">
-            <img src={content} alt="image" className="w-full h-full" />
+            <img src={data.content} alt="image" className="w-full h-full" />
 
             {/* ACTION BUTTONS */}
             <div className="flex gap-3">

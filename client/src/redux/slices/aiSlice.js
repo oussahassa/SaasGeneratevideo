@@ -35,10 +35,10 @@ export const writeArticle = createAsyncThunk(
 
 export const generateImages = createAsyncThunk(
   'ai/generateImages',
-  async (prompt, { rejectWithValue }) => {
+  async ({ prompt, publish }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/ai/generate-images`, { prompt }, {
+      const response = await axios.post(`${API_URL}/ai/generate-image`, { prompt, publish }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -53,7 +53,7 @@ export const removeBackground = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/ai/remove-background`, formData, {
+      const response = await axios.post(`${API_URL}/ai/remove-image-background`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -94,6 +94,14 @@ const initialState = {
 const aiSlice = createSlice({
   name: 'ai',
   initialState,
+  reducers: {
+    resetState: (state) => {
+      state.data = null;
+      state.isLoading = false;
+      state.error = null;
+      state.success = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Generate Blog Titles
@@ -168,5 +176,7 @@ const aiSlice = createSlice({
       })
   }
 })
+
+export const { resetState } = aiSlice.actions
 
 export default aiSlice.reducer

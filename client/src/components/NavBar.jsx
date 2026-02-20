@@ -48,7 +48,7 @@ const NavBar = () => {
           {isAuthenticated && (
             <>
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/ai')}
                 className='text-gray-300 hover:text-white transition-colors font-medium'
               >
                 {t('nav.dashboard')}
@@ -133,7 +133,7 @@ const NavBar = () => {
                 </div>
                 <button
                   onClick={() => {
-                    navigate('/dashboard')
+                    navigate('/ai')
                     setShowMobileMenu(false)
                   }}
                   className='block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors'

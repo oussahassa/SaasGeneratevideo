@@ -5,8 +5,7 @@ import Markdown from 'react-markdown';
 import axios from 'axios'
 import { useSelector } from 'react-redux';
 
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const BlogTitles = () => {
 
   const blogCategories = ['General', 'Technology', 'Business', 'Health', 'Lifestyle', 'Education', 'Travel', 'Food']
@@ -40,7 +39,7 @@ Here are 5 SEO-friendly blog titles for the keyword "${input}":
 5. [Title 5]`;
 
 
-      const { data } = await axios.post('/api/ai/generate-blog-title', { uiPrompt, aiPrompt }, {headers: {Authorization: `Bearer ${token}`}})
+      const { data } = await axios.post(API_URL+'/api/ai/generate-blog-title', { uiPrompt, aiPrompt }, {headers: {Authorization: `Bearer ${token}`}})
 
       if(data.success) {
         setContent(data.content)

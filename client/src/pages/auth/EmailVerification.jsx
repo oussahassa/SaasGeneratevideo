@@ -22,8 +22,8 @@ const EmailVerification = () => {
 
   if (!email) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-        <div className="bg-slate-800 p-8 rounded-lg border border-slate-700">
+      <div className="min-h-screen  flex items-center justify-center">
+        <div className=" p-8 rounded-lg border border-slate-700">
           <h2 className="text-white font-bold text-xl mb-4">{t('common.error')}</h2>
           <p className="text-gray-300 mb-6">{t('auth.noEmailFound') || 'No email found. Please sign up again.'}</p>
           <button
@@ -99,7 +99,7 @@ const EmailVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 pt-24">
+    <div className="min-h-screen 0 to-slate-900 flex items-center justify-center px-4 pt-24">
       <div className="max-w-md w-full">
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl">
           <div className="text-center mb-8">

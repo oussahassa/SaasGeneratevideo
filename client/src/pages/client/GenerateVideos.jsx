@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Loader, Download, Share2, Trash2 } from 'lucide-react';
+import { Loader, Download, Share2, Trash2, Play, Video, Sparkles } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { generateVideo, fetchVideos, fetchVideoStats, deleteVideo, shareVideo } from '../../redux/slices/videoSlice';
 
 export default function GenerateVideos() {
   const [activeTab, setActiveTab] = useState('generate');
-  const [loading, setLoading] = useState(false);
-  const [videos, setVideos] = useState([]);
-  const [stats, setStats] = useState(null);
   const [formData, setFormData] = useState({
     topic: '',
     duration: 30,
@@ -17,37 +16,25 @@ export default function GenerateVideos() {
   const [sharePlatform, setSharePlatform] = useState('instagram');
   const [shareCaption, setShareCaption] = useState('');
 
+  const dispatch = useDispatch();
+  const { videos, stats, isLoading, error, success } = useSelector(state => state.video);
+
   useEffect(() => {
     if (activeTab === 'my-videos') {
-      fetchUserVideos();
-      fetchStats();
+      dispatch(fetchVideos());
+      dispatch(fetchVideoStats());
     }
-  }, [activeTab]);
+  }, [activeTab, dispatch]);
 
-  const fetchUserVideos = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/api/videos/get-videos');
-      if (response.data.success) {
-        setVideos(response.data.videos);
-      }
-    } catch (error) {
-      toast.error('Failed to load videos');
-    } finally {
-      setLoading(false);
+  // Show toast on success or error
+  useEffect(() => {
+    if (success) {
+      toast.success('Operation completed successfully!');
     }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const response = await axios.get('/api/videos/get-stats');
-      if (response.data.success) {
-        setStats(response.data.stats);
-      }
-    } catch (error) {
-      console.error(error);
+    if (error) {
+      toast.error(error);
     }
-  };
+  }, [success, error]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,20 +51,8 @@ export default function GenerateVideos() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const response = await axios.post('/api/videos/generate-script', formData);
-      if (response.data.success) {
-        toast.success('Video script generated successfully!');
-        setFormData({ topic: '', duration: 30, tone: 'professional' });
-        // Refresh videos list
-        setTimeout(() => fetchUserVideos(), 1000);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to generate script');
-    } finally {
-      setLoading(false);
-    }
+    dispatch(generateVideo(formData));
+    setFormData({ topic: '', duration: 30, tone: 'professional' });
   };
 
   const handleShareVideo = async (videoId) => {
@@ -86,72 +61,56 @@ export default function GenerateVideos() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const response = await axios.post('/api/videos/share-to-social', {
-        videoId,
-        platform: sharePlatform,
-        caption: shareCaption
-      });
-      if (response.data.success) {
-        toast.success(`Video shared to ${sharePlatform}!`);
-        setShareModal(null);
-        setShareCaption('');
-      }
-    } catch (error) {
-      toast.error('Failed to share video');
-    } finally {
-      setLoading(false);
-    }
+    dispatch(shareVideo({ videoId, platform: sharePlatform, caption: shareCaption }));
+    setShareModal(null);
+    setShareCaption('');
   };
 
   const handleDeleteVideo = async (videoId) => {
     if (!window.confirm('Are you sure you want to delete this video?')) return;
-
-    try {
-      const response = await axios.delete(`/api/videos/delete-video/${videoId}`);
-      if (response.data.success) {
-        toast.success('Video deleted successfully');
-        fetchUserVideos();
-      }
-    } catch (error) {
-      toast.error('Failed to delete video');
-    }
+    dispatch(deleteVideo(videoId));
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-8 px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Video Generation
-          </h1>
-          <p className="text-xl text-slate-400">
-            Create AI-powered videos and share them on social media
+        <div className="text-center mb-10">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+              <Video className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              AI Video Generator
+            </h1>
+          </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Transform your ideas into stunning videos with AI-powered content creation and seamless social media sharing
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-slate-700">
+        <div className="flex gap-2 mb-8 bg-white rounded-lg p-1 shadow-sm border border-gray-200 max-w-md mx-auto">
           <button
             onClick={() => setActiveTab('generate')}
-            className={`px-6 py-3 font-medium transition-colors ${
+            className={`flex-1 px-6 py-3 font-medium rounded-md transition-all duration-200 ${
               activeTab === 'generate'
-                ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-slate-400 hover:text-slate-300'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
             }`}
           >
-            Generate Video
+            <Sparkles className="w-4 h-4 inline mr-2" />
+            Create Video
           </button>
           <button
             onClick={() => setActiveTab('my-videos')}
-            className={`px-6 py-3 font-medium transition-colors ${
+            className={`flex-1 px-6 py-3 font-medium rounded-md transition-all duration-200 ${
               activeTab === 'my-videos'
-                ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-slate-400 hover:text-slate-300'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
             }`}
           >
+            <Play className="w-4 h-4 inline mr-2" />
             My Videos
           </button>
         </div>
@@ -160,14 +119,17 @@ export default function GenerateVideos() {
         {activeTab === 'generate' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-slate-800 rounded-lg p-8 border border-slate-700">
-                <h2 className="text-2xl font-bold text-white mb-6">
-                  Create a New Video
-                </h2>
+              <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800">Create New Video</h2>
+                </div>
 
                 <form onSubmit={handleGenerateScript} className="space-y-6">
                   <div>
-                    <label className="block text-white font-medium mb-2">
+                    <label className="block text-gray-700 font-semibold mb-2">
                       Video Topic
                     </label>
                     <input
@@ -175,14 +137,14 @@ export default function GenerateVideos() {
                       name="topic"
                       value={formData.topic}
                       onChange={handleInputChange}
-                      placeholder="e.g., How to cook pasta"
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                      placeholder="e.g., How to cook pasta, Benefits of meditation..."
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white font-medium mb-2">
+                      <label className="block text-gray-700 font-semibold mb-2">
                         Duration (seconds)
                       </label>
                       <input
@@ -192,19 +154,19 @@ export default function GenerateVideos() {
                         onChange={handleInputChange}
                         min="15"
                         max="300"
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-white font-medium mb-2">
+                      <label className="block text-gray-700 font-semibold mb-2">
                         Tone
                       </label>
                       <select
                         name="tone"
                         value={formData.tone}
                         onChange={handleInputChange}
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       >
                         <option value="professional">Professional</option>
                         <option value="casual">Casual</option>
@@ -217,38 +179,61 @@ export default function GenerateVideos() {
 
                   <button
                     type="submit"
-                    disabled={loading}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    {loading && <Loader size={20} className="animate-spin" />}
-                    {loading ? 'Generating...' : 'Generate Video Script'}
+                    {isLoading && <Loader size={20} className="animate-spin" />}
+                    <Video className="w-5 h-5" />
+                    {isLoading ? 'Generating...' : 'Generate Video Script'}
                   </button>
                 </form>
 
-                <div className="mt-8 p-4 bg-blue-900/20 border border-blue-900 rounded-lg">
-                  <p className="text-blue-300">
-                    💡 <strong>Tip:</strong> Premium users can generate unlimited videos. Free users have 5 videos per month.
-                  </p>
+                <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <div className="p-1 bg-blue-100 rounded-full">
+                      <Sparkles className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-blue-800 font-medium">💡 Pro Tip</p>
+                      <p className="text-blue-700 text-sm mt-1">
+                        Premium users can generate unlimited videos. Free users have 5 videos per month.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="space-y-4">
-              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                <h3 className="text-white font-bold mb-4">Quick Stats</h3>
-                <div className="space-y-3 text-slate-300">
-                  <div>
-                    <p className="text-slate-400 text-sm">Total Videos</p>
-                    <p className="text-2xl font-bold text-blue-400">0</p>
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-lg">
+                <h3 className="text-gray-800 font-bold mb-6 flex items-center gap-2">
+                  <div className="p-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
+                    <Play className="w-4 h-4 text-white" />
                   </div>
-                  <div>
-                    <p className="text-slate-400 text-sm">Social Shares</p>
-                    <p className="text-2xl font-bold text-green-400">0</p>
+                  Quick Stats
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                    <div>
+                      <p className="text-gray-600 text-sm font-medium">Total Videos</p>
+                      <p className="text-2xl font-bold text-blue-600">{stats?.totalVideos || 0}</p>
+                    </div>
+                    <Video className="w-6 h-6 text-blue-500" />
                   </div>
-                  <div>
-                    <p className="text-slate-400 text-sm">Status</p>
-                    <p className="text-blue-400">Active</p>
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                    <div>
+                      <p className="text-gray-600 text-sm font-medium">Social Shares</p>
+                      <p className="text-2xl font-bold text-purple-600">{stats?.totalShares || 0}</p>
+                    </div>
+                    <Share2 className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                    <div>
+                      <p className="text-gray-600 text-sm font-medium">Status</p>
+                      <p className="text-green-600 font-semibold">Active</p>
+                    </div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -259,47 +244,67 @@ export default function GenerateVideos() {
         {/* My Videos Tab */}
         {activeTab === 'my-videos' && (
           <div className="space-y-6">
-            {loading ? (
-              <div className="text-center text-slate-400">Loading videos...</div>
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="inline-flex items-center gap-3 text-gray-600">
+                  <Loader className="w-6 h-6 animate-spin" />
+                  <p>Loading videos...</p>
+                </div>
+              </div>
             ) : videos.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videos.map(video => (
                   <div
                     key={video.id}
-                    className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-blue-600 transition-colors"
+                    className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                   >
                     {/* Video Thumbnail */}
-                    <div className="bg-slate-900 aspect-video flex items-center justify-center">
+                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 aspect-video flex items-center justify-center relative">
                       <div className="text-center">
-                        <div className="text-4xl mb-2">🎬</div>
-                        <p className="text-slate-400 text-sm">
+                        <div className="text-5xl mb-3">🎬</div>
+                        <p className={`text-sm font-medium px-3 py-1 rounded-full ${
+                          video.status === 'completed'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
                           {video.status === 'completed' ? 'Completed' : 'Processing'}
                         </p>
                       </div>
+                      {video.status === 'completed' && (
+                        <div className="absolute top-3 right-3">
+                          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Video Info */}
-                    <div className="p-4">
-                      <p className="text-slate-400 text-xs mb-2">
-                        {new Date(video.created_at).toLocaleDateString()}
-                      </p>
-                      <p className="text-white font-medium mb-4 line-clamp-2">
-                        {video.script?.substring(0, 80)}...
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                          {new Date(video.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {video.duration}s
+                        </div>
+                      </div>
+                      <p className="text-gray-800 font-semibold mb-4 line-clamp-2 leading-relaxed">
+                        {video.script?.substring(0, 100)}...
                       </p>
 
                       {/* Actions */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-3">
                         {video.status === 'completed' && (
                           <>
                             <button
                               onClick={() => setShareModal(video.id)}
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                             >
-                              <Share2 size={16} /> Share
+                              <Share2 size={16} />
+                              Share
                             </button>
                             <button
                               onClick={() => handleDeleteVideo(video.id)}
-                              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
+                              className="p-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all duration-200 hover:shadow-md"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -311,9 +316,18 @@ export default function GenerateVideos() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-slate-400 py-12">
-                <div className="text-6xl mb-4">📹</div>
-                <p>No videos yet. Create your first video!</p>
+              <div className="text-center py-16">
+                <div className="max-w-md mx-auto">
+                  <div className="text-7xl mb-6">🎬</div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3">No videos yet</h3>
+                  <p className="text-gray-600 mb-6">Create your first AI-powered video to get started!</p>
+                  <button
+                    onClick={() => setActiveTab('generate')}
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    Create Your First Video
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -321,53 +335,65 @@ export default function GenerateVideos() {
 
         {/* Share Modal */}
         {shareModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-slate-700">
-              <h3 className="text-white font-bold text-lg mb-4">Share Video</h3>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full border border-gray-200 shadow-2xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                  <Share2 className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">Share Video</h3>
+              </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-700 font-semibold mb-2">
                     Platform
                   </label>
                   <select
                     value={sharePlatform}
                     onChange={(e) => setSharePlatform(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
-                    <option value="instagram">Instagram</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="youtube">YouTube</option>
+                    <option value="instagram">📸 Instagram</option>
+                    <option value="tiktok">🎵 TikTok</option>
+                    <option value="facebook">👥 Facebook</option>
+                    <option value="youtube">📺 YouTube</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-700 font-semibold mb-2">
                     Caption
                   </label>
                   <textarea
                     value={shareCaption}
                     onChange={(e) => setShareCaption(e.target.value)}
-                    placeholder="Add a caption..."
+                    placeholder="Add an engaging caption..."
                     rows="4"
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   />
                 </div>
 
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShareModal(null)}
-                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleShareVideo(shareModal)}
-                    disabled={loading}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors"
+                    disabled={isLoading}
+                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    {loading ? 'Sharing...' : 'Share'}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader size={16} className="animate-spin" />
+                        Sharing...
+                      </div>
+                    ) : (
+                      'Share Video'
+                    )}
                   </button>
                 </div>
               </div>
