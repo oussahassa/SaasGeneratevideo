@@ -32,20 +32,54 @@ export default function Plans() {
     }
   };
 
+  const handleSelectPlan = async (pack) => {
+    // If it's the free plan, upgrade directly
+    if (pack.price === 0 || pack.name.toLowerCase() === 'free') {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await axios.post(API_URL + '/user/upgrade-plan', {
+          packId: pack.id
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+          toast.success('Successfully upgraded to ' + pack.name + ' plan!');
+          // Refresh user data or redirect to dashboard
+          setTimeout(() => {
+            window.location.href = '/ai';
+          }, 2000);
+        } else {
+          toast.error(response.data.message || 'Upgrade failed');
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Failed to upgrade plan');
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // For paid plans, show payment modal
+      setSelectedPackForPayment(pack);
+      setShowPaymentModal(true);
+    }
+  };
+
   const handlePayment = async (paymentMethod) => {
     if (!selectedPackForPayment) return;
 
     setPaymentLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(API_URL+`/api/payments/${paymentMethod}/create`, {
+      const response = await axios.post(API_URL+`/payments/${paymentMethod}/create`, {
         packId: selectedPackForPayment.id,
         amount: selectedPackForPayment.price,
         currency: paymentMethod === 'paymee' ? 'TND' : 'USD'
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
+console.log('Payment initialization response:', response.data);
       if (response.data.success) {
         if (paymentMethod === 'stripe') {
           // Redirect to Stripe Checkout

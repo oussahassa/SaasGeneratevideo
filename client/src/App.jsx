@@ -29,12 +29,13 @@ import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import EmailVerification from './pages/auth/EmailVerification'
 import ForgotPassword from './pages/auth/ForgotPassword'
-import ResetPassword from './pages/auth/ResetPassword'
-import {Toaster} from 'react-hot-toast'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentCancel from './pages/PaymentCancel'
 import { verifyToken } from './redux/slices/authSlice'
 import './i18n/i18n'
 import { useState } from 'react'
 import ThemeToggle from './components/ThemeToggle'
+import ResetPassword from './pages/auth/ResetPassword'
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
@@ -64,7 +65,10 @@ const App = () => {
         <div className="fixed top-4 right-4 z-50 hidden md:block">
           <ThemeToggle />
         </div>
-        <Routes>
+
+    <div>
+    {/*  <Toaster />*/ } 
+      <Routes>
         {/* Public Routes */}
         <Route path='/' element={<Home />}/>
         <Route path='/login' element={<Login />}/>
@@ -74,6 +78,8 @@ const App = () => {
         <Route path='/reset-password' element={<ResetPassword />}/>
         <Route path='/plan' element={<Plan />}/>
         <Route path='/faq' element={<FAQ />}/>
+        <Route path='/payment/success' element={<PaymentSuccess />}/>
+        <Route path='/payment/cancel' element={<PaymentCancel />}/>
 
         {/* Client Protected Routes */}
         <Route path='/ai' element={
@@ -112,6 +118,7 @@ const App = () => {
           <Route path='analytics' element={<AdminOverview />}/>
         </Route>
       </Routes>
+      </div>
       </div>
   )
 }

@@ -171,3 +171,56 @@ export const revokeSession = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const upgradePlan = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { packId } = req.body;
+
+    if (!packId) {
+      return res.status(400).json({ success: false, message: "Pack ID is required" });
+    }
+
+    // Get pack details
+    const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
+    if (!pack || pack.length === 0) {
+      return res.status(404).json({ success: false, message: "Pack not found" });
+    }
+
+    const selectedPack = pack[0];
+
+    // Check if user already has an active subscription
+    const existingSubscription = await sql`
+      SELECT * FROM user_subscriptions
+      WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()
+    `;
+
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 1); // 1 month subscription
+
+    if (existingSubscription.length > 0) {
+      // Update existing subscription
+      await sql`
+        UPDATE user_subscriptions
+        SET pack_id = ${packId}, end_date = ${endDate}, updated_at = NOW()
+        WHERE user_id = ${userId} AND is_active = TRUE
+      `;
+    } else {
+      // Create new subscription
+      await sql`
+        INSERT INTO user_subscriptions (user_id, pack_id, start_date, end_date, is_active, monthly_limit)
+        VALUES (${userId}, ${packId}, ${startDate}, ${endDate}, TRUE, ${selectedPack.monthly_limit || 0})
+      `;
+    }
+
+    res.json({
+      success: true,
+      message: `Successfully upgraded to ${selectedPack.name} plan`,
+      plan: selectedPack
+    });
+  } catch (error) {
+    console.error('Upgrade plan error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

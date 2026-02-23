@@ -30,7 +30,7 @@ export const fetchUserPlan = createAsyncThunk('user/fetchUserPlan', async (_, { 
 export const upgradePlan = createAsyncThunk('user/upgradePlan', async (planType, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.post(`${API_URL}/user/upgrade-plan`, { planType }, {
+    const response = await axios.post(`${API_URL}/api/user/upgrade-plan`, { planType }, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data

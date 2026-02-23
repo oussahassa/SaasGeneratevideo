@@ -34,7 +34,7 @@ export const createStripePayment = async (req, res) => {
 
     // Get pack details
     const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
-    if (pack.rows.length === 0) {
+    if (pack === null ) {
       return res.status(404).json({ success: false, message: 'Pack not found' });
     }
 
@@ -44,8 +44,8 @@ export const createStripePayment = async (req, res) => {
         price_data: {
           currency: currency,
           product_data: {
-            name: pack.rows[0].name,
-            description: pack.rows[0].description,
+            name: pack.name,
+            description: pack.description,
           },
           unit_amount: Math.round(amount * 100), // Convert to cents
         },
@@ -74,7 +74,8 @@ export const createPayPalPayment = async (req, res) => {
 
     // Get pack details
     const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
-    if (pack.rows.length === 0) {
+    console.log('Pack details:', pack);
+    if (pack === null ) {
       return res.status(404).json({ success: false, message: 'Pack not found' });
     }
 
@@ -87,7 +88,7 @@ export const createPayPalPayment = async (req, res) => {
           currency_code: currency,
           value: amount.toString(),
         },
-        description: pack.rows[0].description,
+        description: pack.description,
       }],
       application_context: {
         return_url: `${process.env.FRONTEND_URL}/payment/success`,
@@ -115,23 +116,29 @@ export const createPaymeePayment = async (req, res) => {
 
     // Get pack details
     const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
-    if (pack.rows.length === 0) {
+        console.log('Pack details:', pack);
+
+    if (pack === null ) {
       return res.status(404).json({ success: false, message: 'Pack not found' });
     }
 
     const paymentData = {
       vendor: process.env.PAYMEE_VENDOR_KEY,
       amount: amount,
-      note: `Payment for ${pack.rows[0].name}`,
-      first_name: req.user.firstName,
-      last_name: req.user.lastName,
+      checkoutForm:true,
+      note: `Payment for ${pack.name}`,
+      first_name: req.user.first_name,
+      last_name: req.user.last_name,
       email: req.user.email,
       phone: req.body.phone || '',
       return_url: `${process.env.FRONTEND_URL}/payment/success`,
       cancel_url: `${process.env.FRONTEND_URL}/payment/cancel`,
       webhook_url: `${process.env.BACKEND_URL}/api/payments/paymee/webhook`,
       order_id: `pack_${packId}_user_${userId}_${Date.now()}`,
+      silentWebhook: true,
+      addPaymentFeesToAmount:false
     };
+    console.log('Creating Paymee payment with data:', paymentData);
 
     const response = await axios.post(PAYMEE_BASE_URL, paymentData, {
       headers: {
@@ -139,11 +146,12 @@ export const createPaymeePayment = async (req, res) => {
         'Content-Type': 'application/json',
       },
     });
+    console.log('Creating Paymee payment with data:', response.data);
 
     res.json({
       success: true,
-      paymentUrl: response.data.payment_url,
-      token: response.data.token,
+      paymentUrl: response.data.data.payment_url,
+      token: response.data.data.token,
     });
   } catch (error) {
     console.error('Paymee payment error:', error);
@@ -167,10 +175,43 @@ export const handleStripeWebhook = async (req, res) => {
     const userId = session.metadata.userId;
     const packId = session.metadata.packId;
 
-    // Update user subscription
-    await sql`
-      UPDATE users SET pack_id = ${packId}, subscription_status = 'active' WHERE id = ${userId}
-    `;
+    try {
+      // Get pack details
+      const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
+      if (!pack || pack.length === 0) {
+        console.error('Pack not found:', packId);
+        return res.status(404).json({ success: false, message: 'Pack not found' });
+      }
+
+      // Check if user already has an active subscription
+      const existingSubscription = await sql`
+        SELECT * FROM user_subscriptions
+        WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()
+      `;
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + 1); // 1 month subscription
+
+      if (existingSubscription && existingSubscription.length > 0) {
+        // Update existing subscription
+        await sql`
+          UPDATE user_subscriptions
+          SET pack_id = ${packId}, end_date = ${endDate}, updated_at = NOW()
+          WHERE user_id = ${userId} AND is_active = TRUE
+        `;
+      } else {
+        // Create new subscription
+        await sql`
+          INSERT INTO user_subscriptions (user_id, pack_id, start_date, end_date, is_active, monthly_limit)
+          VALUES (${userId}, ${packId}, ${startDate}, ${endDate}, TRUE, ${pack[0].monthly_limit || 0})
+        `;
+      }
+
+      console.log('Subscription updated/created for user:', userId);
+    } catch (error) {
+      console.error('Error processing subscription:', error);
+    }
   }
 
   res.json({ received: true });
@@ -181,9 +222,34 @@ export const handlePayPalWebhook = async (req, res) => {
   const event = req.body;
 
   if (event.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
-    // Process successful payment
-    const orderId = event.resource.id;
-    // Update subscription based on orderId
+    try {
+      // Extract order details from webhook
+      const orderId = event.resource.id;
+      const amount = event.resource.amount.value;
+
+      // You would need to store order metadata in a database to retrieve packId and userId
+      // For now, this is a placeholder - you should implement proper order tracking
+      
+      console.log('PayPal payment captured for order:', orderId);
+      
+      // Example of how to handle this if you have order tracking:
+      // const order = await sql`SELECT * FROM orders WHERE paypal_order_id = ${orderId}`;
+      // if (order && order.length > 0) {
+      //   const userId = order[0].user_id;
+      //   const packId = order[0].pack_id;
+      //   
+      //   const startDate = new Date();
+      //   const endDate = new Date();
+      //   endDate.setMonth(endDate.getMonth() + 1);
+      //   
+      //   await sql`
+      //     INSERT INTO user_subscriptions (user_id, pack_id, start_date, end_date, is_active, monthly_limit)
+      //     VALUES (${userId}, ${packId}, ${startDate}, ${endDate}, TRUE, ...)
+      //   `;
+      // }
+    } catch (error) {
+      console.error('Error processing PayPal webhook:', error);
+    }
   }
 
   res.json({ received: true });
@@ -192,17 +258,57 @@ export const handlePayPalWebhook = async (req, res) => {
 export const handlePaymeeWebhook = async (req, res) => {
   // Handle Paymee webhook
   const { payment_status, order_id } = req.body;
-
+console.log('Received Paymee webhook:', req.body);
   if (payment_status === 'completed') {
-    // Extract packId and userId from order_id
-    const [packPart, userPart] = order_id.split('_user_');
-    const packId = packPart.replace('pack_', '');
-    const userId = userPart.split('_')[0];
+    try {
+      // Extract packId and userId from order_id
+      // order_id format: pack_${packId}_user_${userId}_${timestamp}
+      const parts = order_id.split('_user_');
+      if (parts.length !== 2) {
+        console.error('Invalid order_id format:', order_id);
+        return res.status(400).json({ success: false, message: 'Invalid order format' });
+      }
 
-    // Update user subscription
-    await sql`
-      UPDATE users SET pack_id = ${packId}, subscription_status = 'active' WHERE id = ${userId}
-    `;
+      const packId = parseInt(parts[0].replace('pack_', ''));
+      const userIdPart = parts[1].split('_');
+      const userId = userIdPart[0];
+
+      // Get pack details
+      const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
+      if (!pack || pack.length === 0) {
+        console.error('Pack not found:', packId);
+        return res.status(404).json({ success: false, message: 'Pack not found' });
+      }
+
+      // Check if user already has an active subscription
+      const existingSubscription = await sql`
+        SELECT * FROM user_subscriptions
+        WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()
+      `;
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + 1); // 1 month subscription
+
+      if (existingSubscription && existingSubscription.length > 0) {
+        // Update existing subscription
+        await sql`
+          UPDATE user_subscriptions
+          SET pack_id = ${packId}, end_date = ${endDate}, updated_at = NOW()
+          WHERE user_id = ${userId} AND is_active = TRUE
+        `;
+      } else {
+        // Create new subscription
+        await sql`
+          INSERT INTO user_subscriptions (user_id, pack_id, start_date, end_date, is_active, monthly_limit)
+          VALUES (${userId}, ${packId}, ${startDate}, ${endDate}, TRUE, ${pack[0].monthly_limit || 0})
+        `;
+      }
+
+      console.log('Paymee subscription updated/created for user:', userId);
+    } catch (error) {
+      console.error('Error processing Paymee webhook:', error);
+    }
   }
 
   res.json({ success: true });
