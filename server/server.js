@@ -15,10 +15,16 @@ import withoutAuthRouter from './routes/without-authRouter.js';
 import translationRouter from './routes/translationRoutes.js';
 import paymentRouter from './routes/paymentRoutes.js';
 import { auth, attachPlanInfo } from './middlewares/auth.js';
+import https from 'https';
+import fs from 'fs'
 
 const app = express()
 
 await connectCloudinary()
+const httpsOptions = {
+  key: fs.readFileSync('../crts/localhost-key.pem'),
+  cert: fs.readFileSync('../crts/localhost.pem'),
+};
 
 app.use(cors({
   origin: "*",
@@ -32,6 +38,7 @@ app.get('/', (req, res)=>res.send('Server is Live!'))
 // Public auth routes
 app.use('/api/auth', authRouter)
 app.use('/api/without-auth', withoutAuthRouter)
+app.use('/api/payments', paymentRouter)
 
 // Protected routes
 app.use(auth)
@@ -44,7 +51,6 @@ app.use('/api/videos', videoRouter)
 app.use('/api/support', supportRouter)
 app.use('/api/admin', adminRouter)
 
-app.use('/api/payments', paymentRouter)
 app.use('/api/translate', translationRouter)
 
 const PORT = process.env.PORT || 4000;
@@ -52,3 +58,6 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, ()=> {
     console.log('Server is running on port', PORT);
 })
+https.createServer(httpsOptions, app).listen(3443, () => {
+  console.log('HTTPS running on https://localhost:3443');
+});

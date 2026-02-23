@@ -1,6 +1,6 @@
 import express from 'express';
 import { auth } from '../middlewares/auth.js';
-import { getUserProfile, getUserPlan, getPublishedCreations, getUserCreations, toggleLikeCreation, updateUserProfile, getDashboardStats, getSessions, revokeSession } from '../controllers/userController.js';
+import { getUserProfile, getUserPlan, getPublishedCreations, getUserCreations, toggleLikeCreation, updateUserProfile, getDashboardStats, getSessions, revokeSession, upgradePlan } from '../controllers/userController.js';
 
 const userRouter = express.Router()
 
@@ -13,5 +13,6 @@ userRouter.put('/update-profile', auth, updateUserProfile)
 userRouter.get('/dashboard-stats', auth, getDashboardStats)
 userRouter.get('/sessions', auth, getSessions)
 userRouter.post('/revoke-session', auth, revokeSession)
+userRouter.post('/upgrade-plan', auth, upgradePlan)
 
 export default userRouter;
