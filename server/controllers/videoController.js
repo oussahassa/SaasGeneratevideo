@@ -1,20 +1,23 @@
-import OpenAI from "openai";
 import sql from "../configs/db.js";
 import axios from 'axios';
 import { v2 as cloudinary } from 'cloudinary';
 import { v4 as uuidv4 } from 'uuid';
+import { GoogleGenAI } from "@google/genai";
 
-const AI = new OpenAI({
+const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
-  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
-// Générer un script vidéo avec l'IA
-export const generateVideoScript = async (req, res) => {
+
+
+// Générer une vidéo avec l'IA
+export const generateVideo = async (req, res) => {
   try {
     const userId = req.user.id;
     const { topic, duration, tone } = req.body;
     const plan = req.plan;
+
+    console.log("User video plan:", plan);
 
     if (plan !== "premium") {
       return res.json({
@@ -22,11 +25,10 @@ export const generateVideoScript = async (req, res) => {
         message: "Video generation is only available for premium subscriptions.",
       });
     }
-
-    const prompt = `Generate a ${duration} second video script about "${topic}" with a ${tone} tone. 
+ const prompt = `Generate a ${duration} second video script about "${topic}" with a ${tone} tone. 
     The script should be engaging and suitable for social media. Include scene descriptions and voiceover text.
     Format: [SCENE 1], [VOICEOVER], [DURATION] etc.`;
-
+/*
     const response = await AI.chat.completions.create({
       model: "gemini-3-flash-preview",
       messages: [
@@ -38,21 +40,57 @@ export const generateVideoScript = async (req, res) => {
       temperature: 0.7,
       max_tokens: 1000,
     });
+     const script = response.choices[0].message.content;
+     */
 
-    const script = response.choices[0].message.content;
+    const prompt2 = `Generate a ${duration} second video about "${topic}" with a ${tone} tone. 
+The video should be engaging and suitable for social media.`;
+
+    // Call RunwayML API for video generation
+    const runwayResponse = await axios.post('https://api.dev.runwayml.com/v1/text_to_video', {
+      model:"gen4.5",
+      promptText: prompt2,
+      duration: Math.min(duration, 10), // Max 10 seconds for demo
+      ratio: '1280:720'
+    }, {
+      headers: {
+        'Authorization': `Bearer key_b8fc9b1ac378699f60966285a73888ebe7234c2244addac0a6f1d9ad2f767cfa111ee8b23324162aae96cdb5871bdcfd254d7d71cf29483833ed766bda02e5a6`,
+        'Content-Type': 'application/json',
+        'X-Runway-Version': '2024-11-06' // Specify API version if neededs
+      }
+    });
+        console.log("Runway response:", runwayResponse);
+
+console.log("Runway response:", runwayResponse.data);
+    const taskId = runwayResponse.data.id;
 
     const videoId = uuidv4();
-    await sql(
-      'INSERT INTO videos (id, user_id, script, status, type) VALUES ($1, $2, $3, $4, $5)',
-      [videoId, userId, script, 'script_generated', 'generated']
-    );
+    await sql`INSERT INTO videos (id, user_id, script, status, type, created_at) VALUES (${videoId}, ${userId}, ${topic}, 'processing', 'generated', NOW())`;
 
-    res.json({ success: true, videoId, script });
+    // For demo, simulate completion - in production, poll for status
+    // Here, we'll assume the video is generated instantly for simplicity
+    const videoUrl = `https://runwayml.com/videos/${taskId}.mp4`; // Placeholder
+
+    await sql`UPDATE videos SET video_url = ${videoUrl}, status = 'completed' WHERE id = ${videoId}`;
+   const subscription = await sql`SELECT id, monthly_limit FROM user_subscriptions WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()`;
+    if (subscription.length === 0 || subscription[0].monthly_limit < 5) {
+      return res.json({
+        success: false,
+        message: "Insufficient credits.",
+      });
+    }
+
+        await sql`UPDATE user_subscriptions SET monthly_limit = monthly_limit - 5 WHERE id = ${subscription[0].id}`;
+
+    console.log("Generated video:", videoUrl);
+    res.json({ success: true, videoId, videoUrl });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// Générer un script vidéo avec l'IA
+
 
 // Générer une vidéo à partir d'images et d'audio (simulation)
 export const generateVideoFromAssets = async (req, res) => {
@@ -88,10 +126,50 @@ export const generateVideoFromAssets = async (req, res) => {
 export const shareVideoToSocial = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { videoId, platform, caption } = req.body;
+    const { videoId, platforms, caption } = req.body; // platforms as array
 
+if (!Array.isArray(platforms) || platforms.length === 0) {
+  return res.status(400).json({ error: "Platforms required" });
+}
+for (const platform of platforms) {
+
+      const account = await getUserSocialAccount(userId, platform);
+
+      if (!account) {
+        results.push({
+          platform,
+          success: false,
+          error: "Account not connected"
+        });
+        continue;
+      }
+
+      try {
+        let response;
+
+        if (platform === "instagram") {
+          response = await postToInstagram(video.videoUrl, caption, account);
+        }
+
+        if (platform === "tiktok") {
+          response = await postToTikTok(video.videoUrl, caption, account);
+        }
+
+        if (platform === "facebook") {
+          response = await postToFacebook(video.videoUrl, caption, account);
+        }
+        console.log(`Shared to ${platform}:`, response);
+      }
+        catch (error) {
+          results.push({
+            platform,
+            success: false, 
+            error: error.message
+          });
+        }
+      }
     // Récupérer la vidéo
-    const video = await sql('SELECT * FROM videos WHERE id = $1', [videoId]);
+    const video = await sql`SELECT * FROM videos WHERE id = ${videoId}`;
 
     if (!video || video.length === 0) {
       return res.json({ success: false, message: "Video not found" });
@@ -101,20 +179,24 @@ export const shareVideoToSocial = async (req, res) => {
       return res.json({ success: false, message: "Unauthorized access" });
     }
 
-    // Créer un enregistrement de partage
-    const share = await sql(
-      'INSERT INTO video_shares (video_id, user_id, platform, caption, shared_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
-      [videoId, userId, platform, caption]
-    );
+    const shares = [];
+    for (const platform of platforms) {
+      // Créer un enregistrement de partage
+      const share = await sql`
+        INSERT INTO video_shares (video_id, user_id, platform, caption, shared_at) VALUES (${videoId}, ${userId}, ${platform}, ${caption}, NOW()) RETURNING *
+      `;
+      shares.push(share[0]);
+    }
 
     // Simulation - En production, vous intégreriez les APIs réelles
     // des réseaux sociaux (Instagram, TikTok, Facebook)
-    const shareUrl = `https://${platform}.com/${videoId}`;
+    const shareUrls = platforms.map(platform => `https://${platform}.com/${videoId}`);
 
     res.json({
       success: true,
-      message: `Video shared to ${platform}`,
-      share: { ...share[0], shareUrl }
+      message: `Video shared to ${platforms.join(', ')}`,
+      shares,
+      shareUrls
     });
   } catch (error) {
     console.log(error.message);
@@ -127,8 +209,8 @@ export const getUserVideoStats = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const videos = await sql('SELECT * FROM videos WHERE user_id = $1', [userId]);
-    const shares = await sql('SELECT * FROM video_shares WHERE user_id = $1', [userId]);
+    const videos = await sql`SELECT * FROM videos WHERE user_id = ${userId}`;
+    const shares = await sql`SELECT * FROM video_shares WHERE user_id = ${userId}`;
 
     const stats = {
       totalVideos: videos.length,
@@ -153,7 +235,7 @@ export const getUserVideos = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const videos = await sql('SELECT * FROM videos WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+    const videos = await sql`SELECT * FROM videos WHERE user_id = ${userId} ORDER BY created_at DESC`;
 
     res.json({ success: true, videos });
   } catch (error) {
@@ -167,7 +249,7 @@ export const deleteVideo = async (req, res) => {
     const userId = req.user.id;
     const { videoId } = req.params;
 
-    const video = await sql('SELECT * FROM videos WHERE id = $1', [videoId]);
+    const video = await sql`SELECT * FROM videos WHERE id = ${videoId}`;
 
     if (!video || video.length === 0) {
       return res.json({ success: false, message: "Video not found" });
@@ -177,11 +259,83 @@ export const deleteVideo = async (req, res) => {
       return res.json({ success: false, message: "Unauthorized access" });
     }
 
-    await sql('DELETE FROM videos WHERE id = $1', [videoId]);
-    await sql('DELETE FROM video_shares WHERE video_id = $1', [videoId]);
+    await sql`DELETE FROM videos WHERE id = ${videoId}`;
+    await sql`DELETE FROM video_shares WHERE video_id = ${videoId}`;
 
     res.json({ success: true, message: "Video deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+async function postToTikTok(videoUrl, caption, account) {
+
+  const response = await axios.post(
+    "https://open.tiktokapis.com/v2/post/publish/video/init/",
+    {
+      source_info: {
+        source: "PULL_FROM_URL",
+        video_url: videoUrl
+      },
+      post_info: {
+        title: caption,
+        privacy_level: "SELF_ONLY"
+      }
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${account.accessToken}`,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  return response.data;
+}
+
+async function postToInstagram(videoUrl, caption, account) {
+
+  const IG_USER_ID = account.platformUserId;
+  const ACCESS_TOKEN = account.accessToken;
+
+  // 1️⃣ Create media container
+  const container = await axios.post(
+    `https://graph.facebook.com/v19.0/${IG_USER_ID}/media`,
+    {
+      media_type: "REELS",
+      video_url: videoUrl,
+      caption,
+      access_token: ACCESS_TOKEN,
+    }
+  );
+
+  // 2️⃣ Publish
+  const publish = await axios.post(
+    `https://graph.facebook.com/v19.0/${IG_USER_ID}/media_publish`,
+    {
+      creation_id: container.data.id,
+      access_token: ACCESS_TOKEN,
+    }
+  );
+
+  return publish.data;
+}
+
+
+async function postToFacebook(videoUrl, caption, account) {
+
+  const PAGE_ID = account.platform_user_id;
+  const ACCESS_TOKEN = account.access_token;
+
+  // 1️⃣ Upload vidéo depuis URL
+  const upload = await axios.post(
+    `https://graph.facebook.com/v19.0/${PAGE_ID}/videos`,
+    {
+      file_url: videoUrl,
+      description: caption,
+      access_token: ACCESS_TOKEN
+    }
+  );
+
+  return upload.data;
+}

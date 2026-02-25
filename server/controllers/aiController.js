@@ -97,11 +97,21 @@ export const generateImage = async (req, res) => {
     const userId = req.user.id;
     const { prompt, publish } = req.body;
     const plan = req.plan;
-
+console.log("Generating image with prompt:", plan +" "+ prompt)
     if (plan != 'premium') {
       return res.json({success: false, message: "This feature is only available for premium subscriptions.",
       });
     }
+
+    // Deduct 5 credits
+    const subscription = await sql`SELECT id, monthly_limit FROM user_subscriptions WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()`;
+    if (subscription.length === 0 || subscription[0].monthly_limit < 5) {
+      return res.json({
+        success: false,
+        message: "Insufficient credits.",
+      });
+    }
+    await sql`UPDATE user_subscriptions SET monthly_limit = monthly_limit - 5 WHERE id = ${subscription[0].id}`;
 
     const formData = new FormData()
     formData.append('prompt', prompt)

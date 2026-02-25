@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hash, House, SquarePen, Image, Eraser, Scissors, FileText, Users, LogOut, Video, MessageSquare } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { logoutUser } from '../redux/slices/authSlice'
+import { logoutUser, fetchUserPlan } from '../redux/slices/authSlice'
 
 const Sidebar = ({ sidebar, setSidebar }) => {
   const { t } = useTranslation()
-  const { user } = useSelector(state => state.auth);
+  const { user, plan, credits } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+
+
 
   const navItems = [
     {to: '/ai', label: t('user.dashboard') || 'Dashboard', Icon: House},
@@ -50,7 +52,8 @@ const Sidebar = ({ sidebar, setSidebar }) => {
           <img src={user?.profile_picture || 'https://via.placeholder.com/32'} className='w-8 rounded-full' alt="" />
           <div>
             <h1 className='text-sm font-medium'>{user?.first_name} {user?.last_name}</h1>
-            <p className='text-xs text-gray-500'>Free Plan</p>
+            <p className='text-xs text-gray-500'>{plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'Free'} Plan</p>
+            <p className='text-xs text-gray-400'>Credits: {credits ?? 0}</p>
           </div>
         </div>
         <LogOut onClick={handleSignOut} className='w-4.5 text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-700 transition cursor-pointer'/>

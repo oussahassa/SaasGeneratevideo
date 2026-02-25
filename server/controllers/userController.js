@@ -9,7 +9,10 @@ export const getUserProfile = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    res.json({ success: true, user: user[0] });
+    const plan = req.plan;
+    const credits = req.credits;
+
+    res.json({ success: true, user: { ...user[0], plan, credits } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

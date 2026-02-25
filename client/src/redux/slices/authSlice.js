@@ -55,12 +55,26 @@ export const verifyToken = createAsyncThunk('auth/verifyToken', async (_, { reje
   }
 })
 
+export const fetchUserPlan = createAsyncThunk('auth/fetchUserPlan', async (_, { rejectWithValue }) => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${API_URL}/user/plan`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Failed to fetch user plan')
+  }
+})
+
 const initialState = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   token: localStorage.getItem('token') || null,
   isLoading: false,
   error: null,
   isAuthenticated: !!localStorage.getItem('token'),
+  plan: null,
+  credits: null,
 }
 
 const authSlice = createSlice({
@@ -140,6 +154,19 @@ const authSlice = createSlice({
         state.user = null
         state.token = null
         state.isAuthenticated = false
+      })
+      // Fetch User Plan
+      .addCase(fetchUserPlan.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(fetchUserPlan.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.plan = action.payload.planType
+        state.credits = action.payload.credits
+      })
+      .addCase(fetchUserPlan.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
       })
   }
 })

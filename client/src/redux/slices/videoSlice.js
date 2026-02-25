@@ -8,7 +8,7 @@ export const generateVideo = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/videos/generate-script`, payload, {
+      const response = await axios.post(`${API_URL}/videos/generate-video`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -65,10 +65,10 @@ export const deleteVideo = createAsyncThunk(
 
 export const shareVideo = createAsyncThunk(
   'video/shareVideo',
-  async ({ videoId, platform, caption }, { rejectWithValue }) => {
+  async ({ videoId, platforms, caption }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/videos/share-to-social`, { videoId, platform, caption }, {
+      const response = await axios.post(`${API_URL}/videos/share-to-social`, { videoId, platforms, caption }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
