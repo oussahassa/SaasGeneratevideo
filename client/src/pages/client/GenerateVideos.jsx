@@ -13,7 +13,7 @@ export default function GenerateVideos() {
     tone: 'professional'
   });
   const [shareModal, setShareModal] = useState(null);
-  const [sharePlatform, setSharePlatform] = useState('instagram');
+  const [sharePlatforms, setSharePlatforms] = useState(['instagram', 'facebook', 'tiktok']);
   const [shareCaption, setShareCaption] = useState('');
 
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ export default function GenerateVideos() {
     }));
   };
 
-  const handleGenerateScript = async (e) => {
+  const handleGenerateVideo = async (e) => {
     e.preventDefault();
     if (!formData.topic) {
       toast.error('Please enter a topic');
@@ -60,10 +60,15 @@ export default function GenerateVideos() {
       toast.error('Please enter a caption');
       return;
     }
+    if (sharePlatforms.length === 0) {
+      toast.error('Please select at least one platform');
+      return;
+    }
 
-    dispatch(shareVideo({ videoId, platform: sharePlatform, caption: shareCaption }));
+    dispatch(shareVideo({ videoId, platforms: sharePlatforms, caption: shareCaption }));
     setShareModal(null);
     setShareCaption('');
+    setSharePlatforms(['instagram', 'facebook', 'tiktok']);
   };
 
   const handleDeleteVideo = async (videoId) => {
@@ -127,7 +132,7 @@ export default function GenerateVideos() {
                   <h2 className="text-2xl font-bold text-gray-800">Create New Video</h2>
                 </div>
 
-                <form onSubmit={handleGenerateScript} className="space-y-6">
+                <form onSubmit={handleGenerateVideo} className="space-y-6">
                   <div>
                     <label className="block text-gray-700 font-semibold mb-2">
                       Video Topic
@@ -184,7 +189,7 @@ export default function GenerateVideos() {
                   >
                     {isLoading && <Loader size={20} className="animate-spin" />}
                     <Video className="w-5 h-5" />
-                    {isLoading ? 'Generating...' : 'Generate Video Script'}
+                    {isLoading ? 'Generating...' : 'Generate Video'}
                   </button>
                 </form>
 
@@ -196,7 +201,7 @@ export default function GenerateVideos() {
                     <div>
                       <p className="text-blue-800 font-medium">💡 Pro Tip</p>
                       <p className="text-blue-700 text-sm mt-1">
-                        Premium users can generate unlimited videos. Free users have 5 videos per month.
+                        Each video generation costs 5 credits from your monthly limit.
                       </p>
                     </div>
                   </div>
@@ -258,24 +263,34 @@ export default function GenerateVideos() {
                     key={video.id}
                     className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                   >
-                    {/* Video Thumbnail */}
-                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 aspect-video flex items-center justify-center relative">
-                      <div className="text-center">
-                        <div className="text-5xl mb-3">🎬</div>
-                        <p className={`text-sm font-medium px-3 py-1 rounded-full ${
-                          video.status === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {video.status === 'completed' ? 'Completed' : 'Processing'}
-                        </p>
+                    {/* Video Player or Thumbnail */}
+                    {video.video_url ? (
+                      <div className="aspect-video relative">
+                        <video 
+                          src={video.video_url} 
+                          controls 
+                          className="w-full h-full object-cover rounded-t-2xl"
+                        />
                       </div>
-                      {video.status === 'completed' && (
-                        <div className="absolute top-3 right-3">
-                          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    ) : (
+                      <div className="bg-gradient-to-br from-gray-100 to-gray-200 aspect-video flex items-center justify-center relative">
+                        <div className="text-center">
+                          <div className="text-5xl mb-3">🎬</div>
+                          <p className={`text-sm font-medium px-3 py-1 rounded-full ${
+                            video.status === 'completed'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {video.status === 'completed' ? 'Completed' : 'Processing'}
+                          </p>
                         </div>
-                      )}
-                    </div>
+                        {video.status === 'completed' && (
+                          <div className="absolute top-3 right-3">
+                            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Video Info */}
                     <div className="p-6">
@@ -288,7 +303,7 @@ export default function GenerateVideos() {
                         </div>
                       </div>
                       <p className="text-gray-800 font-semibold mb-4 line-clamp-2 leading-relaxed">
-                        {video.script?.substring(0, 100)}...
+                        {video.script}
                       </p>
 
                       {/* Actions */}
@@ -347,18 +362,32 @@ export default function GenerateVideos() {
               <div className="space-y-6">
                 <div>
                   <label className="block text-gray-700 font-semibold mb-2">
-                    Platform
+                    Platforms
                   </label>
-                  <select
-                    value={sharePlatform}
-                    onChange={(e) => setSharePlatform(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="instagram">📸 Instagram</option>
-                    <option value="tiktok">🎵 TikTok</option>
-                    <option value="facebook">👥 Facebook</option>
-                    <option value="youtube">📺 YouTube</option>
-                  </select>
+                  <div className="space-y-2">
+                    {[
+                      { value: 'instagram', label: '📸 Instagram' },
+                      { value: 'tiktok', label: '🎵 TikTok' },
+                      { value: 'facebook', label: '👥 Facebook' },
+                      { value: 'youtube', label: '📺 YouTube' }
+                    ].map(platform => (
+                      <label key={platform.value} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={sharePlatforms.includes(platform.value)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSharePlatforms([...sharePlatforms, platform.value]);
+                            } else {
+                              setSharePlatforms(sharePlatforms.filter(p => p !== platform.value));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        {platform.label}
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 <div>

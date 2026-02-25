@@ -31,7 +31,7 @@ export const API_ENDPOINTS = {
 
   // Video endpoints
   VIDEOS: {
-    GENERATE_SCRIPT: `${API_BASE_URL}/videos/generate-script`,
+    GENERATE_SCRIPT: `${API_BASE_URL}/videos/generate-video`,
     GENERATE_FROM_ASSETS: `${API_BASE_URL}/videos/generate-from-assets`,
     SHARE_TO_SOCIAL: `${API_BASE_URL}/videos/share-to-social`,
     GET_VIDEOS: `${API_BASE_URL}/videos/get-videos`,

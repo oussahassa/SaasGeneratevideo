@@ -1,7 +1,7 @@
 import express from 'express';
 import { auth } from '../middlewares/auth.js';
 import {
-  generateVideoScript,
+  generateVideo,
   generateVideoFromAssets,
   shareVideoToSocial,
   getUserVideoStats,
@@ -11,7 +11,7 @@ import {
 
 const videoRouter = express.Router();
 
-videoRouter.post('/generate-script', auth, generateVideoScript);
+videoRouter.post('/generate-video', auth, generateVideo);
 videoRouter.post('/generate-from-assets', auth, generateVideoFromAssets);
 videoRouter.post('/share-to-social', auth, shareVideoToSocial);
 videoRouter.get('/get-videos', auth, getUserVideos);

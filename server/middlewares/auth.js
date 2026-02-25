@@ -33,16 +33,18 @@ export const attachPlanInfo = async (req, res, next) => {
     try {
         if (!req.user) {
             req.plan = 'free'
+            req.credits = 5
             return next()
         }
 
-        const subscription = await sql(
+        const subscription = await sql
             `SELECT * FROM user_subscriptions 
-             WHERE user_id = $1 AND is_active = TRUE AND end_date > NOW()`,
-            [req.user.id]
-        )
-
+             WHERE user_id = ${ req.user.id } AND is_active = TRUE AND end_date > NOW()`;
+           
+        
+console.log("User subscription info:", subscription)
         req.plan = subscription.length > 0 ? 'premium' : 'free'
+        req.credits = subscription.length > 0 ? subscription[0].monthly_limit : 5
 
         // Update session last_active_at if possible (match by ip + user agent)
         try {
@@ -58,6 +60,7 @@ export const attachPlanInfo = async (req, res, next) => {
         next()
     } catch (error) {
         req.plan = 'free'
+        req.credits = 5
         next()
     }
 }

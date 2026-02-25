@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^1.42.0",
     "@neondatabase/serverless": "^1.0.2",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "axios": "^1.13.2",
@@ -30,7 +31,6 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pdf-parse": "^2.4.5",
-
     "sharp": "^0.33.0",
     "stripe": "^20.3.1",
     "uuid": "^9.0.1"

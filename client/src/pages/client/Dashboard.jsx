@@ -24,15 +24,15 @@ const Dashboard = () => {
     setLoading(true)
     try {
       // Fetch user creations
-      const resCre = await api.get('/api/user/get-user-creations')
+      const resCre = await api.get('/user/get-user-creations')
       if (resCre.data?.success) setCreations(resCre.data.creations || [])
 
       // Fetch dashboard stats
-      const resStats = await api.get('/api/user/dashboard-stats')
+      const resStats = await api.get('/user/dashboard-stats')
       if (resStats.data?.success) setStats(resStats.data.stats || {})
 
       // Fetch sessions
-      const resSessions = await api.get('/api/user/sessions')
+      const resSessions = await api.get('/user/sessions')
       if (resSessions.data?.success) setSessions(resSessions.data.sessions || [])
 
     } catch (err) {
@@ -58,7 +58,7 @@ const Dashboard = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault()
     try {
-      const res = await api.put('/api/user/update-profile', profileForm)
+      const res = await api.put('/user/update-profile', profileForm)
       if (res.data?.success) {
         // update stored user
         const updatedUser = res.data.user
@@ -75,7 +75,7 @@ const Dashboard = () => {
 
   const handleRevokeSession = async (id) => {
     try {
-      const res = await api.post('/api/user/revoke-session', { id })
+      const res = await api.post('/user/revoke-session', { id })
       if (res.data?.success) {
         toast.success(t('dashboard.sessionRevoked') || 'Session revoked')
         setSessions(prev => prev.filter(s => s.id !== id))
