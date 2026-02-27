@@ -25,3 +25,15 @@ PAYPAL_CLIENT_ID=your_paypal_client_id
 PAYPAL_CLIENT_SECRET=your_paypal_client_secret
 PAYMEE_VENDOR_KEY=your_paymee_vendor_key
 PAYMEE_API_KEY=your_paymee_api_key
+
+# Social Media API Keys (All using Facebook Graph API)
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
+FACEBOOK_REDIRECT_URI=http://localhost:5000/api/auth/social/facebook/callback
+INSTAGRAM_REDIRECT_URI=http://localhost:5000/api/auth/social/instagram/callback
+
+TIKTOK_CLIENT_KEY=your_tiktok_client_key
+TIKTOK_CLIENT_SECRET=your_tiktok_client_secret
+TIKTOK_REDIRECT_URI=http://localhost:5000/api/auth/social/tiktok/callback
+
+FRONTEND_URL=http://localhost:5173

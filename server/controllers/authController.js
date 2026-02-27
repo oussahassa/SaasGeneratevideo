@@ -372,3 +372,229 @@ export const refreshAccessToken = async (req, res) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
+
+// Social Login Functions
+export const initiateSocialLogin = async (req, res) => {
+  try {
+    const { platform } = req.params;
+    const { redirectUrl } = req.query;
+
+    if (!['instagram', 'tiktok', 'facebook'].includes(platform)) {
+      return res.status(400).json({ success: false, message: 'Invalid platform' });
+    }
+
+    // Generate OAuth URLs for each platform
+    let authUrl = '';
+
+    switch (platform) {
+      case 'instagram':
+        // Instagram Business Account via Facebook Graph API
+        authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${encodeURIComponent(process.env.INSTAGRAM_REDIRECT_URI)}&scope=pages_manage_posts,pages_show_list,instagram_basic,instagram_content_publish&response_type=code&state=${redirectUrl || ''}`;
+        break;
+      case 'tiktok':
+        // TikTok OAuth
+        authUrl = `https://www.tiktok.com/auth/authorize?client_key=${process.env.TIKTOK_CLIENT_KEY}&scope=user.info.basic,video.publish&response_type=code&redirect_uri=${encodeURIComponent(process.env.TIKTOK_REDIRECT_URI)}&state=${redirectUrl || ''}`;
+        break;
+      case 'facebook':
+        // Facebook OAuth for pages
+        authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${encodeURIComponent(process.env.FACEBOOK_REDIRECT_URI)}&scope=pages_manage_posts,pages_show_list&response_type=code&state=${redirectUrl || ''}`;
+        break;
+    }
+
+    res.json({ success: true, authUrl });
+  } catch (error) {
+    console.error('Social login initiation error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const handleSocialCallback = async (req, res) => {
+  try {
+    const { platform } = req.params;
+    const { code, state } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ success: false, message: 'Authorization code required' });
+    }
+
+    // Exchange code for access token
+    let tokenData = {};
+
+    switch (platform) {
+      case 'instagram':
+        // Instagram via Facebook Graph API
+        const igFbResponse = await fetch(`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${encodeURIComponent(process.env.INSTAGRAM_REDIRECT_URI)}&client_secret=${process.env.FACEBOOK_APP_SECRET}&code=${code}`, {
+          method: 'GET'
+        });
+        tokenData = await igFbResponse.json();
+
+        // Récupérer les pages et comptes Instagram associés
+        if (tokenData.access_token) {
+          try {
+            const pagesResponse = await fetch(`https://graph.facebook.com/v19.0/me/accounts?fields=id,name,access_token,instagram_business_account&access_token=${tokenData.access_token}`, {
+              method: 'GET'
+            });
+            const pagesData = await pagesResponse.json();
+
+            if (pagesData.data && pagesData.data.length > 0) {
+              // Chercher une page avec un compte Instagram Business
+              const pageWithInstagram = pagesData.data.find(page => page.instagram_business_account);
+              if (pageWithInstagram) {
+                tokenData.page_id = pageWithInstagram.id;
+                tokenData.page_access_token = pageWithInstagram.access_token;
+                tokenData.page_name = pageWithInstagram.name;
+                tokenData.instagram_account_id = pageWithInstagram.instagram_business_account.id;
+              }
+            }
+          } catch (igError) {
+            console.warn('Failed to fetch Instagram business account:', igError);
+          }
+        }
+        break;
+
+      case 'tiktok':
+        const tiktokResponse = await fetch('https://open-api.tiktok.com/oauth/access_token/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            client_key: process.env.TIKTOK_CLIENT_KEY,
+            client_secret: process.env.TIKTOK_CLIENT_SECRET,
+            code,
+            grant_type: 'authorization_code',
+            redirect_uri: process.env.TIKTOK_REDIRECT_URI
+          })
+        });
+        tokenData = await tiktokResponse.json();
+        break;
+
+      case 'facebook':
+        const fbResponse = await fetch(`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${encodeURIComponent(process.env.FACEBOOK_REDIRECT_URI)}&client_secret=${process.env.FACEBOOK_APP_SECRET}&code=${code}`, {
+          method: 'GET'
+        });
+        tokenData = await fbResponse.json();
+
+        // Si succès, récupérer les pages Facebook de l'utilisateur
+        if (tokenData.access_token) {
+          try {
+            const pagesResponse = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${tokenData.access_token}`, {
+              method: 'GET'
+            });
+            const pagesData = await pagesResponse.json();
+
+            if (pagesData.data && pagesData.data.length > 0) {
+              // Prendre la première page (ou permettre à l'utilisateur de choisir plus tard)
+              const firstPage = pagesData.data[0];
+              tokenData.page_id = firstPage.id;
+              tokenData.page_access_token = firstPage.access_token;
+              tokenData.page_name = firstPage.name;
+            }
+          } catch (pageError) {
+            console.warn('Failed to fetch Facebook pages:', pageError);
+            // Continue without page info - user can reconnect later
+          }
+        }
+        break;
+    }
+
+    if (tokenData.error) {
+      return res.status(400).json({ success: false, message: tokenData.error_description || tokenData.error });
+    }
+
+    // For demo purposes, we'll assume the user is already logged in
+    // In production, you'd need to handle the OAuth flow properly with user sessions
+    const userId = req.user ? req.user.id : null; // This won't work without proper session handling
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+
+    // Store social account
+    const expiresAt = tokenData.expires_in ? new Date(Date.now() + tokenData.expires_in * 1000) : null;
+
+    if (platform === 'facebook') {
+      // Pour Facebook, stocker les infos de page
+      await sql`
+        INSERT INTO social_accounts (user_id, platform, access_token, refresh_token, expires_at, platform_user_id, page_id, page_access_token, page_name)
+        VALUES (${userId}, ${platform}, ${tokenData.access_token}, ${tokenData.refresh_token || null}, ${expiresAt}, ${tokenData.user_id || null}, ${tokenData.page_id || null}, ${tokenData.page_access_token || null}, ${tokenData.page_name || null})
+        ON CONFLICT (user_id, platform) DO UPDATE SET
+          access_token = EXCLUDED.access_token,
+          refresh_token = EXCLUDED.refresh_token,
+          expires_at = EXCLUDED.expires_at,
+          platform_user_id = EXCLUDED.platform_user_id,
+          page_id = EXCLUDED.page_id,
+          page_access_token = EXCLUDED.page_access_token,
+          page_name = EXCLUDED.page_name,
+          updated_at = NOW()
+      `;
+    } else if (platform === 'instagram') {
+      // Pour Instagram, stocker les infos de page Facebook et compte Instagram
+      await sql`
+        INSERT INTO social_accounts (user_id, platform, access_token, refresh_token, expires_at, platform_user_id, page_id, page_access_token, page_name)
+        VALUES (${userId}, ${platform}, ${tokenData.access_token}, ${tokenData.refresh_token || null}, ${expiresAt}, ${tokenData.instagram_account_id || null}, ${tokenData.page_id || null}, ${tokenData.page_access_token || null}, ${tokenData.page_name || null})
+        ON CONFLICT (user_id, platform) DO UPDATE SET
+          access_token = EXCLUDED.access_token,
+          refresh_token = EXCLUDED.refresh_token,
+          expires_at = EXCLUDED.expires_at,
+          platform_user_id = EXCLUDED.platform_user_id,
+          page_id = EXCLUDED.page_id,
+          page_access_token = EXCLUDED.page_access_token,
+          page_name = EXCLUDED.page_name,
+          updated_at = NOW()
+      `;
+    } else {
+      // Pour les autres plateformes
+      await sql`
+        INSERT INTO social_accounts (user_id, platform, access_token, refresh_token, expires_at, platform_user_id)
+        VALUES (${userId}, ${platform}, ${tokenData.access_token}, ${tokenData.refresh_token || null}, ${expiresAt}, ${tokenData.user_id || null})
+        ON CONFLICT (user_id, platform) DO UPDATE SET
+          access_token = EXCLUDED.access_token,
+          refresh_token = EXCLUDED.refresh_token,
+          expires_at = EXCLUDED.expires_at,
+          platform_user_id = EXCLUDED.platform_user_id,
+          updated_at = NOW()
+      `;
+    }
+
+    // Redirect back to frontend
+    const redirectUrl = state || `${process.env.FRONTEND_URL}/dashboard`;
+    res.redirect(redirectUrl);
+
+  } catch (error) {
+    console.error('Social callback error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getUserSocialAccounts = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const accounts = await sql`
+      SELECT id, platform, platform_user_id, page_id, page_name, created_at, updated_at
+      FROM social_accounts
+      WHERE user_id = ${userId}
+    `;
+
+    res.json({ success: true, accounts });
+  } catch (error) {
+    console.error('Get social accounts error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const disconnectSocialAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { platform } = req.params;
+
+    await sql`
+      DELETE FROM social_accounts
+      WHERE user_id = ${userId} AND platform = ${platform}
+    `;
+
+    res.json({ success: true, message: 'Social account disconnected' });
+  } catch (error) {
+    console.error('Disconnect social account error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

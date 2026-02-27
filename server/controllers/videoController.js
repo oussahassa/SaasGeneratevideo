@@ -128,14 +128,31 @@ export const shareVideoToSocial = async (req, res) => {
     const userId = req.user.id;
     const { videoId, platforms, caption } = req.body; // platforms as array
 
-if (!Array.isArray(platforms) || platforms.length === 0) {
-  return res.status(400).json({ error: "Platforms required" });
-}
-for (const platform of platforms) {
+    if (!Array.isArray(platforms) || platforms.length === 0) {
+      return res.status(400).json({ success: false, message: "Platforms required" });
+    }
 
-      const account = await getUserSocialAccount(userId, platform);
+    // Récupérer la vidéo
+    const video = await sql`SELECT * FROM videos WHERE id = ${videoId}`;
 
-      if (!account) {
+    if (!video || video.length === 0) {
+      return res.json({ success: false, message: "Video not found" });
+    }
+
+    if (video[0].user_id !== userId) {
+      return res.json({ success: false, message: "Unauthorized access" });
+    }
+
+    const results = [];
+
+    for (const platform of platforms) {
+      const account = await sql`
+        SELECT id, user_id, platform, access_token, refresh_token, expires_at, platform_user_id, page_id, page_access_token, page_name, created_at, updated_at
+        FROM social_accounts
+        WHERE user_id = ${userId} AND platform = ${platform}
+      `;
+
+      if (!account || account.length === 0) {
         results.push({
           platform,
           success: false,
@@ -148,58 +165,41 @@ for (const platform of platforms) {
         let response;
 
         if (platform === "instagram") {
-          response = await postToInstagram(video.videoUrl, caption, account);
+          response = await postToInstagram(video[0].video_url, caption, account[0]);
+        } else if (platform === "tiktok") {
+          response = await postToTikTok(video[0].video_url, caption, account[0]);
+        } else if (platform === "facebook") {
+          response = await postToFacebook(video[0].video_url, caption, account[0]);
         }
 
-        if (platform === "tiktok") {
-          response = await postToTikTok(video.videoUrl, caption, account);
-        }
+        // Créer un enregistrement de partage
+        await sql`
+          INSERT INTO video_shares (video_id, user_id, platform, caption, shared_at)
+          VALUES (${videoId}, ${userId}, ${platform}, ${caption}, NOW())
+        `;
 
-        if (platform === "facebook") {
-          response = await postToFacebook(video.videoUrl, caption, account);
-        }
-        console.log(`Shared to ${platform}:`, response);
+        results.push({
+          platform,
+          success: true,
+          response
+        });
+
+      } catch (error) {
+        results.push({
+          platform,
+          success: false,
+          error: error.message
+        });
       }
-        catch (error) {
-          results.push({
-            platform,
-            success: false, 
-            error: error.message
-          });
-        }
-      }
-    // Récupérer la vidéo
-    const video = await sql`SELECT * FROM videos WHERE id = ${videoId}`;
-
-    if (!video || video.length === 0) {
-      return res.json({ success: false, message: "Video not found" });
     }
-
-    if (video[0].user_id !== userId) {
-      return res.json({ success: false, message: "Unauthorized access" });
-    }
-
-    const shares = [];
-    for (const platform of platforms) {
-      // Créer un enregistrement de partage
-      const share = await sql`
-        INSERT INTO video_shares (video_id, user_id, platform, caption, shared_at) VALUES (${videoId}, ${userId}, ${platform}, ${caption}, NOW()) RETURNING *
-      `;
-      shares.push(share[0]);
-    }
-
-    // Simulation - En production, vous intégreriez les APIs réelles
-    // des réseaux sociaux (Instagram, TikTok, Facebook)
-    const shareUrls = platforms.map(platform => `https://${platform}.com/${videoId}`);
 
     res.json({
       success: true,
-      message: `Video shared to ${platforms.join(', ')}`,
-      shares,
-      shareUrls
+      message: `Video sharing completed`,
+      results
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -284,7 +284,7 @@ async function postToTikTok(videoUrl, caption, account) {
     },
     {
       headers: {
-        Authorization: `Bearer ${account.accessToken}`,
+        Authorization: `Bearer ${account.access_token}`,
         "Content-Type": "application/json"
       }
     }
@@ -295,8 +295,12 @@ async function postToTikTok(videoUrl, caption, account) {
 
 async function postToInstagram(videoUrl, caption, account) {
 
-  const IG_USER_ID = account.platformUserId;
-  const ACCESS_TOKEN = account.accessToken;
+  const IG_USER_ID = account.platform_user_id; // Instagram Business Account ID
+  const ACCESS_TOKEN = account.page_access_token; // Page access token
+
+  if (!ACCESS_TOKEN) {
+    throw new Error('Page access token required for Instagram publishing');
+  }
 
   // 1️⃣ Create media container
   const container = await axios.post(
@@ -324,8 +328,12 @@ async function postToInstagram(videoUrl, caption, account) {
 
 async function postToFacebook(videoUrl, caption, account) {
 
-  const PAGE_ID = account.platform_user_id;
-  const ACCESS_TOKEN = account.access_token;
+  const PAGE_ID = account.page_id; // Page ID
+  const ACCESS_TOKEN = account.page_access_token; // Page access token
+
+  if (!ACCESS_TOKEN || !PAGE_ID) {
+    throw new Error('Page access token and page ID required for Facebook publishing');
+  }
 
   // 1️⃣ Upload vidéo depuis URL
   const upload = await axios.post(
