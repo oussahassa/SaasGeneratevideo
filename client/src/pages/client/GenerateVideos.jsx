@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { Loader, Download, Share2, Trash2, Play, Video, Sparkles } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { generateVideo, fetchVideos, fetchVideoStats, deleteVideo, shareVideo } from '../../redux/slices/videoSlice';
+import { fetchSocialAccounts, initiateSocialLogin } from '../../redux/slices/socialSlice';
 
 export default function GenerateVideos() {
   const [activeTab, setActiveTab] = useState('generate');
@@ -18,11 +19,13 @@ export default function GenerateVideos() {
 
   const dispatch = useDispatch();
   const { videos, stats, isLoading, error, success } = useSelector(state => state.video);
+  const { accounts: socialAccounts, isLoading: socialLoading } = useSelector(state => state.social);
 
   useEffect(() => {
     if (activeTab === 'my-videos') {
       dispatch(fetchVideos());
       dispatch(fetchVideoStats());
+      dispatch(fetchSocialAccounts());
     }
   }, [activeTab, dispatch]);
 
@@ -74,6 +77,10 @@ export default function GenerateVideos() {
   const handleDeleteVideo = async (videoId) => {
     if (!window.confirm('Are you sure you want to delete this video?')) return;
     dispatch(deleteVideo(videoId));
+  };
+
+  const handleSocialLogin = async (platform) => {
+    dispatch(initiateSocialLogin({ platform, redirectUrl: window.location.href }));
   };
 
   return (
@@ -310,13 +317,23 @@ export default function GenerateVideos() {
                       <div className="flex gap-3">
                         {video.status === 'completed' && (
                           <>
-                            <button
-                              onClick={() => setShareModal(video.id)}
-                              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                            >
-                              <Share2 size={16} />
-                              Share
-                            </button>
+                            {socialAccounts && socialAccounts.length > 0 ? (
+                              <button
+                                onClick={() => setShareModal(video.id)}
+                                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                              >
+                                <Share2 size={16} />
+                                Share
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setShareModal(video.id)}
+                                className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                              >
+                                <Share2 size={16} />
+                                Connect Social
+                              </button>
+                            )}
                             <button
                               onClick={() => handleDeleteVideo(video.id)}
                               className="p-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all duration-200 hover:shadow-md"
@@ -364,29 +381,49 @@ export default function GenerateVideos() {
                   <label className="block text-gray-700 font-semibold mb-2">
                     Platforms
                   </label>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {[
-                      { value: 'instagram', label: '📸 Instagram' },
-                      { value: 'tiktok', label: '🎵 TikTok' },
-                      { value: 'facebook', label: '👥 Facebook' },
-                      { value: 'youtube', label: '📺 YouTube' }
-                    ].map(platform => (
-                      <label key={platform.value} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={sharePlatforms.includes(platform.value)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSharePlatforms([...sharePlatforms, platform.value]);
-                            } else {
-                              setSharePlatforms(sharePlatforms.filter(p => p !== platform.value));
-                            }
-                          }}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        {platform.label}
-                      </label>
-                    ))}
+                      { value: 'instagram', label: '📸 Instagram', color: 'from-pink-500 to-purple-600' },
+                      { value: 'tiktok', label: '🎵 TikTok', color: 'from-black to-gray-800' },
+                      { value: 'facebook', label: '👥 Facebook', color: 'from-blue-600 to-blue-800' }
+                    ].map(platform => {
+                      const account = socialAccounts?.find(account => account.platform === platform.value);
+                      const isConnected = !!account;
+                      return (
+                        <div key={platform.value} className="flex items-center justify-between">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={sharePlatforms.includes(platform.value)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSharePlatforms([...sharePlatforms, platform.value]);
+                                } else {
+                                  setSharePlatforms(sharePlatforms.filter(p => p !== platform.value));
+                                }
+                              }}
+                              disabled={!isConnected}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+                            />
+                            {platform.label}
+                            {isConnected && (
+                              <span className="text-green-500 text-sm">
+                                ✓ {account.page_name ? `Connected to ${account.page_name}` : 'Connected'}
+                              </span>
+                            )}
+                          </label>
+                          {!isConnected && (
+                            <button
+                              onClick={() => handleSocialLogin(platform.value)}
+                              disabled={socialLoading}
+                              className={`bg-gradient-to-r ${platform.color} hover:opacity-90 disabled:opacity-50 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200`}
+                            >
+                              {socialLoading ? 'Connecting...' : 'Connect'}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

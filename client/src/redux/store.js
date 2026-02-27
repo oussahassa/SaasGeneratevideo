@@ -5,6 +5,7 @@ import aiReducer from './slices/aiSlice'
 import videoReducer from './slices/videoSlice'
 import packReducer from './slices/packSlice'
 import adminReducer from './slices/adminSlice'
+import socialReducer from './slices/socialSlice'
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     video: videoReducer,
     pack: packReducer,
     admin: adminReducer,
+    social: socialReducer,
   },
   devTools: {
     trace: true,
