@@ -234,6 +234,16 @@ export const login = async (req, res) => {
 
     await sql`UPDATE users SET last_sign_in_at = NOW() WHERE id = ${user.id}`
 
+    // Create session
+    const sessionId = uuidv4()
+    const ipAddress = req.ip || req.connection.remoteAddress
+    const userAgent = req.get('user-agent')
+    
+    await sql`
+      INSERT INTO sessions (id, user_id, ip_address, user_agent, created_at, last_active_at)
+      VALUES (${sessionId}, ${user.id}, ${ipAddress}, ${userAgent}, NOW(), NOW())
+    `
+
     const token = generateToken({ id: user.id, email: user.email })
     const refreshToken = generateRefreshToken({ id: user.id, email: user.email })
 
@@ -246,6 +256,7 @@ export const login = async (req, res) => {
         email: user.email,
         firstName: user.first_name,
         lastName: user.last_name,
+        profile_picture: user.profile_picture,
         role: user.is_admin ? 'admin' : 'user'
       }
     })
@@ -393,14 +404,39 @@ export const initiateSocialLogin = async (req, res) => {
         break;
       case 'tiktok':
         // TikTok OAuth
-        authUrl = `https://www.tiktok.com/auth/authorize?client_key=${process.env.TIKTOK_CLIENT_KEY}&scope=user.info.basic,video.publish&response_type=code&redirect_uri=${encodeURIComponent(process.env.TIKTOK_REDIRECT_URI)}&state=${redirectUrl || ''}`;
+           // IMPORTANT: Utilisez l'URL exacte configurée dans votre sandbox TikTok
+        const tiktokRedirectUri = "https://semipatriotic-unpoisonously-jaime.ngrok-free.dev/ai/generate-videos";
+        
+        authUrl = new URL("https://www.tiktok.com/auth/authorize");
+        authUrl.searchParams.set("client_key", process.env.TIKTOK_CLIENT_KEY);
+        authUrl.searchParams.set("scope", "user.info.basic,video.publish");
+        authUrl.searchParams.set("response_type", "code");
+        authUrl.searchParams.set("redirect_uri", tiktokRedirectUri);
+        authUrl.searchParams.set("state", JSON.stringify({ 
+          redirectUrl: redirectUrl || '/',
+          platform: 'tiktok'
+        }));
+        break
+       /*   authUrl =
+    `https://www.tiktok.com/auth/authorize` +
+    `?client_key=${process.env.TIKTOK_CLIENT_KEY}` +
+    `&response_type=code` +
+    `&scope=user.info.basic,video.publish` +
+    `&redirect_uri=${encodeURIComponent(redirectUrl)}` +
+    `&state=test`;
+*/
+
+  //`&state=${encodeURIComponent(redirectUrl)}`;
+    //    authUrl = `https://www.tiktok.com/auth/authorize?client_key=${process.env.TIKTOK_CLIENT_KEY}&scope=user.info.basic,video.publish&response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${redirectUrl || ''}`;
         break;
       case 'facebook':
         // Facebook OAuth for pages
         authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${encodeURIComponent(process.env.FACEBOOK_REDIRECT_URI)}&scope=pages_manage_posts,pages_show_list&response_type=code&state=${redirectUrl || ''}`;
         break;
     }
-
+    console.log('Request IP:', req.ip);
+console.log('Request headers:', req.headers)
+console.log(`Initiating ${platform} login with redirectUrl: ${redirectUrl}, redirecting to:`, authUrl);
     res.json({ success: true, authUrl });
   } catch (error) {
     console.error('Social login initiation error:', error);
@@ -465,6 +501,7 @@ export const handleSocialCallback = async (req, res) => {
           })
         });
         tokenData = await tiktokResponse.json();
+        console.log('TikTok token response:', tokenData);
         break;
 
       case 'facebook':
@@ -556,7 +593,17 @@ export const handleSocialCallback = async (req, res) => {
     }
 
     // Redirect back to frontend
-    const redirectUrl = state || `${process.env.FRONTEND_URL}/dashboard`;
+    // If TikTok login, append a flag so UI can react immediately
+    let redirectUrl = state || `${process.env.FRONTEND_URL}/dashboard`;
+    if (platform === 'tiktok' && tokenData.access_token) {
+      // include basic info in query string for client-side notification
+      const params = new URLSearchParams();
+      params.set('platform', 'tiktok');
+      params.set('connected', '1');
+      // we do NOT include the raw token for security
+      const sep = redirectUrl.includes('?') ? '&' : '?';
+      redirectUrl = `${redirectUrl}${sep}${params.toString()}`;
+    }
     res.redirect(redirectUrl);
 
   } catch (error) {

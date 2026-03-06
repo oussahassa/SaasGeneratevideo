@@ -1,9 +1,11 @@
 import sql from "../configs/db.js";
+import bcrypt from "bcryptjs";
+import { v2 as cloudinary } from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await sql`SELECT id, email, first_name, last_name, created_at FROM users WHERE id = ${userId}`;
+    const user = await sql`SELECT id, email, first_name, last_name, profile_picture, created_at FROM users WHERE id = ${userId}`;
     
     if (!user || user.length === 0) {
       return res.status(404).json({ success: false, message: "User not found" });
@@ -90,30 +92,54 @@ export const toggleLikeCreation = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, password } = req.body;
+    const profileImageFile = req.file;
 
-    if (!firstName && !lastName && !email) {
+    if (!firstName && !lastName && !password && !profileImageFile) {
       return res.status(400).json({ success: false, message: "No fields to update" });
     }
 
-    if (email) {
-      const existing = await sql`SELECT id FROM users WHERE email = ${email} AND id != ${userId}`;
-      if (existing.length > 0) return res.status(409).json({ success: false, message: "Email already in use" });
+    // Get current user data
+    const currentUser = await sql`SELECT * FROM users WHERE id = ${userId}`;
+    if (!currentUser || currentUser.length === 0) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    let profilePictureUrl = currentUser[0].profile_picture;
+    let hashedPassword = currentUser[0].password_hash;
+
+    // Handle profile picture upload
+    if (profileImageFile) {
+      const result = await cloudinary.uploader.upload(profileImageFile.path, {
+        folder: 'nexai/profiles',
+        resource_type: 'auto'
+      });
+      profilePictureUrl = result.secure_url;
+    }
+
+    // Hash password if provided
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    // Update user profile
     const updated = await sql`
       UPDATE users
-      SET first_name = COALESCE(${firstName}, first_name),
-          last_name = COALESCE(${lastName}, last_name),
-          email = COALESCE(${email}, email)
+      SET first_name = ${firstName || currentUser[0].first_name},
+          last_name = ${lastName || currentUser[0].last_name},
+          password_hash = ${hashedPassword},
+          profile_picture = ${profilePictureUrl}
       WHERE id = ${userId}
-      RETURNING id, email, first_name, last_name, created_at
+      RETURNING id, email, first_name, last_name, profile_picture, created_at
     `;
 
-    if (!updated || updated.length === 0) return res.status(404).json({ success: false, message: "User not found" });
+    if (!updated || updated.length === 0) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
     res.json({ success: true, user: updated[0] });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

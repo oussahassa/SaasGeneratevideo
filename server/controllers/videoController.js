@@ -165,11 +165,31 @@ export const shareVideoToSocial = async (req, res) => {
         let response;
 
         if (platform === "instagram") {
-          response = await postToInstagram(video[0].video_url, caption, account[0]);
+          // if we have page_access_token use standard container; else fallback to share link
+          if (account[0].page_access_token) {
+            response = await postToInstagram(video[0].video_url, caption, account[0]);
+          } else {
+            // can't post to personal profile via API, provide sharer link
+            response = { shareUrl: `https://www.instagram.com/sharing?u=${encodeURIComponent(video[0].video_url)}` };
+          }
         } else if (platform === "tiktok") {
           response = await postToTikTok(video[0].video_url, caption, account[0]);
         } else if (platform === "facebook") {
-          response = await postToFacebook(video[0].video_url, caption, account[0]);
+          // if page token available use page share, otherwise use profile
+          if (account[0].page_access_token && account[0].page_id) {
+            response = await postToFacebook(video[0].video_url, caption, account[0]);
+          } else {
+            // post to personal profile
+            const profileResponse = await axios.post(
+              `https://graph.facebook.com/v19.0/me/videos`,
+              {
+                file_url: video[0].video_url,
+                description: caption,
+                access_token: account[0].access_token
+              }
+            );
+            response = profileResponse.data;
+          }
         }
 
         // Créer un enregistrement de partage

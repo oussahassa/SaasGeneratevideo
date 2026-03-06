@@ -1,20 +1,48 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { createComplaint, fetchMyComplaints, clearError, clearSuccess, resetForm } from '../../redux/slices/supportSlice';
 
 export default function Support() {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { complaints, isLoading, error, success } = useSelector(state => state.support);
+
   const [activeTab, setActiveTab] = useState('submit');
-  const [myComplaints, setMyComplaints] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: 'bug',
     priority: 'medium'
   });
+
+  // Handle success/error states
+  useEffect(() => {
+    if (success) {
+      toast.success(t('support.submitted') || 'Complaint submitted successfully');
+      setFormData({
+        title: '',
+        description: '',
+        category: 'bug',
+        priority: 'medium'
+      });
+      setActiveTab('my-complaints');
+      dispatch(clearSuccess());
+    }
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [success, error, dispatch, t]);
+
+  // Fetch complaints when my-complaints tab is active
+  useEffect(() => {
+    if (activeTab === 'my-complaints') {
+      dispatch(fetchMyComplaints());
+    }
+  }, [activeTab, dispatch]);
 
   const categories = [
     { value: 'bug', label: t('support.categories.bug') },
@@ -46,39 +74,11 @@ export default function Support() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const response = await axios.post('/api/support/create-complaint', formData);
-      if (response.data.success) {
-        toast.success(t('support.submitted') || 'Complaint submitted successfully');
-        setFormData({
-          title: '',
-          description: '',
-          category: 'bug',
-          priority: 'medium'
-        });
-        setActiveTab('my-complaints');
-        fetchMyComplaints();
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || t('support.failedToSubmit') || 'Failed to submit complaint');
-    } finally {
-      setLoading(false);
-    }
+    dispatch(createComplaint(formData));
   };
 
-  const fetchMyComplaints = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/api/support/get-my-complaints');
-      if (response.data.success) {
-        setMyComplaints(response.data.complaints);
-      }
-    } catch (error) {
-      toast.error(t('support.failedToLoad') || 'Failed to load complaints');
-    } finally {
-      setLoading(false);
-    }
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
   };
 
   const getStatusIcon = (status) => {
@@ -95,7 +95,7 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -110,9 +110,7 @@ export default function Support() {
         {/* Tabs */}
         <div className="flex gap-4 mb-8 border-b border-slate-700">
           <button
-            onClick={() => {
-              setActiveTab('submit');
-            }}
+            onClick={() => handleTabChange('submit')}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'submit'
                 ? 'text-blue-500 border-b-2 border-blue-500'
@@ -122,10 +120,7 @@ export default function Support() {
             {t('support.submitComplaint')}
           </button>
           <button
-            onClick={() => {
-              setActiveTab('my-complaints');
-              fetchMyComplaints();
-            }}
+            onClick={() => handleTabChange('my-complaints')}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'my-complaints'
                 ? 'text-blue-500 border-b-2 border-blue-500'
@@ -138,7 +133,7 @@ export default function Support() {
 
         {/* Submit Tab */}
         {activeTab === 'submit' && (
-          <div className="bg-slate-800 rounded-lg p-8 border border-slate-700">
+          <div className=" rounded-lg p-8 border border-slate-700">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-white font-medium mb-2">
@@ -150,7 +145,7 @@ export default function Support() {
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder={t('support.complaintTitle')}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-200 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -164,7 +159,7 @@ export default function Support() {
                   onChange={handleInputChange}
                   placeholder={t('support.description')}
                   rows="5"
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-slate-200 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
                 />
               </div>
 
@@ -177,7 +172,7 @@ export default function Support() {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-200 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>
@@ -195,7 +190,7 @@ export default function Support() {
                     name="priority"
                     value={formData.priority}
                     onChange={handleInputChange}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-200 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
                   >
                     {priorities.map(pri => (
                       <option key={pri.value} value={pri.value}>
@@ -208,10 +203,10 @@ export default function Support() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isLoading}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
               >
-                {loading ? t('support.submitting') : t('support.submit')}
+                {isLoading ? t('support.submitting') : t('support.submit')}
               </button>
             </form>
           </div>
@@ -220,10 +215,10 @@ export default function Support() {
         {/* My Complaints Tab */}
         {activeTab === 'my-complaints' && (
           <div className="space-y-4">
-            {loading ? (
+            {isLoading ? (
               <div className="text-center text-slate-400">{t('common.loading')}</div>
-            ) : myComplaints.length > 0 ? (
-              myComplaints.map(complaint => (
+            ) : complaints.length > 0 ? (
+              complaints.map(complaint => (
                 <div
                   key={complaint.id}
                   className="bg-slate-800 rounded-lg p-6 border border-slate-700"

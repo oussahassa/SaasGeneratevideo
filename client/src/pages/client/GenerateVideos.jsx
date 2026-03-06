@@ -29,6 +29,22 @@ export default function GenerateVideos() {
     }
   }, [activeTab, dispatch]);
 
+  // check URL params for social login callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const platform = params.get('platform');
+    const connected = params.get('connected');
+    if (platform && connected === '1') {
+      toast.success(`${platform.charAt(0).toUpperCase() + platform.slice(1)} account connected!`);
+      // remove params so it doesn't recur
+      params.delete('platform');
+      params.delete('connected');
+      const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+      window.history.replaceState({}, '', newUrl);
+      dispatch(fetchSocialAccounts());
+    }
+  }, [dispatch]);
+
   // Show toast on success or error
   useEffect(() => {
     if (success) {
