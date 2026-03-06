@@ -18,7 +18,7 @@ import MyComplaints from './pages/client/MyComplaints'
 import Plan from './pages/Plan'
 import GenerateVideos from './pages/client/GenerateVideos'
 import FAQ from './pages/FAQ'
-import Support from './pages/Support'
+import Support from './pages/client/Support'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOverview from './pages/admin/AdminOverview'
 import AdminUsers from './pages/admin/AdminUsers'
@@ -96,13 +96,17 @@ const App = () => {
           <Route path='community' element={<Community />}/>
           <Route path='generate-videos' element={<GenerateVideos />}/>
           <Route path='my-complaints' element={<MyComplaints />}/>
+          <Route path='support' element={<Support />}/>
+
         </Route>
 
         <Route path='/support' element={
           <PrivateRoute>
-            <Support />
+            <Layout />
           </PrivateRoute>
-        }/>
+        }>
+          <Route index element={<Support />}/>
+        </Route>
 
         {/* Admin Protected Routes */}
         <Route path='/admin-dashboard' element={

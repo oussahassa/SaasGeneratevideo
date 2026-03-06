@@ -1,34 +1,28 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Clock, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { fetchMyComplaints, clearError } from '../../redux/slices/supportSlice';
 
 export default function MyComplaints() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { complaints, isLoading, error } = useSelector(state => state.support);
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetchMyComplaints();
-  }, []);
+    dispatch(fetchMyComplaints());
+  }, [dispatch]);
 
-  const fetchMyComplaints = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/api/support/get-my-complaints');
-      if (response.data.success) {
-        setComplaints(response.data.complaints || []);
-      }
-    } catch (error) {
-      toast.error(t('support.failedToLoad') || 'Failed to load complaints');
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
     }
-  };
+  }, [error, dispatch]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -143,7 +137,7 @@ export default function MyComplaints() {
       </div>
 
       {/* Content */}
-      {loading ? (
+      {isLoading ? (
         <div className='text-center py-12 text-gray-500'>
           {t('common.loading')}
         </div>

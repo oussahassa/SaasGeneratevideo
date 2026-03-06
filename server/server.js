@@ -12,6 +12,7 @@ import adminRouter from './routes/adminRoutes.js';
 import authRouter from './routes/authRoutes.js';
 
 import withoutAuthRouter from './routes/without-authRouter.js';
+import cleanupOldSessions from './configs/cron.js';
 
 import translationRouter from './routes/translationRoutes.js';
 import paymentRouter from './routes/paymentRoutes.js';
@@ -22,6 +23,8 @@ import fs from 'fs'
 const app = express()
 
 await connectCloudinary()
+cleanupOldSessions()
+
 const httpsOptions = {
   key: fs.readFileSync('../crts/localhost-key.pem'),
   cert: fs.readFileSync('../crts/localhost.pem'),
