@@ -79,7 +79,6 @@ export default function Plans() {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-console.log('Payment initialization response:', response.data);
       if (response.data.success) {
         if (paymentMethod === 'stripe') {
           // Redirect to Stripe Checkout

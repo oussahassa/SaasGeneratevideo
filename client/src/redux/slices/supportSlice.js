@@ -1,15 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 
 export const createComplaint = createAsyncThunk(
   'support/createComplaint',
   async (complaintData, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/support/create-complaint`, complaintData, {
+      const response = await axios.post(API_ENDPOINTS.SUPPORT.CREATE_COMPLAINT, complaintData, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -24,7 +23,7 @@ export const fetchMyComplaints = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/support/get-my-complaints`, {
+      const response = await axios.get(API_ENDPOINTS.SUPPORT.GET_MY_COMPLAINTS, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data

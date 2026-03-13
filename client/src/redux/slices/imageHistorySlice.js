@@ -1,15 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL;
-console.log('API_URL:', import.meta.env.VITE_API_URL);
+import { API_ENDPOINTS } from '../../config/api';
 export const fetchImageHistory = createAsyncThunk(
   'imageHistory/fetchImageHistory',
-  async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+  async ({ page = 1, lim = 10 }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/user/image-history?page=${page}&limit=${limit}`, {
+      const response = await axios.get(API_ENDPOINTS.USER.IMAGE_HISTORY(page, lim), {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -18,9 +16,23 @@ export const fetchImageHistory = createAsyncThunk(
     }
   }
 );
-
+export const fetchCreations  = createAsyncThunk(
+  'imageHistory/get-published-creations',
+  async ( { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(API_ENDPOINTS.USER.PUBLISH_CREATION, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch image history');
+    }
+  }
+);
 const initialState = {
   images: [],
+  creations:[],
   total: 0,
   page: 1,
   limit: 10,
@@ -50,7 +62,20 @@ const imageHistorySlice = createSlice({
       .addCase(fetchImageHistory.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
+      })
+
+        // get image
+            .addCase(fetchCreations.pending, (state) => {
+              state.isLoading = true
+              state.error = null
+            })
+            .addCase(fetchCreations.fulfilled, (state, action) => {
+              state.isLoading = false
+            state.creations = action.payload;            })
+            .addCase(fetchCreations.rejected, (state, action) => {
+              state.isLoading = false
+              state.error = action.payload
+            })
   },
 });
 

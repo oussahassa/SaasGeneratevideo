@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 
 export const fetchUserData = createAsyncThunk('user/fetchUserData', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/user/profile`, {
+    const response = await axios.get(API_ENDPOINTS.USER.PROFILE, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data
@@ -19,7 +18,7 @@ export const fetchUserData = createAsyncThunk('user/fetchUserData', async (_, { 
 export const fetchUserPlan = createAsyncThunk('user/fetchUserPlan', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/user/plan`, {
+    const response = await axios.get(API_ENDPOINTS.USER.PLAN, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data
@@ -31,7 +30,7 @@ export const fetchUserPlan = createAsyncThunk('user/fetchUserPlan', async (_, { 
 export const upgradePlan = createAsyncThunk('user/upgradePlan', async (planType, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.post(`${API_URL}/api/user/upgrade-plan`, { planType }, {
+    const response = await axios.post(API_ENDPOINTS.USER.UPGRADE_PLAN, { planType }, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data

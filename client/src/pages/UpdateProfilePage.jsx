@@ -4,6 +4,7 @@ import api from '../utils/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { setUser } from '../redux/slices/authSlice';
+import { Camera } from 'lucide-react'
 
 const UpdateProfilePage = () => {
   const { t } = useTranslation();
@@ -83,7 +84,6 @@ const handleUpdateProfile = async (e) => {
         const updatedUser = res.data.user
         dispatch(setUser(updatedUser))
         toast.success(t('dashboard.profileUpdated') || 'Profile updated')
-        setProfileOpen(false)
         setProfileImage(null)
       } else {
         toast.error(res.data?.message || 'Update failed')
@@ -95,7 +95,7 @@ const handleUpdateProfile = async (e) => {
 
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg ">
       <h2 className="text-2xl font-bold mb-6">{t('dashboard.updateProfile') || 'Update Profile'}</h2>
            
         <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 overflow-y-auto p-4'>
@@ -162,11 +162,7 @@ const handleUpdateProfile = async (e) => {
               </div>
 
               <div className='flex justify-end gap-3 pt-4 border-t'>
-                <button type='button' onClick={() => {
-                  setProfileOpen(false)
-                  setProfileImage(null)
-                  setPreviewImage(user?.profile_picture || null)
-                }} className='px-4 py-2 rounded border hover:bg-gray-50'>{t('dashboard.cancel') || 'Cancel'}</button>
+
                 <button type='submit' className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>{t('dashboard.save') || 'Save'}</button>
               </div>
             </form>

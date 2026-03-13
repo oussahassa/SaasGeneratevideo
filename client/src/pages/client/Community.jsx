@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchImageHistory, setPage } from '../../redux/slices/imageHistorySlice'
+import { fetchImageHistory,fetchCreations, setPage } from '../../redux/slices/imageHistorySlice'
 import { Heart } from 'lucide-react'
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -10,9 +10,9 @@ axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 const Community = () => {
   const dispatch = useDispatch();
   const { user, token } = useSelector(state => state.auth);
-  const creations = useSelector(state => state.ai.data?.creations || []);
+ // const creations = useSelector(state => state.ai.data?.creations || []);
   const aiLoading = useSelector(state => state.ai.isLoading);
-  const { images, total, page, limit, isLoading: historyLoading, error: historyError } = useSelector(state => state.imageHistory);
+  const { creations,images, total, page, limit, isLoading: historyLoading, error: historyError } = useSelector(state => state.imageHistory ? state.imageHistory : { creations: [], images: [], total: 0, page: 1, limit: 10, isLoading: false, error: null });
 
   // Like toggle logic (unchanged)
   const imageLikeToggle = async (id) => {
@@ -35,6 +35,7 @@ const Community = () => {
   useEffect(() => {
     if (user) {
       dispatch(fetchImageHistory({ page, limit }));
+      dispatch(fetchCreations());
     }
   }, [user, page, dispatch, limit]);
 

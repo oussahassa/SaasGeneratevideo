@@ -1,14 +1,31 @@
 // Configuration des endpoints API
 // À utiliser avec axios
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL =  import.meta.env.VITE_BASE_URL || 'http://localhost:5000/api';
 
 export const API_ENDPOINTS = {
+  // Auth endpoints
+  AUTH: {
+    LOGIN: `${API_BASE_URL}/auth/login`,
+    SIGNUP: `${API_BASE_URL}/auth/signup`,
+    LOGOUT: `${API_BASE_URL}/auth/logout`,
+    VERIFY: `${API_BASE_URL}/auth/verify`,
+  },
   // User endpoints
   USER: {
     GET_CREATIONS: `${API_BASE_URL}/user/get-user-creations`,
     GET_PUBLISHED: `${API_BASE_URL}/user/get-published-creations`,
     TOGGLE_LIKE: `${API_BASE_URL}/user/toggle-like-creation`,
+    IMAGE_HISTORY: (page = 1, lim = 10) => `${API_BASE_URL}/user/image-history?page=${page}&lim=${lim}`,
+   PUBLISH_CREATION: `${API_BASE_URL}/user/get-published-creations`,
+   PLAN: `${API_BASE_URL}/user/plan`,
+    PROFILE: `${API_BASE_URL}/user/profile`,
+    UPGRADE_PLAN: `${API_BASE_URL}/user/upgrade-plan`,  
+    DASHBOARD_STATS: `${API_BASE_URL}/user/dashboard-stats`,
+    SESSIONS: `${API_BASE_URL}/user/sessions`,
+    REVOKE_SESSION: `${API_BASE_URL}/user/revoke-session`,
+
+
   },
 
   // AI endpoints

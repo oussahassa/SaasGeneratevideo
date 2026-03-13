@@ -97,7 +97,6 @@ export const generateImage = async (req, res) => {
     const userId = req.user.id;
     const { prompt, publish } = req.body;
     const plan = req.plan;
-console.log("Generating image with prompt:", plan +" "+ prompt)
     if (plan != 'premium') {
       return res.json({success: false, message: "This feature is only available for premium subscriptions.",
       });

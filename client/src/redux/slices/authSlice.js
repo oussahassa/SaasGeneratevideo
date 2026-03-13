@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, credentials)
+    const response = await axios.post(`${API_ENDPOINTS.AUTH.LOGIN}`, credentials)
+    console.log('Login response:', response.data) // Debug log
     localStorage.setItem('token', response.data.token)
     if (response.data.refreshToken) localStorage.setItem('refreshToken', response.data.refreshToken)
     localStorage.setItem('user', JSON.stringify(response.data.user))
@@ -17,7 +17,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, 
 
 export const signupUser = createAsyncThunk('auth/signupUser', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/signup`, credentials)
+    const response = await axios.post(`${API_ENDPOINTS.AUTH.SIGNUP}`, credentials)
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('user', JSON.stringify(response.data.user))
     return response.data
@@ -28,7 +28,7 @@ export const signupUser = createAsyncThunk('auth/signupUser', async (credentials
 
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
-    await axios.post(`${API_URL}/auth/logout`)
+    await axios.post(`${API_ENDPOINTS.AUTH.LOGOUT}`)
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('refreshToken')
@@ -44,7 +44,7 @@ export const verifyToken = createAsyncThunk('auth/verifyToken', async (_, { reje
     if (!token) {
       return null
     }
-    const response = await axios.get(`${API_URL}/auth/verify`, {
+    const response = await axios.get(`${API_ENDPOINTS.AUTH.VERIFY}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data
@@ -58,7 +58,7 @@ export const verifyToken = createAsyncThunk('auth/verifyToken', async (_, { reje
 export const fetchUserPlan = createAsyncThunk('auth/fetchUserPlan', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/user/plan`, {
+    const response = await axios.get(`${API_ENDPOINTS.USER.PLAN}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data

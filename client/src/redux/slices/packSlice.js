@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 export const fetchPacks = createAsyncThunk(
   'pack/fetchPacks',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/packs/list`, {
+      const response = await axios.get(API_ENDPOINTS.PACKS.GET_ALL, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -23,7 +22,7 @@ export const purchasePack = createAsyncThunk(
   async (packId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/packs/purchase`, { packId }, {
+      const response = await axios.post(API_ENDPOINTS.PACKS.PURCHASE, { packId }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data

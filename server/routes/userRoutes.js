@@ -1,7 +1,7 @@
 import express from 'express';
 import { auth } from '../middlewares/auth.js';
 import { upload } from '../configs/multer.js';
-import { getUserProfile, getUserPlan, getPublishedCreations, getUserCreations, toggleLikeCreation, updateUserProfile, getDashboardStats, getSessions, revokeSession, upgradePlan } from '../controllers/userController.js';
+import { getImageHistory,getUserProfile, getUserPlan, getPublishedCreations, getUserCreations, toggleLikeCreation, updateUserProfile, getDashboardStats, getSessions, revokeSession, upgradePlan } from '../controllers/userController.js';
 
 const userRouter = express.Router()
 
@@ -15,5 +15,6 @@ userRouter.get('/dashboard-stats', auth, getDashboardStats)
 userRouter.get('/sessions', auth, getSessions)
 userRouter.post('/revoke-session', auth, revokeSession)
 userRouter.post('/upgrade-plan', auth, upgradePlan)
+userRouter.get('/image-history', auth, getImageHistory)
 
 export default userRouter;

@@ -7,6 +7,7 @@ import packReducer from './slices/packSlice'
 import adminReducer from './slices/adminSlice'
 import socialReducer from './slices/socialSlice'
 import supportReducer from './slices/supportSlice'
+import articleReducer from './slices/articleSlice'
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     admin: adminReducer,
     social: socialReducer,
     support: supportReducer,
+    article: articleReducer,
   },
   devTools: {
     trace: true,

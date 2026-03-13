@@ -1,15 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 
 export const generateVideo = createAsyncThunk(
   'video/generateVideo',
   async (payload, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/videos/generate-video`, payload, {
+      const response = await axios.post(API_ENDPOINTS.VIDEOS.GENERATE_SCRIPT, payload, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -24,7 +23,7 @@ export const fetchVideos = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/videos/get-videos`, {
+      const response = await axios.get(API_ENDPOINTS.VIDEOS.GET_VIDEOS, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -39,7 +38,7 @@ export const fetchVideoStats = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/videos/get-stats`, {
+      const response = await axios.get(API_ENDPOINTS.VIDEOS.GET_STATS, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -54,7 +53,7 @@ export const deleteVideo = createAsyncThunk(
   async (videoId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.delete(`${API_URL}/videos/delete-video/${videoId}`, {
+      const response = await axios.delete(API_ENDPOINTS.VIDEOS.DELETE(videoId), {
         headers: { Authorization: `Bearer ${token}` }
       })
       return { videoId, ...response.data }
@@ -69,7 +68,7 @@ export const shareVideo = createAsyncThunk(
   async ({ videoId, platforms, caption }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.post(`${API_URL}/videos/share-to-social`, { videoId, platforms, caption }, {
+      const response = await axios.post(API_ENDPOINTS.VIDEOS.SHARE_TO_SOCIAL, { videoId, platforms, caption }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
