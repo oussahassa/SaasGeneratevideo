@@ -29,6 +29,7 @@ import PaymentCancel from './pages/PaymentCancel'
 import { verifyToken } from './redux/slices/authSlice'
 import './i18n/i18n'
 import ResetPassword from './pages/auth/ResetPassword'
+import UpdateProfilePage from './pages/UpdateProfilePage'
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
@@ -81,6 +82,7 @@ const App = () => {
           <Route path='generate-videos' element={<GenerateVideos />}/>
           <Route path='my-complaints' element={<MyComplaints />}/>
           <Route path='support' element={<Support />}/>
+          <Route path='update-profile' element={<UpdateProfilePage />}/>
 
         </Route>
 
