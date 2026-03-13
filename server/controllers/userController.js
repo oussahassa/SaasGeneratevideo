@@ -253,3 +253,24 @@ export const upgradePlan = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getImageHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const lim = parseInt(req.query.lim) || 10;
+    const offset = (page - 1) * lim;
+
+    const images = await sql`
+      SELECT * FROM creations
+      WHERE user_id = ${userId} AND type = 'image'
+      ORDER BY id DESC
+      LIMIT ${lim} OFFSET ${offset}
+    `;
+
+    res.json({ success: true, images });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

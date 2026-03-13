@@ -18,6 +18,7 @@ const Community = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+
   // Like toggle logic (unchanged)
   const imageLikeToggle = async (id) => {
     try {
@@ -44,6 +45,7 @@ const Community = () => {
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       }));
+
     }
   }, [user, page, dispatch, limit, filterType, startDate, endDate]);
 

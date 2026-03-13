@@ -1,15 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 
 export const fetchAdminData = createAsyncThunk(
   'admin/fetchAdminData',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/admin/data`, {
+      const response = await axios.get(API_ENDPOINTS.ADMIN.GET_DASHBOARD_STATS, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -24,7 +23,7 @@ export const fetchUsers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/admin/users`, {
+      const response = await axios.get(API_ENDPOINTS.ADMIN.GET_ALL_USERS, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -39,7 +38,7 @@ export const deleteUser = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.delete(`${API_URL}/admin/users/${userId}`, {
+      const response = await axios.delete(API_ENDPOINTS.ADMIN.DELETE_USER(userId), {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data

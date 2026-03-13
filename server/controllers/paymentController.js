@@ -276,7 +276,6 @@ console.log('Received Paymee webhook:', req.body);
       // Get pack details
       const pack = await sql`SELECT * FROM packs WHERE id = ${packId}`;
       if (!pack || pack.length === 0) {
-        console.error('Pack not found:', packId);
         return res.status(404).json({ success: false, message: 'Pack not found' });
       }
 

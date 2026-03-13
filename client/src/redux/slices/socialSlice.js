@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import {baseURL} from '../../utils/api'
-const API_URL = baseURL
+import { API_ENDPOINTS } from '../../config/api';
 
 export const fetchSocialAccounts = createAsyncThunk(
   'social/fetchSocialAccounts',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/auth/social-accounts`, {
+      const response = await axios.get(API_ENDPOINTS.AUTH.SOCIAL_ACCOUNTS, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -23,7 +22,7 @@ export const initiateSocialLogin = createAsyncThunk(
   async ({ platform, redirectUrl }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_URL}/auth/social/${platform}?redirectUrl=${encodeURIComponent(redirectUrl || window.location.href)}`, {
+      const response = await axios.get(API_ENDPOINTS.AUTH.SOCIAL_LOGIN(platform, redirectUrl), {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
@@ -38,7 +37,7 @@ export const disconnectSocialAccount = createAsyncThunk(
   async (platform, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.delete(`${API_URL}/auth/social-accounts/${platform}`, {
+      const response = await axios.delete(API_ENDPOINTS.AUTH.DISCONNECT_SOCIAL(platform), {
         headers: { Authorization: `Bearer ${token}` }
       })
       return response.data
