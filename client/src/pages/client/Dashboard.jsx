@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [filterType, setFilterType] = useState('all')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+
   const { user } = useSelector(state => state.auth)
 
   const fetchAll = async (queryOptions = {}) => {
