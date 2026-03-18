@@ -1,15 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../utils/api';
 
 import { API_ENDPOINTS } from '../../config/api';
 export const fetchImageHistory = createAsyncThunk(
   'imageHistory/fetchImageHistory',
   async ({ page = 1, lim = 10 }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(API_ENDPOINTS.USER.IMAGE_HISTORY(page, lim), {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(API_ENDPOINTS.USER.IMAGE_HISTORY(page, lim));
       console.log('Fetched image history:', response.data); // Debug log
       return response.data;
     } catch (error) {
@@ -21,16 +18,13 @@ export const fetchCreations  = createAsyncThunk(
   'imageHistory/get-published-creations',
   async ({ type, startDate, endDate } = {}, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
       if (type && type !== 'all') params.append('type', type);
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
 
       const url = `${API_ENDPOINTS.USER.PUBLISH_CREATION}${params.toString() ? `?${params.toString()}` : ''}`;
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(url);
       console.log('get-published-creations:', response.data); // Debug log
 
       return response.data;

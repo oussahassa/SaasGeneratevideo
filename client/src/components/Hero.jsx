@@ -9,6 +9,11 @@ const Hero = () => {
   const { t } = useTranslation()
   const { isAuthenticated, user } = useSelector(state => state.auth)
 
+
+  const destination = isAuthenticated
+    ? ((user?.is_admin || user?.role === 'admin') ? '/admin-dashboard' : '/ai')
+    : '/signup'
+
   // Get user role from localStorage if not available in state
   const userRole = user?.role || (localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user'))?.role : null)
   const companyLogos = ["slack", "framer", "netflix", "google", "linkedin", "instagram", "facebook"]

@@ -1,15 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../utils/api'
 import { API_ENDPOINTS } from '../../config/api';
 
 export const fetchSocialAccounts = createAsyncThunk(
   'social/fetchSocialAccounts',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(API_ENDPOINTS.AUTH.SOCIAL_ACCOUNTS, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(API_ENDPOINTS.AUTH.SOCIAL_ACCOUNTS)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch social accounts')
@@ -21,10 +18,7 @@ export const initiateSocialLogin = createAsyncThunk(
   'social/initiateSocialLogin',
   async ({ platform, redirectUrl }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(API_ENDPOINTS.AUTH.SOCIAL_LOGIN(platform, redirectUrl), {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(API_ENDPOINTS.AUTH.SOCIAL_LOGIN(platform, redirectUrl))
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to initiate social login')
@@ -36,10 +30,7 @@ export const disconnectSocialAccount = createAsyncThunk(
   'social/disconnectSocialAccount',
   async (platform, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.delete(API_ENDPOINTS.AUTH.DISCONNECT_SOCIAL(platform), {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.delete(API_ENDPOINTS.AUTH.DISCONNECT_SOCIAL(platform))
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to disconnect social account')

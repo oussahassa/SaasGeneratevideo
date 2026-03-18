@@ -1,15 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../utils/api';
 import { API_ENDPOINTS } from '../../config/api';
 
 export const fetchMyArticles = createAsyncThunk(
   'article/fetchMyArticles',
   async ({ page = 1, lim = 10, filter = '' }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(API_ENDPOINTS.USER.GET_CREATIONS + `?page=${page}&lim=${lim}&filter=${filter}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(API_ENDPOINTS.USER.GET_CREATIONS + `?page=${page}&lim=${lim}&filter=${filter}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch articles');

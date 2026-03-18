@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Package, Plus, Edit2, Trash2, X, Save } from 'lucide-react';
+import { fetchPacks, createPack, updatePack, deletePack } from '../../redux/slices/packSlice';
 
 export default function AdminPacks() {
   const { t } = useTranslation();
-  const [packs, setPacks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { packs, isLoading, error, success } = useSelector((state) => state.pack);
   const [showModal, setShowModal] = useState(false);
   const [editingPack, setEditingPack] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,28 +19,13 @@ export default function AdminPacks() {
     features: ['']
   });
 
-  // Fetch Packs
-  const fetchPacks = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/packs/get-all-packs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.data.success) {
-        setPacks(response.data.packs || []);
-      }
-    } catch (error) {
-      toast.error(t('admin.packs.failedToLoad'));
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchPacks();
-  }, []);
+    dispatch(fetchPacks());
+  }, [dispatch]);
+
+  const refetchPacks = () => {
+    dispatch(fetchPacks());
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -50,31 +36,19 @@ export default function AdminPacks() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const cleanFeatures = formData.features.filter(f => f.trim() !== '');
-
       if (editingPack) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/packs/update-pack/${editingPack.id}`, {
-          ...formData,
-          features: cleanFeatures
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await dispatch(updatePack({ id: editingPack.id, packData: { ...formData, features: cleanFeatures } })).unwrap();
         toast.success(t('admin.packs.packUpdated'));
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/packs/create-pack`, {
-          ...formData,
-          features: cleanFeatures
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await dispatch(createPack({ ...formData, features: cleanFeatures })).unwrap();
         toast.success(t('admin.packs.packCreated'));
       }
 
       setShowModal(false);
       setEditingPack(null);
       resetForm();
-      fetchPacks();
+      refetchPacks();
     } catch (error) {
       toast.error(editingPack ? t('admin.packs.failedToUpdate') : t('admin.packs.failedToCreate'));
     }
@@ -85,12 +59,9 @@ export default function AdminPacks() {
     if (!window.confirm(t('admin.packs.confirmDelete'))) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/packs/delete-pack/${packId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await dispatch(deletePack(packId)).unwrap();
       toast.success(t('admin.packs.packDeleted'));
-      fetchPacks();
+      refetchPacks();
     } catch (error) {
       toast.error(t('admin.packs.failedToDelete'));
     }
@@ -163,7 +134,7 @@ export default function AdminPacks() {
 
       {/* Packs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
+        {isLoading ? (
           <div className="col-span-full text-center py-12">
             <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
           </div>

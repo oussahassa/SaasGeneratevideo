@@ -1,63 +1,31 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Users, UserCheck, UserX, Trash2, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { fetchUsers, toggleUserStatus, deleteUser } from '../../redux/slices/adminSlice';
 
 export default function AdminUsers() {
   const { t } = useTranslation();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, pages: 1, total: 0 });
+  const dispatch = useDispatch();
+  const { users, pagination, isLoading } = useSelector((state) => state.admin);
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch Users
-  const fetchUsers = async (page = 1) => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/get-all-users?page=${page}&limit=10&search=${searchTerm}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data.success) {
-        setUsers(response.data.users);
-        setPagination(response.data.pagination);
-      }
-    } catch (error) {
-      toast.error(t('admin.users.failedToLoad'));
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchUsers(1);
-  }, [searchTerm]);
+    dispatch(fetchUsers({ page, limit: 10, search: searchTerm }));
+  }, [dispatch, page, searchTerm]);
+
+  const refetchUsers = () => {
+    dispatch(fetchUsers({ page, limit: 10, search: searchTerm }));
+  };
 
   // Handle user actions
-  const handleBlockUser = async (userId) => {
+  const handleToggleUser = async (userItem) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`${import.meta.env.VITE_API_URL}/admin/block-user/${userId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      toast.success(t('admin.users.userBlocked'));
-      fetchUsers(pagination.page);
-    } catch (error) {
-      toast.error(t('admin.users.failedToUpdate'));
-    }
-  };
-
-  const handleUnblockUser = async (userId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(`${import.meta.env.VITE_API_URL}/admin/unblock-user/${userId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      toast.success(t('admin.users.userUnblocked'));
-      fetchUsers(pagination.page);
+      await dispatch(toggleUserStatus({ userId: userItem.id, isBlocked: !userItem.is_blocked })).unwrap();
+      toast.success(userItem.is_blocked ? t('admin.users.userUnblocked') : t('admin.users.userBlocked'));
+      refetchUsers();
     } catch (error) {
       toast.error(t('admin.users.failedToUpdate'));
     }
@@ -67,12 +35,9 @@ export default function AdminUsers() {
     if (!window.confirm(t('admin.users.confirmDelete'))) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/delete-user/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await dispatch(deleteUser(userId)).unwrap();
       toast.success(t('admin.users.userDeleted'));
-      fetchUsers(pagination.page);
+      refetchUsers();
     } catch (error) {
       toast.error(t('admin.users.failedToDelete'));
     }
@@ -124,7 +89,7 @@ export default function AdminUsers() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
-              {loading ? (
+              {isLoading ? (
                 <tr>
                   <td colSpan="4" className="px-6 py-4 text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     {t('common.loading')}
@@ -197,14 +162,14 @@ export default function AdminUsers() {
           </div>
           <div className="flex space-x-2">
             <button
-              onClick={() => fetchUsers(pagination.page - 1)}
+              onClick={() => setPage((old) => Math.max(old - 1, 1))}
               disabled={pagination.page === 1}
               className="px-3 py-1 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
-              onClick={() => fetchUsers(pagination.page + 1)}
+              onClick={() => setPage((old) => Math.min(old + 1, pagination.pages))}
               disabled={pagination.page === pagination.pages}
               className="px-3 py-1 bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600"
             >

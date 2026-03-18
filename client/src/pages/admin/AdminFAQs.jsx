@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { HelpCircle, Plus, Edit2, Trash2, X, Save } from 'lucide-react';
+import { fetchFaqs, createFaq, updateFaq, deleteFaq } from '../../redux/slices/supportSlice';
 
 export default function AdminFAQs() {
   const { t } = useTranslation();
-  const [faqs, setFaqs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { faqs, isLoading, error, success } = useSelector((state) => state.support);
   const [showModal, setShowModal] = useState(false);
   const [editingFaq, setEditingFaq] = useState(null);
   const [formData, setFormData] = useState({
@@ -16,28 +17,13 @@ export default function AdminFAQs() {
     category: 'general'
   });
 
-  // Fetch FAQs
-  const fetchFaqs = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/support/get-faqs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.data.success) {
-        setFaqs(response.data.faqs || []);
-      }
-    } catch (error) {
-      toast.error(t('admin.faqs.failedToLoad'));
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchFaqs();
-  }, []);
+    dispatch(fetchFaqs());
+  }, [dispatch]);
+
+  const refetchFaqs = () => {
+    dispatch(fetchFaqs());
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -48,23 +34,18 @@ export default function AdminFAQs() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       if (editingFaq) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/support/update-faq/${editingFaq.id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await dispatch(updateFaq({ id: editingFaq.id, faqData: formData })).unwrap();
         toast.success(t('admin.faqs.faqUpdated'));
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/support/create-faq`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await dispatch(createFaq(formData)).unwrap();
         toast.success(t('admin.faqs.faqCreated'));
       }
 
       setShowModal(false);
       setEditingFaq(null);
       resetForm();
-      fetchFaqs();
+      refetchFaqs();
     } catch (error) {
       toast.error(editingFaq ? t('admin.faqs.failedToUpdate') : t('admin.faqs.failedToCreate'));
     }
@@ -75,12 +56,9 @@ export default function AdminFAQs() {
     if (!window.confirm(t('admin.faqs.confirmDelete'))) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/support/delete-faq/${faqId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await dispatch(deleteFaq(faqId)).unwrap();
       toast.success(t('admin.faqs.faqDeleted'));
-      fetchFaqs();
+      refetchFaqs();
     } catch (error) {
       toast.error(t('admin.faqs.failedToDelete'));
     }
@@ -131,7 +109,7 @@ export default function AdminFAQs() {
 
       {/* FAQs List */}
       <div className="space-y-4">
-        {loading ? (
+        {isLoading ? (
           <div className="text-center py-12">
             <div className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('common.loading')}</div>
           </div>

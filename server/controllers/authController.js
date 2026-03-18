@@ -257,7 +257,8 @@ export const login = async (req, res) => {
         firstName: user.first_name,
         lastName: user.last_name,
         profile_picture: user.profile_picture,
-        role: user.is_admin ? 'admin' : 'user'
+        is_admin: user.is_admin === true,
+        role: user.is_admin === true ? 'admin' : 'user'
       }
     })
   } catch (error) {
@@ -347,7 +348,17 @@ export const verifyToken = async (req, res) => {
     const user = req.user
     if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
 
-    res.json({ success: true, valid: true, user })
+    const payloadUser = {
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      profile_picture: user.profile_picture,
+      is_admin: user.is_admin === true,
+      role: user.is_admin === true ? 'admin' : 'user'
+    }
+
+    res.json({ success: true, valid: true, user: payloadUser })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }

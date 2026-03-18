@@ -20,11 +20,6 @@ import GenerateVideos from './pages/client/GenerateVideos'
 import FAQ from './pages/FAQ'
 import Support from './pages/client/Support'
 import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminOverview from './pages/admin/AdminOverview'
-import AdminUsers from './pages/admin/AdminUsers'
-import AdminPacks from './pages/admin/AdminPacks'
-import AdminComplaints from './pages/admin/AdminComplaints'
-import AdminFAQs from './pages/admin/AdminFAQs'
 import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import EmailVerification from './pages/auth/EmailVerification'
@@ -33,10 +28,12 @@ import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import { verifyToken } from './redux/slices/authSlice'
 import './i18n/i18n'
-import { useState } from 'react'
-import ThemeToggle from './components/ThemeToggle'
 import ResetPassword from './pages/auth/ResetPassword'
 import UpdateProfilePage from './pages/UpdateProfilePage'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminPacks from './pages/admin/AdminPacks'
+import AdminComplaints from './pages/admin/AdminComplaints'
+import AdminFAQs from './pages/admin/AdminFAQs'
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
@@ -57,16 +54,7 @@ const App = () => {
     dispatch(verifyToken())
   }, [dispatch])
 
-
-
   return (
-<div>
-        <Toaster />
-        {/* Theme toggle (desktop fixed) - also present in headers */}
-        <div className="fixed top-4 right-4 z-50 hidden md:block">
-          <ThemeToggle />
-        </div>
-
     <div>
     {/*  <Toaster />*/ } 
       <Routes>
@@ -112,20 +100,19 @@ const App = () => {
 
         {/* Admin Protected Routes */}
         <Route path='/admin-dashboard' element={
-          <AdminRoute>
+          <AdminRoute roles={['admin', 'manager', 'support']}>
             <AdminLayout />
           </AdminRoute>
         }>
-          <Route index element={<AdminOverview />}/>
+          <Route index element={<AdminDashboard />}/>
           <Route path='users' element={<AdminUsers />}/>
           <Route path='packs' element={<AdminPacks />}/>
           <Route path='complaints' element={<AdminComplaints />}/>
           <Route path='faqs' element={<AdminFAQs />}/>
-          <Route path='analytics' element={<AdminOverview />}/>
+          <Route path='analytics' element={<AdminDashboard />}/>
         </Route>
       </Routes>
-      </div>
-      </div>
+    </div>
   )
 }
 

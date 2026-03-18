@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../utils/api'
 
 import { API_ENDPOINTS } from '../../config/api';
 
@@ -7,10 +7,7 @@ export const fetchAdminData = createAsyncThunk(
   'admin/fetchAdminData',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(API_ENDPOINTS.ADMIN.GET_DASHBOARD_STATS, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(API_ENDPOINTS.ADMIN.GET_DASHBOARD_STATS)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch admin data')
@@ -20,15 +17,26 @@ export const fetchAdminData = createAsyncThunk(
 
 export const fetchUsers = createAsyncThunk(
   'admin/fetchUsers',
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10, search = '' } = {}, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(API_ENDPOINTS.ADMIN.GET_ALL_USERS, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      let url = `${API_ENDPOINTS.ADMIN.GET_ALL_USERS}?page=${page}&limit=${limit}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      const response = await api.get(url)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch users')
+    }
+  }
+)
+
+export const toggleUserStatus = createAsyncThunk(
+  'admin/toggleUserStatus',
+  async ({ userId, isBlocked }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(API_ENDPOINTS.ADMIN.TOGGLE_USER_STATUS(userId), { isBlocked })
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to toggle user status')
     }
   }
 )
@@ -37,11 +45,8 @@ export const deleteUser = createAsyncThunk(
   'admin/deleteUser',
   async (userId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.delete(API_ENDPOINTS.ADMIN.DELETE_USER(userId), {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      return response.data
+      const response = await api.delete(API_ENDPOINTS.ADMIN.DELETE_USER(userId))
+      return { ...response.data, userId }
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to delete user')
     }
@@ -51,6 +56,7 @@ export const deleteUser = createAsyncThunk(
 const initialState = {
   data: null,
   users: [],
+  pagination: { page: 1, limit: 10, pages: 1, total: 0 },
   isLoading: false,
   error: null,
   success: false,
@@ -81,13 +87,40 @@ const adminSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.isLoading = false
-        state.users = action.payload
+        state.users = action.payload.users || []
+        state.pagination = action.payload.pagination || state.pagination
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload
       })
       // Delete User
+      .addCase(deleteUser.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.success = true
+        state.users = state.users.filter(user => user.id !== action.payload.userId)
+      })
+      .addCase(toggleUserStatus.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(toggleUserStatus.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.success = true
+        if (action.payload.user) {
+          state.users = state.users.map((user) =>
+            user.id === action.payload.user.id ? action.payload.user : user
+          )
+        }
+      })
+      .addCase(toggleUserStatus.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
       .addCase(deleteUser.pending, (state) => {
         state.isLoading = true
         state.error = null

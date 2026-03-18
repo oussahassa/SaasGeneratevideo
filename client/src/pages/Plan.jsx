@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import toast from 'react-hot-toast';
 import { Check, X, CreditCard, DollarSign, Smartphone } from 'lucide-react';
 
@@ -37,11 +37,8 @@ export default function Plans() {
     if (pack.price === 0 || pack.name.toLowerCase() === 'free') {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await axios.post(API_URL + '/user/upgrade-plan', {
+        const response = await api.post('/user/upgrade-plan', {
           packId: pack.id
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
         });
 
         if (response.data.success) {
@@ -71,13 +68,10 @@ export default function Plans() {
 
     setPaymentLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(API_URL+`/payments/${paymentMethod}/create`, {
+      const response = await api.post(`/payments/${paymentMethod}/create`, {
         packId: selectedPackForPayment.id,
         amount: selectedPackForPayment.price,
         currency: paymentMethod === 'paymee' ? 'TND' : 'USD'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       if (response.data.success) {
         if (paymentMethod === 'stripe') {
