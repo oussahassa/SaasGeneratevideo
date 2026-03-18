@@ -5,19 +5,23 @@ import { Heart } from 'lucide-react'
 import toast from "react-hot-toast";
 import axios from "axios";
 
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 const Community = () => {
   const dispatch = useDispatch();
   const { user, token } = useSelector(state => state.auth);
  // const creations = useSelector(state => state.ai.data?.creations || []);
   const aiLoading = useSelector(state => state.ai.isLoading);
-  const { creations,images, total, page, limit, isLoading: historyLoading, error: historyError } = useSelector(state => state.imageHistory ? state.imageHistory : { creations: [], images: [], total: 0, page: 1, limit: 10, isLoading: false, error: null });
+  const { creations, images, total, page, limit, isLoading: historyLoading, error: historyError } = useSelector(state => state.imageHistory || {});
+
+  const [filterType, setFilterType] = useState('image');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   // Like toggle logic (unchanged)
   const imageLikeToggle = async (id) => {
     try {
-      const { data } = await axios.post('/api/user/toggle-like-creation', { id }, {
+      const { data } = await axios.post('/user/toggle-like-creation', { id }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (data.success) {
@@ -31,13 +35,17 @@ const Community = () => {
     }
   };
 
-  // Fetch image history
+  // Fetch image history and community creations with optional filters
   useEffect(() => {
     if (user) {
       dispatch(fetchImageHistory({ page, limit }));
-      dispatch(fetchCreations());
+      dispatch(fetchCreations({
+        type: filterType,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      }));
     }
-  }, [user, page, dispatch, limit]);
+  }, [user, page, dispatch, limit, filterType, startDate, endDate]);
 
   // Pagination handler
   const handlePageChange = (newPage) => {
@@ -48,8 +56,36 @@ const Community = () => {
     <div className='flex-1 h-full flex flex-col gap-4 p-6'>
       {/* Community Creations */}
       <h2 className='text-lg font-bold mb-2'>Creations</h2>
+
+      <div className='flex flex-wrap gap-3 mb-3 items-center'>
+        <select
+          className='p-2 border rounded-md text-sm'
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value='all'>All</option>
+          <option value='image'>Image</option>
+          <option value='article'>Article</option>
+          <option value='video'>Video</option>
+        </select>
+        <label className='text-xs text-gray-500'>From</label>
+        <input
+          type='date'
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className='p-2 border rounded-md text-sm'
+        />
+        <label className='text-xs text-gray-500'>To</label>
+        <input
+          type='date'
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className='p-2 border rounded-md text-sm'
+        />
+      </div>
+
       <div className='bg-white h-full w-full rounded-xl overflow-y-scroll'>
-        {creations.map((creation, index) => (
+        {creations?.map((creation, index) => (
           <div key={index} className='relative group inline-block pl-3 pt-3 w-full sm:max-w-1/2 lg:max-w-1/3'>
             <img src={creation.content} alt='' className='w-full h-full object-cover rounded-lg' />
             <div className='absolute bottom-0 top-0 right-0 left-3 flex gap-2 items-end justify-end group-hover:justify-between p-3 group-hover:bg-linear-to-b from-transparent to-black/80 text-white rounded-lg'>
@@ -72,11 +108,11 @@ const Community = () => {
           </div>
         ) : historyError ? (
           <div className='text-red-500'>{historyError}</div>
-        ) : images.length === 0 ? (
+        ) : images?.length === 0 ? (
           <div className='text-gray-400'>No image history found.</div>
         ) : (
           <div className='grid grid-cols-2 md:grid-cols-5 gap-4'>
-            {images.map((img, idx) => (
+            {images?.map((img, idx) => (
               <div key={img.id || idx} className='flex flex-col items-center'>
                 <img src={img.content} alt='historique' className='w-full h-32 object-cover rounded-lg mb-2' />
                 <span className='text-xs text-gray-500'>{img.prompt}</span>

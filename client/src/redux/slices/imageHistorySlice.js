@@ -10,6 +10,7 @@ export const fetchImageHistory = createAsyncThunk(
       const response = await axios.get(API_ENDPOINTS.USER.IMAGE_HISTORY(page, lim), {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log('Fetched image history:', response.data); // Debug log
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch image history');
@@ -18,12 +19,20 @@ export const fetchImageHistory = createAsyncThunk(
 );
 export const fetchCreations  = createAsyncThunk(
   'imageHistory/get-published-creations',
-  async ( { rejectWithValue }) => {
+  async ({ type, startDate, endDate } = {}, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(API_ENDPOINTS.USER.PUBLISH_CREATION, {
+      const params = new URLSearchParams();
+      if (type && type !== 'all') params.append('type', type);
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+
+      const url = `${API_ENDPOINTS.USER.PUBLISH_CREATION}${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log('get-published-creations:', response.data); // Debug log
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch image history');
@@ -71,7 +80,7 @@ const imageHistorySlice = createSlice({
             })
             .addCase(fetchCreations.fulfilled, (state, action) => {
               state.isLoading = false
-            state.creations = action.payload;            })
+            state.creations = action.payload.creations;            })
             .addCase(fetchCreations.rejected, (state, action) => {
               state.isLoading = false
               state.error = action.payload

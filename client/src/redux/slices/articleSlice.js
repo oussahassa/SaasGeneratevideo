@@ -44,8 +44,8 @@ const articleSlice = createSlice({
       })
       .addCase(fetchMyArticles.fulfilled, (state, action) => {
         state.loading = false;
-        state.articles = action.payload.articles || [];
-        state.total = action.payload.total || 0;
+        state.articles = action.payload.creations || [];
+        state.total = action.payload.creations.length || 0;
       })
       .addCase(fetchMyArticles.rejected, (state, action) => {
         state.loading = false;

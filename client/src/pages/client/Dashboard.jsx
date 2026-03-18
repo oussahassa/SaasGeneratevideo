@@ -14,13 +14,22 @@ const Dashboard = () => {
   const [stats, setStats] = useState({ videos: 0, images: 0, articles: 0, creations: 0 })
   const [sessions, setSessions] = useState([])
   const [profileForm, setProfileForm] = useState({})
+  const [filterType, setFilterType] = useState('all')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const { user } = useSelector(state => state.auth)
 
-  const fetchAll = async () => {
+  const fetchAll = async (queryOptions = {}) => {
     setLoading(true)
     try {
+      const params = new URLSearchParams();
+      if (queryOptions.type && queryOptions.type !== 'all') params.append('type', queryOptions.type);
+      if (queryOptions.startDate) params.append('startDate', queryOptions.startDate);
+      if (queryOptions.endDate) params.append('endDate', queryOptions.endDate);
+
       // Fetch user creations
-      const resCre = await api.get('/user/get-user-creations')
+      const creationsUrl = `/user/get-user-creations${params.toString() ? `?${params.toString()}` : ''}`;
+      const resCre = await api.get(creationsUrl)
       if (resCre.data?.success) setCreations(resCre.data.creations || [])
 
       // Fetch dashboard stats
@@ -38,13 +47,17 @@ const Dashboard = () => {
     }
   }
 
+  const handleFilterApply = () => {
+    fetchAll({ type: filterType, startDate, endDate })
+  }
+
   useEffect(() => {
     // Prefill profile form from user
     if (user) {
       setProfileForm({ firstName: user.first_name || '', lastName: user.last_name || '', email: user.email || '' })
     }
-    fetchAll()
-  }, [user])
+    fetchAll({ type: filterType, startDate, endDate })
+  }, [user, filterType, startDate, endDate])
 
 
 
@@ -106,6 +119,38 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className='mt-6 space-y-4'>
+          <div className='flex flex-wrap items-center gap-2 mb-2'>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className='p-2 border rounded-md text-sm'
+            >
+              <option value='all'>All</option>
+              <option value='image'>Image</option>
+              <option value='article'>Article</option>
+              <option value='video'>Video</option>
+            </select>
+            <input
+              type='date'
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className='p-2 border rounded-md text-sm'
+              placeholder='Start date'
+            />
+            <input
+              type='date'
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className='p-2 border rounded-md text-sm'
+              placeholder='End date'
+            />
+            <button
+              onClick={handleFilterApply}
+              className='px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm'
+            >
+              Apply filters
+            </button>
+          </div>
           <div>
             <p className='mt-2 mb-3 text-lg font-semibold'>{t('dashboard.recentCreations') || 'Recent Creations'}</p>
             <div className='grid gap-3'>

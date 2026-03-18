@@ -37,10 +37,46 @@ export const getUserPlan = async (req, res) => {
   }
 };
 
+const buildCreationsQuery = ({ userId, type, startDate, endDate, publishedOnly } = {}) => {
+  let query = sql`SELECT * FROM creations WHERE TRUE`;
+
+  if (userId) {
+    query = sql`${query} AND user_id = ${userId}`;
+  }
+
+  if (publishedOnly) {
+    query = sql`${query} AND publish = TRUE`;
+  }
+
+  if (type) {
+    query = sql`${query} AND type = ${type}`;
+  }
+
+  if (startDate) {
+    const start = new Date(startDate);
+    if (!Number.isNaN(start.getTime())) {
+      query = sql`${query} AND created_at >= ${start.toISOString()}`;
+    }
+  }
+
+  if (endDate) {
+    const end = new Date(endDate);
+    if (!Number.isNaN(end.getTime())) {
+      query = sql`${query} AND created_at <= ${end.toISOString()}`;
+    }
+  }
+
+  return sql`${query} ORDER BY created_at DESC`;
+};
+
 export const getUserCreations = async (req, res) => {
   try {
     const userId = req.user.id;
-    const creations = await sql`SELECT * FROM creations WHERE user_id = ${userId} ORDER BY created_at DESC`;
+    const { type, startDate, endDate } = req.query;
+
+    const query = buildCreationsQuery({ userId, type, startDate, endDate });
+    const creations = await query;
+
     res.json({ success: true, creations });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -49,7 +85,11 @@ export const getUserCreations = async (req, res) => {
 
 export const getPublishedCreations = async (req, res) => {
   try {
-    const creations = await sql`SELECT * FROM creations WHERE publish = true ORDER BY created_at DESC`;
+    const { type, startDate, endDate } = req.query;
+
+    const query = buildCreationsQuery({ publishedOnly: true, type, startDate, endDate });
+    const creations = await query;
+
     res.json({ success: true, creations });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -151,19 +191,23 @@ export const getDashboardStats = async (req, res) => {
       SELECT 
         COUNT(*) as creations,
         SUM(CASE WHEN type = 'image' THEN 1 ELSE 0 END) as images,
-        SUM(CASE WHEN type = 'video' THEN 1 ELSE 0 END) as videos,
         SUM(CASE WHEN type = 'article' THEN 1 ELSE 0 END) as articles
       FROM creations WHERE user_id = ${userId}
     `;
-
+const countsVideos = await sql`
+      SELECT 
+        COUNT(*) as videos
+        
+      FROM videos vs  WHERE user_id = ${userId}
+    `;
     const connected = await sql`SELECT COUNT(DISTINCT user_id) as connected FROM sessions WHERE last_active_at > NOW() - INTERVAL '10 minutes'`;
-
+console.log(countsVideos)
     res.json({
       success: true,
       stats: {
         creations: parseInt(counts[0].creations || 0),
         images: parseInt(counts[0].images || 0),
-        videos: parseInt(counts[0].videos || 0),
+        videos: parseInt( countsVideos[0].videos || 0),
         articles: parseInt(counts[0].articles || 0),
         connectedUsers: parseInt(connected[0].connected || 0),
       },
