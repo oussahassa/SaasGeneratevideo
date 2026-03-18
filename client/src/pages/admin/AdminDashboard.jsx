@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Users, FileText, Video, Package, AlertCircle, BarChart3, Plus, Trash2, Edit2, TrendingUp, CheckCircle, Clock } from 'lucide-react';
@@ -37,6 +38,8 @@ const Tab = ({ label, active, onClick, icon: Icon }) => (
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
@@ -63,10 +66,7 @@ export default function AdminDashboard() {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard-stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/dashboard-stats');
       if (response.data.success) {
         setStats(response.data.stats);
       }
@@ -82,11 +82,7 @@ export default function AdminDashboard() {
   const fetchUsers = async (page = 1) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/get-all-users?page=${page}&limit=10`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await api.get(`/admin/get-all-users?page=${page}&limit=10`);
       if (response.data.success) {
         setUsers(response.data.users);
         setPagination(response.data.pagination);
@@ -102,10 +98,7 @@ export default function AdminDashboard() {
   const fetchComplaints = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/support/get-all-complaints`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/support/get-all-complaints');
       if (response.data.success) {
         setComplaints(response.data.complaints || []);
       }
@@ -120,10 +113,7 @@ export default function AdminDashboard() {
   const fetchPacks = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/packs/get-all-packs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/packs/get-all-packs');
       if (response.data.success) {
         setPacks(response.data.packs || []);
       }
@@ -138,10 +128,7 @@ export default function AdminDashboard() {
   const fetchFaqs = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/support/get-faqs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/support/get-faqs');
       if (response.data.success) {
         setFaqs(response.data.faqs || []);
       }
@@ -155,10 +142,7 @@ export default function AdminDashboard() {
   // Fetch Daily Stats
   const fetchDailyStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/daily-stats?days=30`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/daily-stats?days=30');
       if (response.data.success) {
         setDailyStats(response.data.stats);
       }
@@ -172,12 +156,26 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    const relative = location.pathname.replace('/admin-dashboard', '').replace(/^\//, '');
+    const section = relative || 'overview';
+    if (section !== activeTab) {
+      setActiveTab(section);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (activeTab === 'users') fetchUsers(1);
     else if (activeTab === 'complaints') fetchComplaints();
     else if (activeTab === 'packs') fetchPacks();
     else if (activeTab === 'faqs') fetchFaqs();
     else if (activeTab === 'analytics') fetchDailyStats();
   }, [activeTab]);
+
+  const handleTabChange = (tab) => {
+    const path = tab === 'overview' ? '/admin-dashboard' : `/admin-dashboard/${tab}`;
+    setActiveTab(tab);
+    navigate(path);
+  }
 
   // Pack operations
   const handleSavePack = async () => {
@@ -186,16 +184,11 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const token = localStorage.getItem('token');
       if (editingPack) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/packs/update-pack/${editingPack.id}`, packForm, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/packs/update-pack/${editingPack.id}`, packForm);
         toast.success(t('admin.packs.packUpdated'));
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/packs/create-pack`, packForm, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post('/packs/create-pack', packForm);
         toast.success(t('admin.packs.packCreated'));
       }
       setShowPackModal(false);
@@ -210,10 +203,7 @@ export default function AdminDashboard() {
   const handleDeletePack = async (packId) => {
     if (!window.confirm(t('admin.packs.confirmDelete'))) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/packs/delete-pack/${packId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/packs/delete-pack/${packId}`);
       toast.success(t('admin.packs.packDeleted'));
       fetchPacks();
     } catch (error) {
@@ -228,16 +218,11 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const token = localStorage.getItem('token');
       if (editingFaq) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/support/update-faq/${editingFaq.id}`, faqForm, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/support/update-faq/${editingFaq.id}`, faqForm);
         toast.success(t('admin.faqs.faqUpdated'));
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/support/create-faq`, faqForm, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post('/support/create-faq', faqForm);
         toast.success(t('admin.faqs.faqCreated'));
       }
       setShowFaqModal(false);
@@ -252,10 +237,7 @@ export default function AdminDashboard() {
   const handleDeleteFaq = async (faqId) => {
     if (!window.confirm(t('admin.faqs.confirmDelete'))) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/support/delete-faq/${faqId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/support/delete-faq/${faqId}`);
       toast.success(t('admin.faqs.faqDeleted'));
       fetchFaqs();
     } catch (error) {
@@ -270,12 +252,9 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`${import.meta.env.VITE_API_URL}/support/update-complaint/${complaintId}`, {
+      await api.put(`/support/update-complaint/${complaintId}`, {
         status: 'resolved',
         response: complaintResponse
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(t('admin.complaints.complaintUpdated'));
       setShowComplaintModal(null);
@@ -289,11 +268,8 @@ export default function AdminDashboard() {
   // User operations
   const handleToggleUserStatus = async (userId, currentStatus) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`${import.meta.env.VITE_API_URL}/admin/toggle-user-status/${userId}`, {
+      await api.put(`/admin/toggle-user-status/${userId}`, {
         isBlocked: !currentStatus
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(currentStatus ? t('admin.users.userUnblocked') : t('admin.users.userBlocked'));
       fetchUsers(pagination.page);
@@ -305,10 +281,7 @@ export default function AdminDashboard() {
   const handleDeleteUser = async (userId) => {
     if (!window.confirm(t('admin.users.confirmDelete'))) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/delete-user/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/admin/delete-user/${userId}`);
       toast.success(t('admin.users.userDeleted'));
       fetchUsers(1);
     } catch (error) {
@@ -329,12 +302,12 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Tabs Navigation */}
         <div className="flex gap-2 mb-8 border-b border-slate-700 overflow-x-auto">
-          <Tab label={t('admin.tabs.overview')} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={BarChart3} />
-          <Tab label={t('admin.tabs.users')} active={activeTab === 'users'} onClick={() => setActiveTab('users')} icon={Users} />
-          <Tab label={t('admin.tabs.packs')} active={activeTab === 'packs'} onClick={() => setActiveTab('packs')} icon={Package} />
-          <Tab label={t('admin.tabs.faqs')} active={activeTab === 'faqs'} onClick={() => setActiveTab('faqs')} icon={FileText} />
-          <Tab label={t('admin.tabs.complaints')} active={activeTab === 'complaints'} onClick={() => setActiveTab('complaints')} icon={AlertCircle} />
-          <Tab label={t('admin.tabs.analytics')} active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} icon={TrendingUp} />
+          <Tab label={t('admin.tabs.overview')} active={activeTab === 'overview'} onClick={() => handleTabChange('overview')} icon={BarChart3} />
+          <Tab label={t('admin.tabs.users')} active={activeTab === 'users'} onClick={() => handleTabChange('users')} icon={Users} />
+          <Tab label={t('admin.tabs.packs')} active={activeTab === 'packs'} onClick={() => handleTabChange('packs')} icon={Package} />
+          <Tab label={t('admin.tabs.faqs')} active={activeTab === 'faqs'} onClick={() => handleTabChange('faqs')} icon={FileText} />
+          <Tab label={t('admin.tabs.complaints')} active={activeTab === 'complaints'} onClick={() => handleTabChange('complaints')} icon={AlertCircle} />
+          <Tab label={t('admin.tabs.analytics')} active={activeTab === 'analytics'} onClick={() => handleTabChange('analytics')} icon={TrendingUp} />
         </div>
 
         {/* Overview Tab*/}

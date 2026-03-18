@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard,
@@ -19,15 +19,31 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation()
   const dispatch = useDispatch()
   const { t } = useTranslation()
+  const { user } = useSelector(state => state.auth)
 
-  const menuItems = [
-    { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
-    { icon: Users, label: t('admin.tabs.users'), path: '/admin-dashboard/users' },
-    { icon: Package, label: t('admin.tabs.packs'), path: '/admin-dashboard/packs' },
-    { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
-    { icon: HelpCircle, label: t('admin.tabs.faqs'), path: '/admin-dashboard/faqs' },
-    { icon: BarChart3, label: t('admin.tabs.analytics'), path: '/admin-dashboard/analytics' },
-  ]
+  const menuItemsByRole = {
+    admin: [
+      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
+      { icon: Users, label: t('admin.tabs.users'), path: '/admin-dashboard/users' },
+      { icon: Package, label: t('admin.tabs.packs'), path: '/admin-dashboard/packs' },
+      { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
+      { icon: HelpCircle, label: t('admin.tabs.faqs'), path: '/admin-dashboard/faqs' },
+      { icon: BarChart3, label: t('admin.tabs.analytics'), path: '/admin-dashboard/analytics' },
+    ],
+    manager: [
+      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
+      { icon: Users, label: t('admin.tabs.users'), path: '/admin-dashboard/users' },
+      { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
+      { icon: BarChart3, label: t('admin.tabs.analytics'), path: '/admin-dashboard/analytics' },
+    ],
+    support: [
+      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
+      { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
+      { icon: HelpCircle, label: t('admin.tabs.faqs'), path: '/admin-dashboard/faqs' },
+    ],
+  }
+
+  const menuItems = menuItemsByRole[user?.role] || menuItemsByRole.admin
 
   const isActive = (path) => {
     return location.pathname === path || location.pathname.startsWith(path + '/')

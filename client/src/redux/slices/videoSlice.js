@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../utils/api'
 
 import { API_ENDPOINTS } from '../../config/api';
 
@@ -7,10 +7,7 @@ export const generateVideo = createAsyncThunk(
   'video/generateVideo',
   async (payload, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.VIDEOS.GENERATE_SCRIPT, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.post(API_ENDPOINTS.VIDEOS.GENERATE_SCRIPT, payload)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to generate video')
@@ -22,10 +19,7 @@ export const fetchVideos = createAsyncThunk(
   'video/fetchVideos',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(API_ENDPOINTS.VIDEOS.GET_VIDEOS, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(API_ENDPOINTS.VIDEOS.GET_VIDEOS)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch videos')
@@ -37,10 +31,7 @@ export const fetchVideoStats = createAsyncThunk(
   'video/fetchVideoStats',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(API_ENDPOINTS.VIDEOS.GET_STATS, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(API_ENDPOINTS.VIDEOS.GET_STATS)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch stats')
@@ -52,10 +43,7 @@ export const deleteVideo = createAsyncThunk(
   'video/deleteVideo',
   async (videoId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.delete(API_ENDPOINTS.VIDEOS.DELETE(videoId), {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.delete(API_ENDPOINTS.VIDEOS.DELETE(videoId))
       return { videoId, ...response.data }
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to delete video')
@@ -67,10 +55,7 @@ export const shareVideo = createAsyncThunk(
   'video/shareVideo',
   async ({ videoId, platforms, caption }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.VIDEOS.SHARE_TO_SOCIAL, { videoId, platforms, caption }, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.post(API_ENDPOINTS.VIDEOS.SHARE_TO_SOCIAL, { videoId, platforms, caption })
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to share video')

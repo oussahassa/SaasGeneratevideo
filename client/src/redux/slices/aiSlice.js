@@ -1,15 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../utils/api'
 
 import { API_ENDPOINTS } from '../../config/api';
 export const generateBlogTitles = createAsyncThunk(
   'ai/generateBlogTitles',
   async (topic, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.AI.GENERATE_BLOG_TITLE, { topic }, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.post(API_ENDPOINTS.AI.GENERATE_BLOG_TITLE, { topic })
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to generate titles')
@@ -21,10 +18,7 @@ export const writeArticle = createAsyncThunk(
   'ai/writeArticle',
   async (payload, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.AI.GENERATE_ARTICLE, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.post(API_ENDPOINTS.AI.GENERATE_ARTICLE, payload)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to write article')
@@ -36,10 +30,7 @@ export const generateImages = createAsyncThunk(
   'ai/generateImages',
   async ({ prompt, publish }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.AI.GENERATE_IMAGE, { prompt, publish }, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.post(API_ENDPOINTS.AI.GENERATE_IMAGE, { prompt, publish })
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to generate images')
@@ -51,10 +42,8 @@ export const removeBackground = createAsyncThunk(
   'ai/removeBackground',
   async (formData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.AI.REMOVE_BACKGROUND, formData, {
+      const response = await api.post(API_ENDPOINTS.AI.REMOVE_BACKGROUND, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         }
       })
@@ -69,10 +58,8 @@ export const removeObject = createAsyncThunk(
   'ai/removeObject',
   async (formData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(API_ENDPOINTS.AI.REMOVE_OBJECT, formData, {
+      const response = await api.post(API_ENDPOINTS.AI.REMOVE_OBJECT, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         }
       })

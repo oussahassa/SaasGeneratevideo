@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getAuthToken, getRefreshToken, setAuthToken, clearAuthAll } from './authCookies'
 
 export const baseURL = import.meta.env.VITE_BASE_URL ? import.meta.env.VITE_BASE_URL : import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : 'http://localhost:5000/api'
 
@@ -22,7 +23,7 @@ const processQueue = (error, token = null) => {
 }
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  const token = getAuthToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -48,18 +49,16 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken')
+        const refreshToken = getRefreshToken()
         const resp = await axios.post(`${baseURL}/auth/refresh`, { token: refreshToken })
         const newToken = resp.data.token
-        localStorage.setItem('token', newToken)
+        setAuthToken(newToken)
         processQueue(null, newToken)
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       } catch (err) {
         processQueue(err, null)
-        // clear storage and redirect to login
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
+        clearAuthAll()
         window.location.href = '/login'
         return Promise.reject(err)
       } finally {

@@ -7,7 +7,11 @@ import { Sparkles, ArrowRight, Play } from "lucide-react"
 const Hero = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { isAuthenticated } = useSelector(state => state.auth)
+  const { isAuthenticated, user } = useSelector(state => state.auth)
+
+  const destination = isAuthenticated
+    ? ((user?.is_admin || user?.role === 'admin') ? '/admin-dashboard' : '/ai')
+    : '/signup'
 
   const companyLogos = ["slack", "framer", "netflix", "google", "linkedin", "instagram", "facebook"]
 
@@ -61,7 +65,7 @@ const Hero = () => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
           <button
-            onClick={() => navigate(isAuthenticated ? "/dashboard" : "/signup")}
+            onClick={() => navigate(destination)}
             className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/50 active:scale-95"
           >
             {t('hero.startBtn')}

@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { setAuthToken, setRefreshToken, setAuthUser } from '../utils/authCookies'
+import { setUser } from '../redux/slices/authSlice'
 
 const EmailVerification = () => {
   const { t } = useTranslation()
@@ -53,12 +55,24 @@ const EmailVerification = () => {
       })
 
       if (response.data.success) {
-        // Store token
-        localStorage.setItem('token', response.data.token)
-        
-        // Dispatch login action to Redux
+        // Store token and user in cookies
+        setAuthToken(response.data.token)
+        if (response.data.refreshToken) setRefreshToken(response.data.refreshToken)
+        if (response.data.user) {
+          setAuthUser(response.data.user)
+          dispatch(setUser({ ...response.data.user,
+            is_admin: response.data.user.is_admin === true,
+            role: response.data.user.role || (response.data.user.is_admin ? 'admin' : 'user')
+          }))
+        }
+
         toast.success('Email verified successfully!')
-        navigate('/dashboard')
+
+        const target = response.data.user && (response.data.user.is_admin || response.data.user.role === 'admin')
+          ? '/admin-dashboard'
+          : '/ai'
+
+        navigate(target)
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Verification failed')

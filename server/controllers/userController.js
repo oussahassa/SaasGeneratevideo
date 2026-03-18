@@ -14,7 +14,21 @@ export const getUserProfile = async (req, res) => {
     const plan = req.plan;
     const credits = req.credits;
 
-    res.json({ success: true, user: { ...user[0], plan, credits } });
+    res.json({
+      success: true,
+      user: {
+        id: user[0].id,
+        email: user[0].email,
+        firstName: user[0].first_name,
+        lastName: user[0].last_name,
+        profile_picture: user[0].profile_picture,
+        created_at: user[0].created_at,
+        is_admin: user[0].is_admin === true,
+        role: user[0].is_admin === true ? 'admin' : 'user',
+        plan,
+        credits,
+      }
+    })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

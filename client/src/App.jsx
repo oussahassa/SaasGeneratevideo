@@ -30,6 +30,10 @@ import { verifyToken } from './redux/slices/authSlice'
 import './i18n/i18n'
 import ResetPassword from './pages/auth/ResetPassword'
 import UpdateProfilePage from './pages/UpdateProfilePage'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminPacks from './pages/admin/AdminPacks'
+import AdminComplaints from './pages/admin/AdminComplaints'
+import AdminFAQs from './pages/admin/AdminFAQs'
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
@@ -96,15 +100,15 @@ const App = () => {
 
         {/* Admin Protected Routes */}
         <Route path='/admin-dashboard' element={
-          <AdminRoute>
+          <AdminRoute roles={['admin', 'manager', 'support']}>
             <AdminLayout />
           </AdminRoute>
         }>
           <Route index element={<AdminDashboard />}/>
-          <Route path='users' element={<AdminDashboard />}/>
-          <Route path='packs' element={<AdminDashboard />}/>
-          <Route path='complaints' element={<AdminDashboard />}/>
-          <Route path='faqs' element={<AdminDashboard />}/>
+          <Route path='users' element={<AdminUsers />}/>
+          <Route path='packs' element={<AdminPacks />}/>
+          <Route path='complaints' element={<AdminComplaints />}/>
+          <Route path='faqs' element={<AdminFAQs />}/>
           <Route path='analytics' element={<AdminDashboard />}/>
         </Route>
       </Routes>

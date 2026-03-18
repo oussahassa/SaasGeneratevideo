@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import api from '../../utils/api'
+import { setAuthToken, setRefreshToken, setAuthUser, getAuthToken, getAuthUser, clearAuthAll } from '../../utils/authCookies'
 
 import { API_ENDPOINTS } from '../../config/api';
 export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
   try {
     const response = await axios.post(`${API_ENDPOINTS.AUTH.LOGIN}`, credentials)
     console.log('Login response:', response.data) // Debug log
-    localStorage.setItem('token', response.data.token)
-    if (response.data.refreshToken) localStorage.setItem('refreshToken', response.data.refreshToken)
-    localStorage.setItem('user', JSON.stringify(response.data.user))
+    setAuthToken(response.data.token)
+    if (response.data.refreshToken) setRefreshToken(response.data.refreshToken)
+    setAuthUser(response.data.user)
     return response.data
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Login failed')
@@ -18,8 +20,9 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, 
 export const signupUser = createAsyncThunk('auth/signupUser', async (credentials, { rejectWithValue }) => {
   try {
     const response = await axios.post(`${API_ENDPOINTS.AUTH.SIGNUP}`, credentials)
-    localStorage.setItem('token', response.data.token)
-    localStorage.setItem('user', JSON.stringify(response.data.user))
+    setAuthToken(response.data.token)
+    setRefreshToken(response.data.refreshToken)
+    setAuthUser(response.data.user)
     return response.data
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Signup failed')
@@ -29,9 +32,7 @@ export const signupUser = createAsyncThunk('auth/signupUser', async (credentials
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
     await axios.post(`${API_ENDPOINTS.AUTH.LOGOUT}`)
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    localStorage.removeItem('refreshToken')
+    clearAuthAll()
     return null
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Logout failed')
@@ -40,27 +41,21 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { reject
 
 export const verifyToken = createAsyncThunk('auth/verifyToken', async (_, { rejectWithValue }) => {
   try {
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
     if (!token) {
       return null
     }
-    const response = await axios.get(`${API_ENDPOINTS.AUTH.VERIFY}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const response = await api.get(`${API_ENDPOINTS.AUTH.VERIFY}`)
     return response.data
   } catch (error) {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    clearAuthAll()
     return rejectWithValue(error.response?.data?.message || 'Verification failed')
   }
 })
 
 export const fetchUserPlan = createAsyncThunk('auth/fetchUserPlan', async (_, { rejectWithValue }) => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_ENDPOINTS.USER.PLAN}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const response = await api.get(`${API_ENDPOINTS.USER.PLAN}`)
     return response.data
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Failed to fetch user plan')
@@ -68,11 +63,11 @@ export const fetchUserPlan = createAsyncThunk('auth/fetchUserPlan', async (_, { 
 })
 
 const initialState = {
-  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
-  token: localStorage.getItem('token') || null,
+  user: getAuthUser(),
+  token: getAuthToken(),
   isLoading: false,
   error: null,
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: !!getAuthToken(),
   plan: null,
   credits: null,
 }
@@ -83,7 +78,7 @@ const authSlice = createSlice({
   reducers: {
     setUser(state, action) {
       state.user = action.payload
-      localStorage.setItem('user', JSON.stringify(action.payload))
+      setAuthUser(action.payload)
     }
   },
   extraReducers: (builder) => {
@@ -95,7 +90,12 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false
-        state.user = action.payload.user
+        const user = action.payload.user || {}
+        state.user = {
+          ...user,
+          is_admin: user.is_admin === true,
+          role: user.role || (user.is_admin ? 'admin' : 'user')
+        }
         state.token = action.payload.token
         state.isAuthenticated = true
         state.error = null
@@ -112,7 +112,12 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.isLoading = false
-        state.user = action.payload.user
+        const user = action.payload.user || {}
+        state.user = {
+          ...user,
+          is_admin: user.is_admin === true,
+          role: user.role || (user.is_admin ? 'admin' : 'user')
+        }
         state.token = action.payload.token
         state.isAuthenticated = true
         state.error = null
@@ -144,8 +149,13 @@ const authSlice = createSlice({
       })
       .addCase(verifyToken.fulfilled, (state, action) => {
         state.isLoading = false
-        if (action.payload) {
-          state.user = action.payload.user
+        if (action.payload && action.payload.user) {
+          const user = action.payload.user
+          state.user = {
+            ...user,
+            is_admin: user.is_admin === true,
+            role: user.role || (user.is_admin ? 'admin' : 'user')
+          }
           state.isAuthenticated = true
         }
       })

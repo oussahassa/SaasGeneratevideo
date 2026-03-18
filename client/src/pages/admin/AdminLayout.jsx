@@ -9,6 +9,8 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const { user } = useSelector(state => state.auth)
 
+  const roleLabel = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Admin'
+
   return (
     <div className='fixed inset-0 flex flex-col bg-gray-900'>
       {/* Admin Header */}
@@ -35,7 +37,7 @@ const AdminLayout = () => {
         <div className='flex items-center gap-4'>
           <div className='text-right hidden sm:block'>
             <p className='text-white font-medium text-sm'>{user?.firstName} {user?.lastName}</p>
-            <p className='text-gray-400 text-xs'>Administrator</p>
+            <p className='text-gray-400 text-xs'>{roleLabel}</p>
           </div>
           <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
             <span className='text-white font-bold'>{user?.firstName?.charAt(0)}</span>
