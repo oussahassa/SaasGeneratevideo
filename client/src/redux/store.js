@@ -8,7 +8,7 @@ import adminReducer from './slices/adminSlice'
 import socialReducer from './slices/socialSlice'
 import supportReducer from './slices/supportSlice'
 import articleReducer from './slices/articleSlice'
-
+import imageHistoryReducer from './slices/imageHistorySlice'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -20,6 +20,9 @@ export const store = configureStore({
     social: socialReducer,
     support: supportReducer,
     article: articleReducer,
+    imageHistory: imageHistoryReducer,
+
+    
   },
   devTools: {
     trace: true,

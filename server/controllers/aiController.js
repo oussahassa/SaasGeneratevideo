@@ -3,44 +3,63 @@ import sql from "../configs/db.js";
 import axios from 'axios';
 import {v2 as cloudinary} from 'cloudinary';
 
-const AI = new OpenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-});
 
 export const generateArticle = async (req, res) => {
-  try {
-    const userId = req.user.id;
+  const API_KEY = process.env.GEMINI_API_KEY;
+      const userId = req.user.id;
     const { prompt, length } = req.body;
-    const plan = req.plan;
+    const plan = req.plan; // ton X-goog-api-key
+    const credits = req.credits; // credits from subscription
+const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
 
-    if (plan != "premium") {
+const body = {
+  contents: [
+    {
+      parts: [
+        { text: prompt }
+      ]
+    }
+  ]
+};
+  try {
+
+    if (plan != "premium" || credits < 5) {
       return res.json({success: false, message: "This feature requires premium plan.",
       });
     }
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-goog-api-key": API_KEY
+    },
+    body: JSON.stringify(body)
+  });
+     const subscription = await sql`SELECT id, monthly_limit FROM user_subscriptions WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()`;
+   if (subscription.length>0) {
+        await sql`UPDATE user_subscriptions SET monthly_limit = monthly_limit - 5 WHERE id = ${subscription[0].id}`;
+   }
+    const content = await response.json();
+          console.log("API response status:", content); // Debug log
 
-    const response = await AI.chat.completions.create({
-      model: "gemini-3-flash-preview",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: length,
-    });
+    console.log("API response status:", content.candidates[0].content.parts[0].text); // Debug log
+const data = content.candidates[0].content.parts[0].text.trim();
 
-    const content = response.choices[0].message.content
+    if (!data || data.length < 10) {
 await sql`
   INSERT INTO creations (user_id, prompt, content, type)
-  VALUES (${userId}, ${prompt}, ${content}, ${'article'})
+  VALUES (${userId}, ${prompt}, ${data}, ${'article'})
 `;
 
 
 
-    res.json({success: true, content})
-
+    res.json({success: true, content: data})
+    } else {
+      res.json({
+        success: false,
+        message: "AI returned incomplete response"
+      });
+    }
   } catch (error) {
     console.log(error.message)
     res.status(500).json({success: false, message: error.message})
