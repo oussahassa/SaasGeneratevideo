@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import api from '../utils/api';
+import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { setUser } from '../redux/slices/authSlice';
+import { setUser } from '../../redux/slices/authSlice';
 import { Camera } from 'lucide-react'
 
 const UpdateProfilePage = () => {

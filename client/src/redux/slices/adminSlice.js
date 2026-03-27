@@ -95,15 +95,7 @@ const adminSlice = createSlice({
         state.error = action.payload
       })
       // Delete User
-      .addCase(deleteUser.pending, (state) => {
-        state.isLoading = true
-        state.error = null
-      })
-      .addCase(deleteUser.fulfilled, (state, action) => {
-        state.isLoading = false
-        state.success = true
-        state.users = state.users.filter(user => user.id !== action.payload.userId)
-      })
+   
       .addCase(toggleUserStatus.pending, (state) => {
         state.isLoading = true
         state.error = null

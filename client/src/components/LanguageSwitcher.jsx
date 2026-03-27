@@ -33,7 +33,7 @@ export default function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white    dark:bg-slate-800 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-50   dark:bg-yellow-800 hover:bg-gray-50 dark:bg-yellow-50 dark:bg-gray-50 dark:bg-yellow-50 dark:bg-slate-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white transition-colors"
         title="Change Language"
       >
         <Globe size={18} />
@@ -41,12 +41,12 @@ export default function LanguageSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute top-full right-0 mt-2 bg-white    dark:bg-slate-800 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50">
+        <div className="absolute top-full right-0 mt-2 bg-yellow-50    dark:bg-yellow-800 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50">
           {languages.map(lang => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
-              className={`w-full px-4 py-2 text-left hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 transition-colors flex items-center gap-2 ${
+              className={`w-full px-4 py-2 text-left hover:bg-yellow-50 dark:bg-yellow-800 dark:bg-yellow-50 dark:bg-yellow-50 dark:bg-yellow-50 dark:bg-slate-700 transition-colors flex items-center gap-2 ${
                 i18n.language === lang.code
                   ? 'bg-blue-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
                   : 'text-slate-300'

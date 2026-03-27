@@ -120,7 +120,7 @@ export default function Plans() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen  dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -220,7 +220,7 @@ export default function Plans() {
             ))}
           </div>
         ) : (
-          <div className="bg-white    dark:bg-slate-800 rounded-lg p-12 text-center border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+          <div className="     rounded-lg p-12 text-center border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
             <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-4">No plans available at the moment</p>
             <button
               onClick={fetchPacks}
@@ -272,7 +272,7 @@ export default function Plans() {
         )}
 
         {/* FAQ Section */}
-        <div className="mt-16 bg-white    dark:bg-slate-800 rounded-lg p-8 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+        <div className="mt-16  rounded-lg p-8 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-6">
             Questions about plans?
           </h2>

@@ -64,7 +64,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Sidebar Overlay for Mobile */}
       {sidebarOpen && (
         <div
-          className='fixed inset-0 bg-black/50 z-30 md:hidden'
+          className='fixed inset-0  z-30 md:hidden'
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -72,7 +72,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed md:relative w-64 h-[calc(100vh-4rem)] bg-gray-800 border-r border-gray-700 
+          fixed md:relative w-64 h-[calc(100vh-4rem)]  border-gray-700 
           flex flex-col overflow-y-auto z-40
           transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -82,7 +82,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div className='md:hidden flex justify-end p-4'>
           <button
             onClick={() => setSidebarOpen(false)}
-            className='p-2 hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
+            className='p-2 hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 d'
           >
             <X className='w-5 h-5' />
           </button>
@@ -106,7 +106,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   ${
                     active
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white shadow-lg'
-                      : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:bg-gray-700 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
+                      : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:bg-gray-700 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 '
                   }
                 `}
               >

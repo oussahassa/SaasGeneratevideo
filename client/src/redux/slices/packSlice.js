@@ -81,7 +81,7 @@ const packSlice = createSlice({
       })
       .addCase(fetchPacks.fulfilled, (state, action) => {
         state.isLoading = false
-        state.packs = action.payload
+        state.packs = action?.payload?.packs || []
       })
       .addCase(fetchPacks.rejected, (state, action) => {
         state.isLoading = false

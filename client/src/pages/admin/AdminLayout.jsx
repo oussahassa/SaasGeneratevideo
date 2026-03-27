@@ -12,9 +12,9 @@ const AdminLayout = () => {
   const roleLabel = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Admin'
 
   return (
-    <div className='fixed inset-0 flex flex-col bg-gray-900'>
+    <div className='fixed inset-0 flex flex-col '>
       {/* Admin Header */}
-      <nav className='h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6 shrink-0 z-40'>
+      <nav className='h-16 8bordbg70 flex items-center justify-between px-6 shrink-0 z-40'>
         <div className='flex items-center gap-4'>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -27,9 +27,9 @@ const AdminLayout = () => {
             className='cursor-pointer flex items-center gap-2 group'
           >
             <div className='w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
-              <span className='text-white font-bold text-lg'>N</span>
+              <span className='font-bold text-lg'>N</span>
             </div>
-            <span className='text-white font-bold text-lg hidden sm:inline'>NexAI Admin</span>
+            <span className='font-bold text-lg hidden sm:inline'>NexAI Admin</span>
           </div>
         </div>
 
@@ -50,7 +50,7 @@ const AdminLayout = () => {
         <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content */}
-        <main className='flex-1 bg-gray-900 overflow-y-auto'>
+        <main className='flex-1  overflow-y-auto'>
           <Outlet />
         </main>
       </div>

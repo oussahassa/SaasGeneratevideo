@@ -290,9 +290,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen ">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white pt-8 pb-12 shadow-xl">
+      <div className=" pt-8 pb-12 shadow-xl">
         <div className="max-w-7xl mx-auto px-4">
           <h1 className="text-4xl font-bold mb-2">{t('admin.dashboard')}</h1>
           <p className="text-blue-100">{t('admin.description')}</p>
@@ -517,8 +517,8 @@ export default function AdminDashboard() {
         {/* Modals - Pack Modal */}
         {showPackModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-slate-700 shadow-2xl">
-              <h3 className="text-white font-bold text-2xl mb-6">
+            <div className="bg-white  rounded-xl p-8 max-w-md w-full border border-gray-200 dark:border-gray-800 shadow-2xl">
+              <h3 className="text-gray-900 dark:text-white font-bold text-2xl mb-6">
                 {editingPack ? t('admin.packs.edit') : t('admin.packs.create')}
               </h3>
               <div className="space-y-4">
@@ -527,43 +527,228 @@ export default function AdminDashboard() {
                   placeholder={t('admin.packs.name')}
                   value={packForm.name}
                   onChange={(e) => setPackForm({...packForm, name: e.target.value})}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none"
                 />
                 <input
                   type="text"
                   placeholder={t('admin.packs.description')}
                   value={packForm.description}
                   onChange={(e) => setPackForm({...packForm, description: e.target.value})}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none"
                 />
                 <input
                   type="number"
                   placeholder={t('admin.packs.price')}
                   value={packForm.price}
                   onChange={(e) => setPackForm({...packForm, price: parseFloat(e.target.value)})}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none"
                 />
                 <input
                   type="number"
                   placeholder={t('admin.packs.limit')}
                   value={packForm.monthly_limit}
                   onChange={(e) => setPackForm({...packForm, monthly_limit: parseInt(e.target.value)})}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 outline-none"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none"
                 />
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => setShowPackModal(false)}
-                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg transition-colors"
+                    className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
                   >
                     {t('common.cancel')}
                   </button>
                   <button
                     onClick={handleSavePack}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition-colors"
                   >
                     {t('common.save')}
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FAQs Tab */}
+        {activeTab === 'faqs' && (
+          <div className="space-y-4">
+            <button
+              onClick={() => {
+                setEditingFaq(null);
+                setFaqForm({ question: '', answer: '', category: 'general' });
+                setShowFaqModal(true);
+              }}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              <Plus size={20} />
+              {t('admin.faqs.create')}
+            </button>
+
+            {loading ? (
+              <div className="text-center text-gray-500 dark:text-gray-400 py-12">{t('common.loading')}</div>
+            ) : faqs.length > 0 ? (
+              <div className="space-y-4">
+                {faqs.map(faq => (
+                  <div key={faq.id} className="bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-800">
+                    <h3 className="text-gray-900 dark:text-white font-bold mb-2">{faq.question}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{faq.answer}</p>
+                    <p className="text-gray-500 dark:text-gray-500 text-xs mb-4">{faq.category}</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingFaq(faq);
+                          setFaqForm(faq);
+                          setShowFaqModal(true);
+                        }}
+                        className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                      >
+                        <Edit2 size={14} />
+                        {t('common.edit')}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteFaq(faq.id)}
+                        className="flex items-center gap-1 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                      >
+                        <Trash2 size={14} />
+                        {t('common.delete')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 dark:text-gray-400 py-12">{t('admin.faqs.noFAQs')}</div>
+            )}
+          </div>
+        )}
+
+        {/* Complaints Tab */}
+        {activeTab === 'complaints' && (
+          <div className="space-y-4">
+            {loading ? (
+              <div className="text-center text-gray-500 dark:text-gray-400 py-12">{t('common.loading')}</div>
+            ) : complaints.length > 0 ? (
+              complaints.map(complaint => (
+                <div key={complaint.id} className="bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-800">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-gray-900 dark:text-white font-bold">{complaint.title}</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{t('admin.complaints.from')}: {complaint.email}</p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      complaint.status === 'open' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                      complaint.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    }`}>
+                      {t(`admin.complaints.${complaint.status}`)}
+                    </span>
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">{complaint.description}</p>
+                  {complaint.admin_response && (
+                    <p className="text-blue-600 dark:text-blue-400 mb-4 text-sm"><strong>{t('support.adminResponse')}:</strong> {complaint.admin_response}</p>
+                  )}
+                  <button
+                    onClick={() => {
+                      setShowComplaintModal(complaint.id);
+                      setComplaintResponse(complaint.admin_response || '');
+                    }}
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    {complaint.status === 'resolved' ? t('admin.complaints.details') : t('admin.complaints.respond')} →
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 dark:text-gray-400 py-12">{t('admin.complaints.noComplaints')}</div>
+            )}
+          </div>
+        )}
+
+        {/* Analytics Tab */}
+        {activeTab === 'analytics' && (
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-8 border border-gray-200 dark:border-gray-800 text-center">
+            <BarChart3 size={64} className="text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-gray-900 dark:text-white font-bold mb-2">{t('admin.tabs.analytics')}</h3>
+            <p className="text-gray-600 dark:text-gray-400">Coming soon...</p>
+          </div>
+        )}
+
+        {/* FAQ Modal */}
+        {showFaqModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-gray-800">
+              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-4">
+                {editingFaq ? t('admin.faqs.edit') : t('admin.faqs.create')}
+              </h3>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder={t('admin.faqs.question')}
+                  value={faqForm.question}
+                  onChange={(e) => setFaqForm({...faqForm, question: e.target.value})}
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none"
+                />
+                <textarea
+                  placeholder={t('admin.faqs.answer')}
+                  value={faqForm.answer}
+                  onChange={(e) => setFaqForm({...faqForm, answer: e.target.value})}
+                  rows="4"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none resize-none"
+                />
+                <select
+                  value={faqForm.category}
+                  onChange={(e) => setFaqForm({...faqForm, category: e.target.value})}
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-500 outline-none"
+                >
+                  <option value="general">General</option>
+                  <option value="subscription">Subscription</option>
+                  <option value="features">Features</option>
+                  <option value="technical">Technical</option>
+                </select>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowFaqModal(false)}
+                    className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
+                  >
+                    {t('common.cancel')}
+                  </button>
+                  <button
+                    onClick={handleSaveFaq}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition-colors"
+                  >
+                    {t('common.save')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Complaint Response Modal */}
+        {showComplaintModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-gray-800">
+              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-4">{t('admin.complaints.respond')}</h3>
+              <textarea
+                placeholder={t('admin.complaints.respond')}
+                value={complaintResponse}
+                onChange={(e) => setComplaintResponse(e.target.value)}
+                rows="4"
+                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-500 outline-none resize-none mb-4"
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowComplaintModal(null)}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-2 rounded-lg transition-colors"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={() => handleRespondComplaint(showComplaintModal)}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition-colors"
+                >
+                  {t('common.save')}
+                </button>
               </div>
             </div>
           </div>
