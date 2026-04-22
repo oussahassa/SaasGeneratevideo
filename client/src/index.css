@@ -21,7 +21,7 @@ html.dark {
   /* Dark theme variables */
   --bg: #0b1220; /* dark bg */
   --panel: #0f1724; /* panel */
-  --text: #e6eef8; /* light text */
+  --text: #ffffff; /* light text */
   --muted: #94a3b8; /* gray-400 */
 }
 
@@ -29,9 +29,7 @@ html, body {
   background-color: var(--bg);
   color: var(--text);
 }
-* {
-  color: var(--text) ;
-}
+
 @theme {
   --color-primary: #CC0022;
 }

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import Markdown from 'react-markdown';
 import { fetchMyArticles, setPage, setFilter } from '../../redux/slices/articleSlice';
+import { refreshCredits } from '../../redux/slices/authSlice';
 
 const WriteArticle = () => {
 
@@ -40,6 +41,9 @@ const WriteArticle = () => {
       );
       if (data.success) {
         setContent(data.content);
+        toast.success('Article generated successfully!');
+        // Refresh credits after successful article generation
+        dispatch(refreshCredits());
       } else {
         toast.error(data.message);
       }

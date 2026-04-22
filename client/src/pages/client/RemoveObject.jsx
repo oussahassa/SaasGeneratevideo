@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Eraser, Scissors, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { refreshCredits } from "../../redux/slices/authSlice";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -14,6 +15,7 @@ const RemoveObject = () => {
   const [content, setContent] = useState("");
 
   const { token } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
   const onSubmitHandler = async (e) => {
@@ -37,6 +39,9 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
       if (data.success) {
         setContent(data.content);
+        toast.success('Object removed successfully!');
+        // Refresh credits after successful object removal
+        dispatch(refreshCredits());
       } else {
         toast.error(data.message);
       }

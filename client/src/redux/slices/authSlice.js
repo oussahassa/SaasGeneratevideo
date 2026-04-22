@@ -56,9 +56,20 @@ export const verifyToken = createAsyncThunk('auth/verifyToken', async (_, { reje
 export const fetchUserPlan = createAsyncThunk('auth/fetchUserPlan', async (_, { rejectWithValue }) => {
   try {
     const response = await api.get(`${API_ENDPOINTS.USER.PLAN}`)
+    console.log('Fetch user plan response:', response.data)
     return response.data
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Failed to fetch user plan')
+  }
+})
+
+export const refreshCredits = createAsyncThunk('auth/refreshCredits', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get(`${API_ENDPOINTS.USER.PLAN}`)
+    console.log('Refresh credits response:', response.data)
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Failed to refresh credits')
   }
 })
 
@@ -70,6 +81,8 @@ const initialState = {
   isAuthenticated: !!getAuthToken(),
   plan: null,
   credits: null,
+  hasFetchedPlan: false
+
 }
 
 const authSlice = createSlice({
@@ -173,10 +186,17 @@ const authSlice = createSlice({
         state.isLoading = false
         state.plan = action.payload.planType
         state.credits = action.payload.credits
+        state.hasFetchedPlan = true
       })
       .addCase(fetchUserPlan.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload
+      })
+      // Refresh Credits
+      .addCase(refreshCredits.fulfilled, (state, action) => {
+        console.log('Updating credits:', action.payload.credits, 'plan:', action.payload.planType)
+        state.plan = action.payload.planType
+        state.credits = action.payload.credits
       })
   }
 })

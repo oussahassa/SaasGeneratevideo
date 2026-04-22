@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hash, House, SquarePen, Image, Eraser, Scissors, FileText, Users, LogOut, Video, MessageSquare } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { logoutUser, fetchUserPlan } from '../redux/slices/authSlice'
+import { logoutUser, fetchUserPlan, refreshCredits } from '../redux/slices/authSlice'
 
 const Sidebar = ({ sidebar, setSidebar }) => {
   const { t } = useTranslation()
-  const { user, plan, credits } = useSelector(state => state.auth);
+  const {isAuthenticated, user, plan, credits } = useSelector(state => state.auth);
+  
   const dispatch = useDispatch();
 
-
-
+  // Refresh credits periodically when authenticated
   const navItems = [
     {to: '/ai', label: t('user.dashboard') || 'Dashboard', Icon: House},
     {to: '/ai/write-article', label: t('dashboard.articles') || 'Write Article', Icon: SquarePen},

@@ -3,6 +3,7 @@ import { Eraser, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { removeBackground, resetState } from "../../redux/slices/aiSlice";
+import { refreshCredits } from "../../redux/slices/authSlice";
 
 const RemoveBackground = () => {
   const [input, setInput] = useState("");
@@ -47,11 +48,13 @@ const RemoveBackground = () => {
   React.useEffect(() => {
     if (success && data) {
       toast.success("Background removed successfully!");
+      // Refresh credits after successful background removal
+      dispatch(refreshCredits());
     }
     if (error) {
       toast.error(error);
     }
-  }, [success, error, data]);
+  }, [success, error, data, dispatch]);
 
 
   return (

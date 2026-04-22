@@ -3,7 +3,8 @@ import { Hash, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast';
 import Markdown from 'react-markdown';
 import axios from 'axios'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { refreshCredits } from '../../redux/slices/authSlice';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const BlogTitles = () => {
@@ -43,6 +44,9 @@ Here are 5 SEO-friendly blog titles for the keyword "${input}":
 
       if(data.success) {
         setContent(data.content)
+        toast.success('Blog titles generated successfully!');
+        // Refresh credits after successful title generation
+        dispatch(refreshCredits());
       } else {
         toast.error(data.message)
       }

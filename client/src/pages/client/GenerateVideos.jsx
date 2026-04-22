@@ -5,6 +5,7 @@ import { Loader, Download, Share2, Trash2, Play, Video, Sparkles } from 'lucide-
 import { useDispatch, useSelector } from 'react-redux';
 import { generateVideo, fetchVideos, fetchVideoStats, deleteVideo, shareVideo } from '../../redux/slices/videoSlice';
 import { fetchSocialAccounts, initiateSocialLogin } from '../../redux/slices/socialSlice';
+import { refreshCredits } from '../../redux/slices/authSlice';
 
 export default function GenerateVideos() {
   const [activeTab, setActiveTab] = useState('generate');
@@ -49,11 +50,13 @@ export default function GenerateVideos() {
   useEffect(() => {
     if (success) {
       toast.success('Operation completed successfully!');
+      // Refresh credits after successful video operation
+      dispatch(refreshCredits());
     }
     if (error) {
       toast.error(error);
     }
-  }, [success, error]);
+  }, [success, error, dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

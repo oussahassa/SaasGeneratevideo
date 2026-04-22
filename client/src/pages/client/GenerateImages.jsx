@@ -3,6 +3,7 @@ import { Image, Hash, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { generateImages, resetState } from "../../redux/slices/aiSlice";
+import { refreshCredits } from "../../redux/slices/authSlice";
 
 const GenerateImages = () => {
   const imageStyle = [
@@ -63,6 +64,7 @@ const GenerateImages = () => {
   React.useEffect(() => {
     if (success && data) {
       toast.success("Image generated successfully!");
+      // Crédits seront rafraîchis automatiquement via l'intervalle dans Sidebar
     }
     if (error) {
       toast.error(error);

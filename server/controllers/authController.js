@@ -355,9 +355,10 @@ export const verifyToken = async (req, res) => {
       lastName: user.last_name,
       profile_picture: user.profile_picture,
       is_admin: user.is_admin === true,
-      role: user.is_admin === true ? 'admin' : 'user'
+      role: user.is_admin === true ? 'admin' : 'user',
+      credit: user.credit,
     }
-
+console.log('Token verified for user:', user.credit)
     res.json({ success: true, valid: true, user: payloadUser })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })

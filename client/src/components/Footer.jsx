@@ -7,7 +7,7 @@ const Footer = () => {
     const { t } = useTranslation()
 
     return (
-        <footer className="w-full text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-900">
+        <footer className="w-full ">
             <div className="max-w-7xl mx-auto px-6 py-16 flex flex-col items-center">
                 <div className="flex items-center space-x-3 mb-6">
                     <img

@@ -88,23 +88,23 @@ const Dashboard = () => {
           <div className='p-6 bg-white shadow-lg rounded-2xl border border-gray-200 flex flex-col items-center'>
             <Gem className='text-blue-500 mb-2' size={32}/>
             <p className='text-sm text-slate-600'>{t('dashboard.totalCreations') || 'Total Creations'}</p>
-            <h2 className='text-3xl font-bold mt-1'>{stats.creations ?? creations.length}</h2>
+            <h2 className='text-3xl font-bold mt-1 text-gray-600'>{stats.creations ?? creations.length}</h2>
           </div>
           <div className='p-6 bg-white shadow-lg rounded-2xl border border-gray-200 flex flex-col items-center'>
             <Sparkles className='text-purple-500 mb-2' size={32}/>
             <p className='text-sm text-slate-600'>{t('dashboard.videos') || 'Videos generated'}</p>
-            <h2 className='text-3xl font-bold mt-1'>{stats.videos ?? 0}</h2>
+            <h2 className='text-3xl font-bold mt-1 text-gray-600'>{stats.videos ?? 0}</h2>
           </div>
           <div className='p-6 bg-white shadow-lg rounded-2xl border border-gray-200 flex flex-col items-center'>
              <Images className='text-red-500 mb-2' size={32}/>
 
             <p className='text-sm text-slate-600'>{t('dashboard.images') || 'Images generated'}</p>
-            <h2 className='text-3xl font-bold mt-1'>{stats.images ?? 0}</h2>
+            <h2 className='text-3xl font-bold mt-1 text-gray-600'>{stats.images ?? 0}</h2>
           </div>
           <div className='p-6 bg-white shadow-lg rounded-2xl border border-gray-200 flex flex-col items-center'>
            <Newspaper className='text-bleu-500 mb-2' size={32}/> 
             <p className='text-sm text-slate-600'>{t('dashboard.articles') || 'Articles generated'}</p>
-            <h2 className='text-3xl font-bold mt-1'>{stats.articles ?? 0}</h2>
+            <h2 className='text-3xl font-bold mt-1 text-gray-600'>{stats.articles ?? 0}</h2>
           </div>
         </div>
         <div className='mt-6 w-full flex gap-4 justify-end'>
@@ -124,7 +124,7 @@ const Dashboard = () => {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className='p-2 border rounded-md text-sm'
+              className='p-2 border rounded-md text-sm text-gray-500'
             >
               <option value='all'>All</option>
               <option value='image'>Image</option>
@@ -135,14 +135,14 @@ const Dashboard = () => {
               type='date'
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className='p-2 border rounded-md text-sm'
+              className='p-2 border rounded-md text-sm text-gray-500'
               placeholder='Start date'
             />
             <input
               type='date'
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className='p-2 border rounded-md text-sm'
+              className='p-2 border rounded-md text-sm text-gray-500'
               placeholder='End date'
             />
             <button
@@ -153,7 +153,7 @@ const Dashboard = () => {
             </button>
           </div>
           <div>
-            <p className='mt-2 mb-3 text-lg font-semibold'>{t('dashboard.recentCreations') || 'Recent Creations'}</p>
+            <p className='mt-2 mb-3 text-lg font-semibold text-gray-500'>{t('dashboard.recentCreations') || 'Recent Creations'}</p>
             <div className='grid gap-3'>
               {creations.map((item) => (
                 <CreationItem key={item.id} item={item} />
@@ -162,13 +162,13 @@ const Dashboard = () => {
           </div>
 
           <div>
-            <p className='mb-3 text-lg font-semibold'>{t('dashboard.sessions') || 'Active Sessions'}</p>
-            <div className='space-y-2'>
+            <p className='mb-3 text-lg font-semibold text-gray-500'>{t('dashboard.sessions') || 'Active Sessions'}</p>
+            <div className='space-y-2 text-gray-500 '>
               {sessions.length === 0 && <p className='text-sm text-gray-500'>{t('dashboard.noSessions') || 'No active sessions'}</p>}
               {sessions.slice(0, 5).map(s => (
                 <div key={s.id} className='flex items-center justify-between p-3 bg-white border rounded-lg shadow'>
                   <div>
-                    <p className='text-sm font-medium'>{s.device || s.userAgent || 'Unknown device'}</p>
+                    <p className='text-sm font-medium text-gray-500'>{s.device || s.userAgent || 'Unknown device'}</p>
                     <p className='text-xs text-gray-500'>{s.ip || 'Unknown IP'} • {new Date(s.lastActive).toLocaleString()}</p>
                   </div>
                   <div className='flex items-center gap-2'>
