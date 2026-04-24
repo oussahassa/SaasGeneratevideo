@@ -279,7 +279,7 @@ export const upgradePlan = async (req, res) => {
     // Check if user already has an active subscription
     const existingSubscription = await sql`
       SELECT * FROM user_subscriptions
-      WHERE user_id = ${userId} AND is_active = TRUE AND end_date > NOW()
+      WHERE user_id = ${userId} 
     `;
 
     const startDate = new Date();
@@ -290,7 +290,7 @@ export const upgradePlan = async (req, res) => {
       // Update existing subscription
       await sql`
         UPDATE user_subscriptions
-        SET pack_id = ${packId}, end_date = ${endDate}, updated_at = NOW()
+        SET pack_id = ${packId}, end_date = ${endDate}, monthly_limit = ${selectedPack.monthly_limit + existingSubscription[0].monthly_limit  || 0}, updated_at = NOW()
         WHERE user_id = ${userId} AND is_active = TRUE
       `;
     } else {

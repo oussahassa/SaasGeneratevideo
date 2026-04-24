@@ -426,10 +426,37 @@
     "everythingPro": "Everything in Pro",
     "customAPI": "Custom API access",
     "dedicatedSupport": "Dedicated support",
-    "advancedAnalytics": "Advanced analytics"
+    "advancedAnalytics": "Advanced analytics",
+    "selectPaymentMethod": "Select Payment Method",
+    "noPaymentRequired": "This plan is free - no payment required!",
+    "upgradeFree": "Upgrade to Free",
+    "selectPlan": "Please select a plan first",
+    "paymentFailed": "Payment failed. Please try again.",
+    "alreadyHavePlan": "You already have this plan",
+    "creationsMonth": "creations per month",
+    "noFeatures": "No features specified",
+    "didntFind": "Didn't find what you need?",
+    "support": "Contact our support team for assistance with your needs.",
+    "contactSupport": "Contact Support",
+    "noPlans": "No plans available at the moment"
   },
-  "footer": {
-    "description": "Experience the power of AI with NexAI. Transform your content creation with our suite of premium AI tools. Write articles, generate images and enhance your workflow.",
-    "copyright": "©2026. All rights reserved."
-  }
-}
+  "payment": {
+    "paymentSuccessful": "Payment successful! Your plan has been upgraded.",
+    "verificationFailed": "Payment verification failed. Please try again.",
+    "noPaymentData": "No payment information found",
+    "verificationError": "Failed to verify payment",
+    "verifyingPayment": "Verifying your payment...",
+    "pleasWait": "Please wait while we confirm your payment and upgrade your plan.",
+    "tryAgain": "Try Again",
+    "paymentSuccessfulTitle": "Payment Successful!",
+    "congratulations": "Congratulations! Your subscription has been activated successfully. You now have access to all premium features.",
+    "whatsIncluded": "What's included:",
+    "unlimitedGenerations": "Unlimited AI generations",
+    "advancedAnalytics": "Advanced analytics dashboard",
+    "prioritySupport": "Priority support",
+    "exportFormats": "Export to multiple formats",
+    "startCreating": "Start Creating",
+    "confirmationEmail": "A confirmation email has been sent to your inbox with your subscription details.",
+    "viewAllPlans": "View all plans →",
+    "paymentFailed": "Payment Verification Failed"
+  },

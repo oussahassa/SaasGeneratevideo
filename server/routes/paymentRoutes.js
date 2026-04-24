@@ -4,6 +4,8 @@ import {
   createStripePayment,
   createPayPalPayment,
   createPaymeePayment,
+  verifyStripePayment,
+  verifyPayPalPayment,
   handleStripeWebhook,
   handlePayPalWebhook,
   handlePaymeeWebhook,
@@ -15,6 +17,10 @@ const paymentRouter = express.Router();
 paymentRouter.post('/stripe/create', auth, createStripePayment);
 paymentRouter.post('/paypal/create', auth, createPayPalPayment);
 paymentRouter.post('/paymee/create', auth, createPaymeePayment);
+
+// Payment verification routes
+paymentRouter.get('/stripe/verify', auth, verifyStripePayment);
+paymentRouter.get('/paypal/verify', auth, verifyPayPalPayment);
 
 // Webhook routes (no auth required)
 paymentRouter.post('/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);

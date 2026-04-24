@@ -62,11 +62,58 @@ export const purchasePack = createAsyncThunk(
   }
 )
 
+export const fetchClientPacks = createAsyncThunk(
+  'pack/fetchClientPacks',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(API_ENDPOINTS.PACKS.GET_CLIENT_PACKS)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch plans')
+    }
+  }
+)
+
+export const upgradePlan = createAsyncThunk(
+  'pack/upgradePlan',
+  async (packId, { rejectWithValue }) => {
+    try {
+      const response = await api.post(API_ENDPOINTS.USER.UPGRADE_PLAN, { packId })
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to upgrade plan')
+    }
+  }
+)
+
+export const initiatePayment = createAsyncThunk(
+  'pack/initiatePayment',
+  async ({ method, packId, amount, currency }, { rejectWithValue }) => {
+    try {
+      const endpoint = 
+        method === 'stripe' ? API_ENDPOINTS.PAYMENTS.STRIPE_CREATE :
+        method === 'paypal' ? API_ENDPOINTS.PAYMENTS.PAYPAL_CREATE :
+        API_ENDPOINTS.PAYMENTS.PAYMEE_CREATE
+      
+      const response = await api.post(endpoint, {
+        packId,
+        amount,
+        currency
+      })
+      return { ...response.data, method }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Payment initialization failed')
+    }
+  }
+)
+
 const initialState = {
   packs: [],
   isLoading: false,
+  paymentLoading: false,
   error: null,
   success: false,
+  paymentUrl: null,
 }
 
 const packSlice = createSlice({
@@ -139,6 +186,46 @@ const packSlice = createSlice({
       })
       .addCase(purchasePack.rejected, (state, action) => {
         state.isLoading = false
+        state.error = action.payload
+      })
+      // Fetch Client Packs
+      .addCase(fetchClientPacks.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchClientPacks.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.packs = action?.payload?.packs || []
+      })
+      .addCase(fetchClientPacks.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      // Upgrade Plan
+      .addCase(upgradePlan.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.success = false
+      })
+      .addCase(upgradePlan.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.success = true
+      })
+      .addCase(upgradePlan.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      // Initiate Payment
+      .addCase(initiatePayment.pending, (state) => {
+        state.paymentLoading = true
+        state.error = null
+      })
+      .addCase(initiatePayment.fulfilled, (state, action) => {
+        state.paymentLoading = false
+        state.paymentUrl = action.payload
+      })
+      .addCase(initiatePayment.rejected, (state, action) => {
+        state.paymentLoading = false
         state.error = action.payload
       })
   }

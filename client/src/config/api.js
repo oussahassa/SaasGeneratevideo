@@ -40,10 +40,18 @@ export const API_ENDPOINTS = {
   // Pack endpoints
   PACKS: {
     GET_ALL: `${API_BASE_URL}/packs/get-all-packs`,
+    GET_CLIENT_PACKS: `${API_BASE_URL}/without-auth/get-packs-clients`,
     GET_BY_ID: (id) => `${API_BASE_URL}/packs/get-pack/${id}`,
     CREATE: `${API_BASE_URL}/packs/create-pack`,
     UPDATE: (id) => `${API_BASE_URL}/packs/update-pack/${id}`,
     DELETE: (id) => `${API_BASE_URL}/packs/delete-pack/${id}`,
+  },
+
+  // Payments endpoints
+  PAYMENTS: {
+    STRIPE_CREATE: `${API_BASE_URL}/payments/stripe/create`,
+    PAYPAL_CREATE: `${API_BASE_URL}/payments/paypal/create`,
+    PAYMEE_CREATE: `${API_BASE_URL}/payments/paymee/create`,
   },
 
   // Video endpoints

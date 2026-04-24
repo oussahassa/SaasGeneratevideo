@@ -18,14 +18,17 @@ export function ThemeProvider({ children }) {
     try {
       const saved = localStorage.getItem('theme')
       const normalized = parseSaved(saved)
+      console.log('Initial theme from localStorage:', saved, 'normalized:', normalized)
       return normalized || 'light'
     } catch (e) {
+      console.log('Error getting theme from localStorage:', e)
       return 'light'
     }
   })
 
   // Apply class + persist
   useEffect(() => {
+    console.log('Theme changed to:', theme)
     const root = document.documentElement
     // add temporary smooth-transition helper class
     root.classList.add('theme-transition')
@@ -44,6 +47,7 @@ export function ThemeProvider({ children }) {
     const handler = (e) => {
       try {
         const saved = parseSaved(localStorage.getItem('theme'))
+        console.log('System preference changed, saved theme:', saved, 'system dark:', e.matches)
         if (!saved) {
           setTheme(e.matches ? 'dark' : 'light')
         }

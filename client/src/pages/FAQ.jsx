@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import NavBar from '../components/NavBar'
 
 export default function FAQ() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
@@ -49,11 +50,14 @@ export default function FAQ() {
   };
 
   return (
-    <div className="min-h-screen   dark:to-slate-900 py-12 px-4">
+    <>
+        <NavBar/>
+
+    <div className="relative w-full min-h-screen pt-24 pb-12 px-4 sm:px-8 lg:px-12 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold mb-4">
             {t('faq.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">
@@ -134,5 +138,7 @@ export default function FAQ() {
         </div>
       </div>
     </div>
+    
+    </>
   );
 }

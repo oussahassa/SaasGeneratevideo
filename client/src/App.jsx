@@ -34,6 +34,8 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminPacks from './pages/admin/AdminPacks'
 import AdminComplaints from './pages/admin/AdminComplaints'
 import AdminFAQs from './pages/admin/AdminFAQs'
+import { Toaster } from 'react-hot-toast';
+
 const App = () => {
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
@@ -56,7 +58,7 @@ const App = () => {
 
   return (
     <div>
-    {/*  <Toaster />*/ } 
+     <Toaster />
       <Routes>
         {/* Public Routes */}
         <Route path='/' element={<Home />}/>

@@ -1,140 +1,107 @@
 import { useState, useEffect } from 'react';
-import api from '../utils/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchClientPacks, upgradePlan, initiatePayment } from '../redux/slices/packSlice';
 import toast from 'react-hot-toast';
 import { Check, X, CreditCard, DollarSign, Smartphone } from 'lucide-react';
 
 export default function Plans() {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  const dispatch = useDispatch();
+  const { packs, isLoading, paymentLoading, error } = useSelector(state => state.pack);
+  const { isAuthenticated } = useSelector(state => state.auth);
 
-  const [packs, setPacks] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPackForPayment, setSelectedPackForPayment] = useState(null);
-  const [paymentLoading, setPaymentLoading] = useState(false);
 
   useEffect(() => {
-    fetchPacks();
-  }, []);
-
-  const fetchPacks = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(API_URL+'/without-auth/get-packs-clients');
-      if (response.data.success) {
-        setPacks(response.data.packs);
-      }
-    } catch (error) {
-      toast.error('Failed to load plans');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(fetchClientPacks());
+  }, [dispatch]);
 
   const handleSelectPlan = async (pack) => {
+    console.log(pack)
     // If it's the free plan, upgrade directly
     if (pack.price === 0 || pack.name.toLowerCase() === 'free') {
+      if (!isAuthenticated) {
+        toast.error('Please login first');
+        return;
+      }
+      
       try {
-        setLoading(true);
-        const response = await api.post('/user/upgrade-plan', {
-          packId: pack.id
-        });
-
-        if (response.data.success) {
+        const result = await dispatch(upgradePlan(pack.id)).unwrap();
+        if (result.success) {
           toast.success('Successfully upgraded to ' + pack.name + ' plan!');
-          // Refresh user data or redirect to dashboard
           setTimeout(() => {
             window.location.href = '/ai';
           }, 2000);
-        } else {
-          toast.error(response.data.message || 'Upgrade failed');
         }
       } catch (error) {
-        toast.error(error.response?.data?.message || 'Failed to upgrade plan');
-        console.error(error);
-      } finally {
-        setLoading(false);
+        toast.error(error || 'Failed to upgrade plan');
       }
     } else {
       // For paid plans, show payment modal
+      if (!isAuthenticated) {
+        console.log('User not authenticated, cannot proceed to payment');
+        toast.error('Please login first');
+        return;
+      }
       setSelectedPackForPayment(pack);
       setShowPaymentModal(true);
+      console.log('Selected pack for payment:', selectedPackForPayment);
     }
   };
 
   const handlePayment = async (paymentMethod) => {
     if (!selectedPackForPayment) return;
 
-    setPaymentLoading(true);
     try {
-      const response = await api.post(`/payments/${paymentMethod}/create`, {
+      const result = await dispatch(initiatePayment({
+        method: paymentMethod,
         packId: selectedPackForPayment.id,
         amount: selectedPackForPayment.price,
         currency: paymentMethod === 'paymee' ? 'TND' : 'USD'
-      });
-      if (response.data.success) {
-        if (paymentMethod === 'stripe') {
-          // Redirect to Stripe Checkout
-          window.location.href = response.data.url;
-        } else if (paymentMethod === 'paypal') {
-          // Redirect to PayPal approval
-          window.location.href = response.data.approvalUrl;
-        } else if (paymentMethod === 'paymee') {
-          // Redirect to Paymee payment page
-          window.location.href = response.data.paymentUrl;
+      })).unwrap();
+
+      if (result.success) {
+        if (paymentMethod === 'stripe' && result.url) {
+          window.location.href = result.url;
+        } else if (paymentMethod === 'paypal' && result.approvalUrl) {
+          window.location.href = result.approvalUrl;
+        } else if (paymentMethod === 'paymee' && result.paymentUrl) {
+          window.location.href = result.paymentUrl;
         }
       }
+      setShowPaymentModal(false);
     } catch (error) {
       toast.error('Payment initialization failed');
-      console.error(error);
-    } finally {
-      setPaymentLoading(false);
-      setShowPaymentModal(false);
     }
   };
 
-  const defaultFeatures = {
-    free: [
-      'Write Articles (AI-Powered)',
-      'Generate Blog Titles',
-      '10 Creations/Month',
-      'Basic Dashboard',
-      'Community Access',
-      'Email Support'
-    ],
-    premium: [
-      'Write Articles (AI-Powered)',
-      'Generate Blog Titles',
-      'Generate Images',
-      'Remove Background',
-      'Remove Objects',
-      'Generate Videos',
-      'Unlimited Creations',
-      'Advanced Analytics',
-      'Priority Support',
-      'Social Media Sharing',
-      'Export to Multiple Formats',
-      'API Access'
-    ]
-  };
-
   return (
-    <div className="min-h-screen  dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Pricing Plans
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-4">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">
             Choose the perfect plan for your needs
           </p>
         </div>
 
         {/* Plans Grid */}
-        {loading ? (
-          <div className="text-center text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">Loading plans...</div>
+        {isLoading ? (
+          <div className="text-center text-gray-600 dark:text-gray-300">Loading plans...</div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500 mb-4">{error}</p>
+            <button
+              onClick={() => dispatch(fetchClientPacks())}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
         ) : packs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {packs.map((pack) => (
@@ -142,14 +109,14 @@ export default function Plans() {
                 key={pack.id}
                 className={`rounded-lg border-2 transition-all duration-300 ${
                   selectedPlan === pack.id
-                    ? 'border-blue-500 bg-white    dark:bg-slate-800 shadow-lg shadow-blue-500/20'
-                    : 'border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 bg-white    dark:bg-slate-800 hover:border-blue-500/50'
+                    ? 'border-blue-500 bg-white dark:bg-slate-800 shadow-lg shadow-blue-500/20'
+                    : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-500/50'
                 }`}
               >
                 {/* Plan Badge */}
                 {pack.name.toLowerCase() === 'premium' && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white px-4 py-1 rounded-full text-sm font-bold">
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold">
                       Most Popular
                     </span>
                   </div>
@@ -157,23 +124,23 @@ export default function Plans() {
 
                 <div className="p-8">
                   {/* Plan Name */}
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2 capitalize">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 capitalize">
                     {pack.name}
                   </h3>
 
                   {/* Price */}
                   <div className="mb-6">
-                    <div className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white">
+                    <div className="text-4xl font-bold text-gray-900 dark:text-white">
                       ${pack.price || 0}
                     </div>
                     {pack.price > 0 && (
-                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">per month</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm">per month</p>
                     )}
                   </div>
 
                   {/* Description */}
                   {pack.description && (
-                    <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm mb-6">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">
                       {pack.description}
                     </p>
                   )}
@@ -188,10 +155,11 @@ export default function Plans() {
                   {/* CTA Button */}
                   <button
                     onClick={() => handleSelectPlan(pack)}
-                    className={`w-full py-3 rounded-lg font-bold transition-all mb-8 ${
+                    disabled={isLoading || paymentLoading}
+                    className={`w-full py-3 rounded-lg font-bold transition-all mb-8 disabled:opacity-50 ${
                       selectedPlan === pack.id
-                        ? 'bg-blue-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
-                        : 'bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700 hover:bg-blue-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-50 dark:bg-slate-700 hover:bg-blue-600 text-gray-900 dark:text-white'
                     }`}
                   >
                     {selectedPlan === pack.id ? '✓ Selected' : 'Get Started'}
@@ -199,7 +167,7 @@ export default function Plans() {
 
                   {/* Features */}
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
                       What's included:
                     </h4>
                     {pack.features && pack.features.length > 0 ? (
@@ -212,7 +180,7 @@ export default function Plans() {
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">No features listed</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm">No features listed</p>
                     )}
                   </div>
                 </div>
@@ -220,11 +188,11 @@ export default function Plans() {
             ))}
           </div>
         ) : (
-          <div className="     rounded-lg p-12 text-center border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
-            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-4">No plans available at the moment</p>
+          <div className="rounded-lg p-12 text-center border border-gray-200 dark:border-slate-700">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">No plans available at the moment</p>
             <button
-              onClick={fetchPacks}
-              className="bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold py-2 px-6 rounded-lg transition-colors"
+              onClick={() => dispatch(fetchClientPacks())}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
             >
               Refresh
             </button>
@@ -234,17 +202,17 @@ export default function Plans() {
         {/* Comparison Section */}
         {packs.length > 0 && (
           <div className="mt-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-8 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
               Feature Comparison
             </h2>
 
             <div className="overflow-x-auto">
-              <table className="w-full bg-white    dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
-                <thead className="bg-white    dark:bg-slate-900 border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
+              <table className="w-full bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                <thead className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
                   <tr>
-                    <th className="px-6 py-4 text-left text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold">Feature</th>
+                    <th className="px-6 py-4 text-left text-gray-900 dark:text-white font-bold">Feature</th>
                     {packs.map(pack => (
-                      <th key={pack.id} className="px-6 py-4 text-center text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-bold capitalize">
+                      <th key={pack.id} className="px-6 py-4 text-center text-gray-900 dark:text-white font-bold capitalize">
                         {pack.name}
                       </th>
                     ))}
@@ -252,7 +220,7 @@ export default function Plans() {
                 </thead>
                 <tbody>
                   {['Write Articles', 'Blog Titles', 'Images', 'Remove Background', 'Remove Objects', 'Generate Videos', 'Unlimited Creations', 'Analytics', 'Support'].map((feature, idx) => (
-                    <tr key={idx} className="border-b border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-gray-50 dark:bg-slate-700/50">
+                    <tr key={idx} className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50">
                       <td className="px-6 py-4 text-slate-300 font-medium">{feature}</td>
                       {packs.map(pack => (
                         <td key={pack.id} className="px-6 py-4 text-center">
@@ -272,32 +240,32 @@ export default function Plans() {
         )}
 
         {/* FAQ Section */}
-        <div className="mt-16  rounded-lg p-8 border border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-gray-200 dark:border-slate-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-6">
+        <div className="mt-16 rounded-lg p-8 border border-gray-200 dark:border-slate-700">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Questions about plans?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold mb-2">Can I change my plan?</h4>
-              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Can I change my plan?</h4>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.
               </p>
             </div>
             <div>
-              <h4 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold mb-2">Is there a free trial?</h4>
-              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Is there a free trial?</h4>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Yes! Try our free plan with 10 creations per month to see if NexAI is right for you.
               </p>
             </div>
             <div>
-              <h4 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold mb-2">Do you offer refunds?</h4>
-              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Do you offer refunds?</h4>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 If you're not satisfied within 30 days, we offer a full refund. No questions asked.
               </p>
             </div>
             <div>
-              <h4 className="text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white font-semibold mb-2">Can I cancel anytime?</h4>
-              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 text-sm">
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Can I cancel anytime?</h4>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Absolutely! Cancel your subscription anytime. No hidden fees or long-term contracts.
               </p>
             </div>

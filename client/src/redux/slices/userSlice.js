@@ -21,9 +21,9 @@ export const fetchUserPlan = createAsyncThunk('user/fetchUserPlan', async (_, { 
   }
 })
 
-export const upgradePlan = createAsyncThunk('user/upgradePlan', async (planType, { rejectWithValue }) => {
+export const upgradePlan = createAsyncThunk('user/upgradePlan', async (packId, { rejectWithValue }) => {
   try {
-    const response = await api.post(API_ENDPOINTS.USER.UPGRADE_PLAN, { planType })
+    const response = await api.post(API_ENDPOINTS.USER.UPGRADE_PLAN, { packId })
     return response.data
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || 'Failed to upgrade plan')

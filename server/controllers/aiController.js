@@ -129,8 +129,7 @@ export const generateImage = async (req, res) => {
         message: "Insufficient credits.",
       });
     }
-    await sql`UPDATE user_subscriptions SET monthly_limit = monthly_limit - 5 WHERE id = ${subscription[0].id}`;
-
+  
     const formData = new FormData()
     formData.append('prompt', prompt)
     const {data} = await axios.post("https://clipdrop-api.co/text-to-image/v1", formData, {
@@ -141,6 +140,7 @@ export const generateImage = async (req, res) => {
     const base64Image = `data:image/png;base64,${Buffer.from(data, 'binary').toString('base64')}`;
 
     const {secure_url} = await cloudinary.uploader.upload(base64Image)
+  await sql`UPDATE user_subscriptions SET monthly_limit = monthly_limit - 5 WHERE id = ${subscription[0].id}`;
 
     await sql`
       INSERT INTO creations (user_id, prompt, content, type, publish)

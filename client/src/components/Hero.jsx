@@ -53,7 +53,7 @@ const Hero = () => {
 
         {/* Main Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white leading-tight mb-6">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold  leading-tight mb-6">
             {t('hero.title.part1')}
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
