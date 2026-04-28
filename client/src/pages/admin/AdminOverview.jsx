@@ -78,8 +78,8 @@ export default function AdminOverview() {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">{t('admin.overview.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.overview.title')}</p>
+        <h1 className="text-3xl font-bold text-gray-500 mb-2">{t('admin.overview.title')}</h1>
+        <p className="text-gray-400">{t('admin.overview.title')}</p>
       </div>
 
       {/* Stats Grid */}

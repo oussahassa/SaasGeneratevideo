@@ -73,7 +73,7 @@ export const API_ENDPOINTS = {
     CREATE_COMPLAINT: `${API_BASE_URL}/support/create-complaint`,
     GET_MY_COMPLAINTS: `${API_BASE_URL}/support/get-my-complaints`,
     GET_ALL_COMPLAINTS: `${API_BASE_URL}/support/get-all-complaints`,
-    UPDATE_COMPLAINT: (id) => `${API_BASE_URL}/support/update-complaint/${id}`,
+    RESPOND_COMPLAINT: (id) => `${API_BASE_URL}/support/respond-complaint/${id}`,
     DELETE_COMPLAINT: (id) => `${API_BASE_URL}/support/delete-complaint/${id}`,
     GET_COMPLAINTS_STATS: `${API_BASE_URL}/support/complaints-stats`,
   },

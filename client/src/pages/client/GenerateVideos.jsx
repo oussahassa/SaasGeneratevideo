@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Loader, Download, Share2, Trash2, Play, Video, Sparkles } from 'lucide-react';
@@ -6,6 +6,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { generateVideo, fetchVideos, fetchVideoStats, deleteVideo, shareVideo } from '../../redux/slices/videoSlice';
 import { fetchSocialAccounts, initiateSocialLogin } from '../../redux/slices/socialSlice';
 import { refreshCredits } from '../../redux/slices/authSlice';
+
+// Constants
+const VIDEO_DURATION_LIMITS = { min: 15, max: 300 };
+const TONE_OPTIONS = [
+  { value: 'professional', label: 'Professional' },
+  { value: 'casual', label: 'Casual' },
+  { value: 'funny', label: 'Funny' },
+  { value: 'educational', label: 'Educational' },
+  { value: 'inspirational', label: 'Inspirational' }
+];
+
+const SOCIAL_PLATFORMS = [
+  { value: 'instagram', label: '📸 Instagram', color: 'from-pink-500 to-purple-600' },
+  { value: 'tiktok', label: '🎵 TikTok', color: 'from-black to-gray-800' },
+  { value: 'facebook', label: '👥 Facebook', color: 'from-blue-600 to-blue-800' }
+];
+
+const DEFAULT_SHARE_PLATFORMS = ['instagram', 'facebook', 'tiktok'];
 
 export default function GenerateVideos() {
   const [activeTab, setActiveTab] = useState('generate');
@@ -15,12 +33,65 @@ export default function GenerateVideos() {
     tone: 'professional'
   });
   const [shareModal, setShareModal] = useState(null);
-  const [sharePlatforms, setSharePlatforms] = useState(['instagram', 'facebook', 'tiktok']);
+  const [sharePlatforms, setSharePlatforms] = useState(DEFAULT_SHARE_PLATFORMS);
   const [shareCaption, setShareCaption] = useState('');
 
   const dispatch = useDispatch();
   const { videos, stats, isLoading, error, success } = useSelector(state => state.video);
   const { accounts: socialAccounts, isLoading: socialLoading } = useSelector(state => state.social);
+
+  // Memoized handlers to prevent unnecessary re-renders
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'duration' ? Math.min(Math.max(parseInt(value) || 0, VIDEO_DURATION_LIMITS.min), VIDEO_DURATION_LIMITS.max) : value
+    }));
+  }, []);
+
+  const handleGenerateVideo = useCallback(async (e) => {
+    e.preventDefault();
+    if (!formData.topic.trim()) {
+      toast.error('Please enter a topic');
+      return;
+    }
+
+    dispatch(generateVideo(formData));
+    setFormData({ topic: '', duration: 30, tone: 'professional' });
+  }, [formData, dispatch]);
+
+  const handleShareVideo = useCallback(async (videoId) => {
+    if (!shareCaption.trim()) {
+      toast.error('Please enter a caption');
+      return;
+    }
+    if (sharePlatforms.length === 0) {
+      toast.error('Please select at least one platform');
+      return;
+    }
+
+    dispatch(shareVideo({ videoId, platforms: sharePlatforms, caption: shareCaption }));
+    setShareModal(null);
+    setShareCaption('');
+    setSharePlatforms(DEFAULT_SHARE_PLATFORMS);
+  }, [shareCaption, sharePlatforms, dispatch]);
+
+  const handleDeleteVideo = useCallback(async (videoId) => {
+    if (!window.confirm('Are you sure you want to delete this video?')) return;
+    dispatch(deleteVideo(videoId));
+  }, [dispatch]);
+
+  const handleSocialLogin = useCallback((platform) => {
+    dispatch(initiateSocialLogin({ platform, redirectUrl: window.location.href }));
+  }, [dispatch]);
+
+  const handlePlatformToggle = useCallback((platform) => {
+    setSharePlatforms(prev =>
+      prev.includes(platform)
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    );
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'my-videos') {
@@ -57,50 +128,6 @@ export default function GenerateVideos() {
       toast.error(error);
     }
   }, [success, error, dispatch]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'duration' ? parseInt(value) : value
-    }));
-  };
-
-  const handleGenerateVideo = async (e) => {
-    e.preventDefault();
-    if (!formData.topic) {
-      toast.error('Please enter a topic');
-      return;
-    }
-
-    dispatch(generateVideo(formData));
-    setFormData({ topic: '', duration: 30, tone: 'professional' });
-  };
-
-  const handleShareVideo = async (videoId) => {
-    if (!shareCaption.trim()) {
-      toast.error('Please enter a caption');
-      return;
-    }
-    if (sharePlatforms.length === 0) {
-      toast.error('Please select at least one platform');
-      return;
-    }
-
-    dispatch(shareVideo({ videoId, platforms: sharePlatforms, caption: shareCaption }));
-    setShareModal(null);
-    setShareCaption('');
-    setSharePlatforms(['instagram', 'facebook', 'tiktok']);
-  };
-
-  const handleDeleteVideo = async (videoId) => {
-    if (!window.confirm('Are you sure you want to delete this video?')) return;
-    dispatch(deleteVideo(videoId));
-  };
-
-  const handleSocialLogin = async (platform) => {
-    dispatch(initiateSocialLogin({ platform, redirectUrl: window.location.href }));
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-8 px-4">
@@ -199,11 +226,11 @@ export default function GenerateVideos() {
                         onChange={handleInputChange}
                         className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       >
-                        <option value="professional">Professional</option>
-                        <option value="casual">Casual</option>
-                        <option value="funny">Funny</option>
-                        <option value="educational">Educational</option>
-                        <option value="inspirational">Inspirational</option>
+                        {TONE_OPTIONS.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -401,11 +428,7 @@ export default function GenerateVideos() {
                     Platforms
                   </label>
                   <div className="space-y-3">
-                    {[
-                      { value: 'instagram', label: '📸 Instagram', color: 'from-pink-500 to-purple-600' },
-                      { value: 'tiktok', label: '🎵 TikTok', color: 'from-black to-gray-800' },
-                      { value: 'facebook', label: '👥 Facebook', color: 'from-blue-600 to-blue-800' }
-                    ].map(platform => {
+                    {SOCIAL_PLATFORMS.map(platform => {
                       const account = socialAccounts?.find(account => account.platform === platform.value);
                       const isConnected = !!account;
                       return (
@@ -414,13 +437,7 @@ export default function GenerateVideos() {
                             <input
                               type="checkbox"
                               checked={sharePlatforms.includes(platform.value)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSharePlatforms([...sharePlatforms, platform.value]);
-                                } else {
-                                  setSharePlatforms(sharePlatforms.filter(p => p !== platform.value));
-                                }
-                              }}
+                              onChange={() => handlePlatformToggle(platform.value)}
                               disabled={!isConnected}
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
                             />

@@ -666,11 +666,7 @@ export default function AdminDashboard() {
 
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
-          <div className="bg-white dark:bg-gray-900 rounded-lg p-8 border border-gray-200 dark:border-gray-800 text-center">
-            <BarChart3 size={64} className="text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-gray-900 dark:text-white font-bold mb-2">{t('admin.tabs.analytics')}</h3>
-            <p className="text-gray-600 dark:text-gray-400">Coming soon...</p>
-          </div>
+          <Analytics />
         )}
 
         {/* FAQ Modal */}

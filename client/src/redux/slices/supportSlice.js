@@ -75,6 +75,58 @@ export const deleteFaq = createAsyncThunk(
   }
 )
 
+// Admin: Fetch all complaints
+export const fetchAllComplaints = createAsyncThunk(
+  'support/fetchAllComplaints',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(API_ENDPOINTS.SUPPORT.GET_ALL_COMPLAINTS)
+      return response.data.complaints || []
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch complaints')
+    }
+  }
+)
+
+// Admin: Respond to complaint
+export const respondComplaint = createAsyncThunk(
+  'support/respondComplaint',
+  async ({ id, response: responseText }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(API_ENDPOINTS.SUPPORT.RESPOND_COMPLAINT(id), { response: responseText })
+      return { id, response: responseText, ...response.data }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to respond to complaint')
+    }
+  }
+)
+
+// Admin: Delete complaint
+export const deleteComplaint = createAsyncThunk(
+  'support/deleteComplaint',
+  async (complaintId, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(API_ENDPOINTS.SUPPORT.DELETE_COMPLAINT(complaintId))
+      return { ...response.data, complaintId }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete complaint')
+    }
+  }
+)
+
+// Admin: Update complaint status
+export const updateComplaintStatus = createAsyncThunk(
+  'support/updateComplaintStatus',
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(API_ENDPOINTS.SUPPORT.UPDATE_COMPLAINT_STATUS(id), { status })
+      return { id, status, ...response.data }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update complaint status')
+    }
+  }
+)
+
 const supportSlice = createSlice({
   name: 'support',
   initialState: {
@@ -176,6 +228,53 @@ const supportSlice = createSlice({
         state.faqs = state.faqs.filter((faq) => faq.id !== action.payload.faqId)
       })
       .addCase(deleteFaq.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      // Admin: Fetch all complaints
+      .addCase(fetchAllComplaints.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchAllComplaints.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.complaints = action.payload 
+
+      })
+      .addCase(fetchAllComplaints.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      // Admin: Respond to complaint
+      .addCase(respondComplaint.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.success = false
+      })
+      .addCase(respondComplaint.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.success = true
+        state.complaints = state.complaints.map((complaint) =>
+          complaint.id === action.payload.id
+            ? { ...complaint, admin_response: action.payload.response }
+            : complaint
+        )
+      })
+      .addCase(respondComplaint.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      // Admin: Delete complaint
+      .addCase(deleteComplaint.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(deleteComplaint.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.success = true
+        state.complaints = state.complaints.filter((complaint) => complaint.id !== action.payload.complaintId)
+      })
+      .addCase(deleteComplaint.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload
       })

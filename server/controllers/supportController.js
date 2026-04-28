@@ -260,3 +260,30 @@ export const getComplaintsStats = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+   export const respondToComplaint = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+    const { response } = req.body;
+
+    const isAdmin = await checkAdminStatus(userId);
+    if (!isAdmin)
+      return res.status(403).json({ success: false, message: "Unauthorized access" });
+
+    const complaint = await sql`
+      UPDATE complaints
+      SET
+        admin_response = ${response || null}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+
+    if (!complaint.length)
+      return res.status(404).json({ success: false, message: "Complaint not found" });
+
+    res.json({ success: true, message: "Complaint response added successfully", complaint: complaint[0] });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

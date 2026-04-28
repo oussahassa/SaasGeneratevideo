@@ -1,5 +1,7 @@
 import express from 'express';
 import { auth } from '../middlewares/auth.js';
+import { validateVideoParams, validateShareParams, validateIdParam } from '../middlewares/validation.js';
+import { asyncHandler } from '../middlewares/errorHandler.js';
 import {
   generateVideo,
   generateVideoFromAssets,
@@ -11,11 +13,25 @@ import {
 
 const videoRouter = express.Router();
 
-videoRouter.post('/generate-video', auth, generateVideo);
-videoRouter.post('/generate-from-assets', auth, generateVideoFromAssets);
-videoRouter.post('/share-to-social', auth, shareVideoToSocial);
-videoRouter.get('/get-videos', auth, getUserVideos);
-videoRouter.get('/get-stats', auth, getUserVideoStats);
-videoRouter.delete('/delete-video/:videoId', auth, deleteVideo);
+// All video routes require authentication
+videoRouter.use(auth);
+
+// Generate video with validation
+videoRouter.post('/generate-video', validateVideoParams, asyncHandler(generateVideo));
+
+// Generate video from assets with validation
+videoRouter.post('/generate-from-assets', asyncHandler(generateVideoFromAssets));
+
+// Share video to social platforms with validation
+videoRouter.post('/share-to-social', validateShareParams, asyncHandler(shareVideoToSocial));
+
+// Get user videos
+videoRouter.get('/get-videos', asyncHandler(getUserVideos));
+
+// Get video statistics
+videoRouter.get('/get-stats', asyncHandler(getUserVideoStats));
+
+// Delete video with ID validation
+videoRouter.delete('/delete-video/:videoId', validateIdParam('videoId'), asyncHandler(deleteVideo));
 
 export default videoRouter;

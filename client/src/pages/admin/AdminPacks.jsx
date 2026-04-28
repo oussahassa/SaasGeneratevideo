@@ -120,8 +120,8 @@ export default function AdminPacks() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white mb-2">{t('admin.packs.title')}</h1>
-          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300">{t('admin.packs.title')}</p>
+          <h1 className="text-3xl font-bold text-gray-500    mb-2">{t('admin.packs.title')}</h1>
+          <p className="text-gray-400">{t('admin.packs.title')}</p>
         </div>
         <button
           onClick={openCreateModal}

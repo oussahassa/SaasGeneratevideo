@@ -459,4 +459,5 @@
     "confirmationEmail": "A confirmation email has been sent to your inbox with your subscription details.",
     "viewAllPlans": "View all plans →",
     "paymentFailed": "Payment Verification Failed"
-  },
+  }
+}

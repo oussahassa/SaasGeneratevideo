@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
+import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import Layout from './pages/Layout'
 import AdminLayout from './pages/admin/AdminLayout'
@@ -57,64 +58,68 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <div>
-     <Toaster />
-      <Routes>
-        {/* Public Routes */}
-        <Route path='/' element={<Home />}/>
-        <Route path='/login' element={<Login />}/>
-        <Route path='/signup' element={<Signup />}/>
-        <Route path='/verify-email' element={<EmailVerification />}/>
-        <Route path='/forgot-password' element={<ForgotPassword />}/>
-        <Route path='/reset-password' element={<ResetPassword />}/>
-        <Route path='/plan' element={<Plan />}/>
-        <Route path='/faq' element={<FAQ />}/>
-        <Route path='/payment/success' element={<PaymentSuccess />}/>
-        <Route path='/payment/cancel' element={<PaymentCancel />}/>
+    <ErrorBoundary>
+      <div>
+       <Toaster />
+        <Routes>
+          {/* Public Routes */}
+          <Route path='/' element={<Home />}/>
+          <Route path='/login' element={<Login />}/>
+          <Route path='/signup' element={<Signup />}/>
+          <Route path='/verify-email' element={<EmailVerification />}/>
+          <Route path='/forgot-password' element={<ForgotPassword />}/>
+          <Route path='/reset-password' element={<ResetPassword />}/>
+          <Route path='/plan' element={<Plan />}/>
+          <Route path='/faq' element={<FAQ />}/>
+          <Route path='/payment/success' element={<PaymentSuccess />}/>
+          <Route path='/payment/cancel' element={<PaymentCancel />}/>
 
-        {/* Client Protected Routes */}
-        <Route path='/ai' element={
-          <PrivateRoute>
-            <Layout />
-          </PrivateRoute>
-        }>
-          <Route index element={<Dashboard />}/>
-          <Route path='write-article' element={<WriteArticle />}/>
-          <Route path='blog-titles' element={<BlogTitles />}/>
-          <Route path='generate-images' element={<GenerateImages />}/>
-          <Route path='remove-background' element={<RemoveBackground />}/>
-          <Route path='remove-object' element={<RemoveObject />}/>
-          <Route path='community' element={<Community />}/>
-          <Route path='generate-videos' element={<GenerateVideos />}/>
-          <Route path='my-complaints' element={<MyComplaints />}/>
-          <Route path='support' element={<Support />}/>
-          <Route path='update-profile' element={<UpdateProfilePage />}/>
+          {/* Client Protected Routes */}
+          <Route path='/ai' element={
+            <PrivateRoute>
+              <Layout />
+            </PrivateRoute>
+          }>
+            <Route index element={<Dashboard />}/>
+            <Route path='write-article' element={<WriteArticle />}/>
+            <Route path='blog-titles' element={<BlogTitles />}/>
+            <Route path='generate-images' element={<GenerateImages />}/>
+            <Route path='remove-background' element={<RemoveBackground />}/>
+            <Route path='remove-object' element={<RemoveObject />}/>
+            <Route path='community' element={<Community />}/>
+            <Route path='generate-videos' element={<GenerateVideos />}/>
+            <Route path='my-complaints' element={<MyComplaints />}/>
+            <Route path='support' element={<Support />}/>
+            <Route path='update-profile' element={<UpdateProfilePage />}/>
 
-        </Route>
+          </Route>
 
-        <Route path='/support' element={
-          <PrivateRoute>
-            <Layout />
-          </PrivateRoute>
-        }>
-          <Route index element={<Support />}/>
-        </Route>
+          <Route path='/support' element={
+            <PrivateRoute>
+              <Layout />
+            </PrivateRoute>
+          }>
+            <Route index element={<Support />}/>
+          </Route>
 
-        {/* Admin Protected Routes */}
-        <Route path='/admin-dashboard' element={
-          <AdminRoute roles={['admin', 'manager', 'support']}>
-            <AdminLayout />
-          </AdminRoute>
-        }>
-          <Route index element={<AdminDashboard />}/>
-          <Route path='users' element={<AdminUsers />}/>
-          <Route path='packs' element={<AdminPacks />}/>
-          <Route path='complaints' element={<AdminComplaints />}/>
-          <Route path='faqs' element={<AdminFAQs />}/>
-          <Route path='analytics' element={<AdminDashboard />}/>
-        </Route>
-      </Routes>
-    </div>
+          {/* Admin Protected Routes */}
+          <Route path='/admin-dashboard' element={
+            <AdminRoute roles={['admin', 'manager', 'support']}>
+              <AdminLayout />
+            </AdminRoute>
+          }>
+            <Route index element={<AdminDashboard />}/>
+            <Route path='global' element={<AdminDashboard />}/>
+
+            <Route path='users' element={<AdminUsers />}/>
+            <Route path='packs' element={<AdminPacks />}/>
+            <Route path='complaints' element={<AdminComplaints />}/>
+            <Route path='faqs' element={<AdminFAQs />}/>
+            <Route path='analytics' element={<AdminDashboard />}/>
+          </Route>
+        </Routes>
+      </div>
+    </ErrorBoundary>
   )
 }
 

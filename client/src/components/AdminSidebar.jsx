@@ -23,7 +23,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   const menuItemsByRole = {
     admin: [
-      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
+      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard/global' },
       { icon: Users, label: t('admin.tabs.users'), path: '/admin-dashboard/users' },
       { icon: Package, label: t('admin.tabs.packs'), path: '/admin-dashboard/packs' },
       { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
@@ -31,13 +31,13 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
       { icon: BarChart3, label: t('admin.tabs.analytics'), path: '/admin-dashboard/analytics' },
     ],
     manager: [
-      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
+      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard/global' },
       { icon: Users, label: t('admin.tabs.users'), path: '/admin-dashboard/users' },
       { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
       { icon: BarChart3, label: t('admin.tabs.analytics'), path: '/admin-dashboard/analytics' },
     ],
     support: [
-      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard' },
+      { icon: LayoutDashboard, label: t('admin.tabs.overview'), path: '/admin-dashboard/global' },
       { icon: MessageSquare, label: t('admin.tabs.complaints'), path: '/admin-dashboard/complaints' },
       { icon: HelpCircle, label: t('admin.tabs.faqs'), path: '/admin-dashboard/faqs' },
     ],
@@ -90,7 +90,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
         {/* Menu Items */}
         <nav className='flex-1 px-4 py-6 space-y-2'>
-          <h3 className='text-xs font-semibold text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 uppercase tracking-wider px-3 mb-4'>
+          <h3 className='text-xs font-semibold  px-3 mb-4'>
             {t('admin.title')}
           </h3>
 
@@ -106,7 +106,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   ${
                     active
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-white shadow-lg'
-                      : 'text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-600 dark:text-gray-300 hover:bg-gray-700 hover:text-gray-900 dark:text-gray-900 dark:text-gray-900 dark:text-gray-900 '
+                      : 'text-gray-400  '
                   }
                 `}
               >

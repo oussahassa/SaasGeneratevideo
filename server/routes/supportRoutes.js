@@ -10,7 +10,8 @@ import {
   getAllComplaints,
   updateComplaintStatus,
   deleteComplaint,
-  getComplaintsStats
+  getComplaintsStats,
+  respondToComplaint
 } from '../controllers/supportController.js';
 
 const supportRouter = express.Router();
@@ -25,9 +26,9 @@ supportRouter.delete('/delete-faq/:id', auth, deleteFAQ);
 // Complaint routes
 supportRouter.post('/create-complaint', auth, createComplaint);
 supportRouter.get('/get-my-complaints', auth, getUserComplaints);
-supportRouter.get('/get-all-complaints', auth, getAllComplaints);
+supportRouter.get('/get-all-complaints',auth, getAllComplaints);
 supportRouter.put('/update-complaint/:id', auth, updateComplaintStatus);
 supportRouter.delete('/delete-complaint/:id', auth, deleteComplaint);
 supportRouter.get('/complaints-stats', auth, getComplaintsStats);
-
+supportRouter.put('/respond-complaint/:id', auth, respondToComplaint);
 export default supportRouter;
