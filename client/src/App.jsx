@@ -35,6 +35,7 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminPacks from './pages/admin/AdminPacks'
 import AdminComplaints from './pages/admin/AdminComplaints'
 import AdminFAQs from './pages/admin/AdminFAQs'
+import Analytics from './pages/admin/Analytics'
 import { Toaster } from 'react-hot-toast';
 
 const App = () => {
@@ -110,12 +111,11 @@ const App = () => {
           }>
             <Route index element={<AdminDashboard />}/>
             <Route path='global' element={<AdminDashboard />}/>
-
+            <Route path='analytics' element={<Analytics />}/>
             <Route path='users' element={<AdminUsers />}/>
             <Route path='packs' element={<AdminPacks />}/>
             <Route path='complaints' element={<AdminComplaints />}/>
             <Route path='faqs' element={<AdminFAQs />}/>
-            <Route path='analytics' element={<AdminDashboard />}/>
           </Route>
         </Routes>
       </div>

@@ -20,6 +20,7 @@ import analyticsRouter from './routes/analyticsRoutes.js';
 import { auth, attachPlanInfo } from './middlewares/auth.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { generalRateLimiter, authRateLimiter } from './middlewares/rateLimiter.js';
+import { applySecurity } from './middlewares/securityMiddleware.js';
 import https from 'https';
 import fs from 'fs'
 
@@ -77,13 +78,14 @@ app.use('/api/admin', adminRouter)
 app.use('/api/support', supportRouter)
 
 // Protected routes
-//app.use(auth)
-//app.use(attachPlanInfo)
+app.use(auth)
+app.use(attachPlanInfo)
 
-app.use('/api/ai', aiRouter)
-app.use('/api/user', userRouter)
-app.use('/api/packs', packRouter)
-app.use('/api/videos', videoRouter)
+// Apply security middleware to protected routes
+app.use('/api/ai', ...applySecurity, aiRouter)
+app.use('/api/user', ...applySecurity, userRouter)
+app.use('/api/packs', ...applySecurity, packRouter)
+app.use('/api/videos', ...applySecurity, videoRouter)
 
 
 // Error handling middleware (must be last)

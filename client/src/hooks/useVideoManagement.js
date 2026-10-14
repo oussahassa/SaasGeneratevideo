@@ -6,7 +6,7 @@ import { refreshCredits } from '../redux/slices/authSlice';
 import toast from 'react-hot-toast';
 
 // Constants
-export const VIDEO_DURATION_LIMITS = { min: 15, max: 300 };
+export const VIDEO_DURATION_LIMITS = { min: 5, max: 300 };
 export const TONE_OPTIONS = [
   { value: 'professional', label: 'Professional' },
   { value: 'casual', label: 'Casual' },

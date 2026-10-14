@@ -4,6 +4,7 @@ import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Users, FileText, Video, Package, AlertCircle, BarChart3, Plus, Trash2, Edit2, TrendingUp, CheckCircle, Clock } from 'lucide-react';
+import Analytics from './Analytics.jsx';
 
 // Reusable StatCard Component
 const StatCard = ({ icon: Icon, title, value, subtitle, gradientColor }) => (

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { v2 as cloudinary } from 'cloudinary';
 import { v4 as uuidv4 } from 'uuid';
 import { GoogleGenAI } from "@google/genai";
+import { encodeToBase64, createSecureResponse, extractSecureData } from "../utils/security.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -14,7 +15,14 @@ const ai = new GoogleGenAI({
 export const generateVideo = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { topic, duration, tone } = req.body;
+
+    // Extract and decode secure data
+    let requestData = req.body;
+    if (req.body.encodedData) {
+      requestData = extractSecureData(req);
+    }
+
+    const { topic, duration, tone } = requestData;
     const plan = req.plan;
 
     console.log("User video plan:", plan);
@@ -83,7 +91,9 @@ console.log("Runway response:", runwayResponse.data);
         await sql`UPDATE user_subscriptions SET monthly_limit = monthly_limit - 5 WHERE id = ${subscription[0].id}`;
 
     console.log("Generated video:", videoUrl);
-    res.json({ success: true, videoId, videoUrl });
+
+    // Return secure response
+    res.json(createSecureResponse({ videoId, videoUrl }));
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: error.message });
